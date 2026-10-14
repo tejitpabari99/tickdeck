@@ -43,7 +43,19 @@ describe('foundation styles', () => {
     for (const t of ['.media-grid', '.media-row']) expect(m).toContain(t);
   });
 
-  for (const f of ['site', 'utils', 'widgets', 'types/kpi', 'types/list', 'types/markdown', 'types/media', 'types/table'].map((n) => `styles/${n}.css`)) {
+  it('main.tsx imports mobile.css last', () => {
+    const tsx = read('main.tsx');
+    const imports = [...tsx.matchAll(/^import '([^']+\.css)';/gm)].map((m) => m[1]);
+    expect(imports.at(-1)).toBe('./styles/mobile.css');
+  });
+
+  it('mobile.css stacks center, left, right and disables animation under reduced motion', () => {
+    const css = read('styles/mobile.css');
+    expect(css).toContain("grid-template-areas: 'center' 'left' 'right'");
+    expect(css).toMatch(/prefers-reduced-motion: reduce[\s\S]*animation: none !important/);
+  });
+
+  for (const f of ['site', 'utils', 'widgets', 'types/kpi', 'types/list', 'types/markdown', 'types/media', 'types/table', 'mobile'].map((n) => `styles/${n}.css`)) {
     it(`${f} has no colour literals`, () => {
       const css = read(f).replace(/\/\*[\s\S]*?\*\//g, '');
       expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);

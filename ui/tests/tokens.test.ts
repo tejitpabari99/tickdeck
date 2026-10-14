@@ -5,7 +5,7 @@ import { COLUMNS_BREAKPOINT_PX } from './helpers/breakpoint.ts';
 
 const themeDir = join(import.meta.dirname, '../src/theme');
 const tokensCss = readFileSync(join(themeDir, 'tokens.css'), 'utf8');
-const columnsPath = join(import.meta.dirname, '../src/zones/columns.css');
+const mobilePath = join(import.meta.dirname, '../src/styles/mobile.css');
 
 const LAYOUT_TOKENS: Record<string, string> = {
   '--col-side': '300px',
@@ -29,8 +29,9 @@ describe('layout tokens', () => {
     expect(COLUMNS_BREAKPOINT_PX).toBe(1200);
   });
 
-  it('columns.css uses the same breakpoint literal', () => {
-    const css = readFileSync(columnsPath, 'utf8');
-    expect(css).toContain(`max-width: ${COLUMNS_BREAKPOINT_PX}px`);
+  it('mobile.css uses the same breakpoint literal', () => {
+    const css = readFileSync(mobilePath, 'utf8');
+    expect(css.match(/\b1200px/g) ?? []).toHaveLength(2); // one in the comment, one in the @media
+    expect(css).toContain(`@media (max-width: ${COLUMNS_BREAKPOINT_PX}px)`);
   });
 });

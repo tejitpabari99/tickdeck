@@ -223,4 +223,24 @@ describe('list type', () => {
       expect(fn).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('style variants', () => {
+    const items = { items: [{ id: 'a', text: 'Deploy', subtitle: 'sub', meta: 'deploy • 12m ago' }] };
+    it('detailed shows a clamped meta line and list--detailed class', () => {
+      const { container } = renderList(items, { card: { id: 'c1', style: 'detailed' } as never });
+      expect(container.querySelector('.lst-root')!.className).toContain('list--detailed');
+      const m = container.querySelector('.meta-line')!;
+      expect(m.textContent).toBe('deploy • 12m ago');
+      expect(m.className).toContain('truncate');
+      expect(container.querySelector('.lst-sub')).not.toBeNull();
+    });
+    it('rows (default and explicit) ignores meta', () => {
+      for (const style of [undefined, 'rows']) {
+        const { container, unmount } = renderList(items, { card: { id: 'c1', style } as never });
+        expect(container.querySelector('.lst-root')!.className).toContain('list--rows');
+        expect(container.querySelector('.meta-line')).toBeNull();
+        unmount();
+      }
+    });
+  });
 });

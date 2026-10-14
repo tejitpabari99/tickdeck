@@ -68,6 +68,7 @@ function actionType(item: ListItem): 'complete' | 'dismiss' | undefined {
 
 export function ListBody({ card, data, mode, query, checked, pending, onItemAction }: CardTypeProps<ListData>) {
   const full = mode === 'fullscreen';
+  const detailed = card.style === 'detailed';
   const items = useMemo<ListItem[]>(() => (Array.isArray(data?.items) ? data.items : []), [data]);
   const [shown, setShown] = useState(PAGE);
   const [hideDone, setHideDone] = useState(false);
@@ -94,7 +95,7 @@ export function ListBody({ card, data, mode, query, checked, pending, onItemActi
     );
 
   return (
-    <div className="lst-root">
+    <div className={`lst-root list--${detailed ? 'detailed' : 'rows'}`}>
       <div className="lst-head">
         <span className="lst-count">{`${done} of ${items.length} done`}</span>
         {full && (
@@ -144,6 +145,11 @@ export function ListBody({ card, data, mode, query, checked, pending, onItemActi
                     <span className={`lst-due${due.overdue && !c ? ' lst-due--negative' : ''}`}>{due.label}</span>
                   )}
                 </div>
+                {detailed && it.meta && (
+                  <div className="meta-line truncate" title={it.meta}>
+                    {highlight(it.meta, query)}
+                  </div>
+                )}
                 {it.subtitle && (
                   <div className="lst-sub">
                     <span {...clampProps(it.subtitle, 2)}>{highlight(it.subtitle, query)}</span>

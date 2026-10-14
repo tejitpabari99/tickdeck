@@ -16,6 +16,7 @@ Source of truth: `src/constants/error-codes.ts`. Codes appear in HTTP bodies (`{
 | `CARD_BROKEN` | 400 | Card is Broken, so Done/action refused | Fix the card file |
 | `CARD_CHANGED` | 409 | Card changed since the client loaded it (message: `card was updated; reload and retry`) | Reload and retry |
 | `NOT_AN_ALERT` | 400 | Tick on an id that is not an alert file | Only alerts can be ticked |
+| `PERMANENT_CARD` | 400 | Done or Hide on a side-column card (sides are permanent) | Move the card to the center column; `DELETE` variants still work |
 | `ITEM_NOT_FOUND` | 404 | No list item with that id on the card | Reload |
 | `ITEM_NO_ACTION` | 400 | Item has no (known) action | Add `action` to the item in the card |
 | `DISMISS_NOT_UNCHECKABLE` | 400 | `checked: false` sent for a `dismiss` item | `dismiss` is one-way |

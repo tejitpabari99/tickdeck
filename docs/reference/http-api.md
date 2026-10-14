@@ -22,9 +22,9 @@ Mutation success bodies are `{ "rev": "<snapshot rev>" }` unless noted.
 | `GET /api/snapshot` | Everything the UI renders | none | 200 `Snapshot` with `ETag` and `Cache-Control: no-cache`; 304 when `If-None-Match` matches | |
 | `POST /api/shutdown` | Graceful stop | none | 200 `{ ok: true }` | |
 | `POST /api/alerts/:id/tick` | Move an alert file to `feed/alerts/.done/` (its file time becomes the tick time) | none | 200; repeating on an already-ticked id is 200 | 404 `CARD_NOT_FOUND` (no such alert); 400 `NOT_AN_ALERT` (the id is a card) |
-| `POST /api/cards/:id/done` | Acknowledge the card's current data version; the card moves to Completed | none | 200 | 404 `CARD_NOT_FOUND`; 400 `CARD_BROKEN` |
+| `POST /api/cards/:id/done` | Acknowledge the card's current data version; the card moves to Completed | none | 200 | 404 `CARD_NOT_FOUND`; 400 `PERMANENT_CARD` (side card); 400 `CARD_BROKEN` |
 | `DELETE /api/cards/:id/done` | Remove the acknowledgement (Reopen) | none | 200 | 404 `CARD_NOT_FOUND` |
-| `PUT /api/cards/:id/hidden` | Hide the card | none | 200 | 404 `CARD_NOT_FOUND` |
+| `PUT /api/cards/:id/hidden` | Hide the card | none | 200 | 404 `CARD_NOT_FOUND`; 400 `PERMANENT_CARD` (side card) |
 | `DELETE /api/cards/:id/hidden` | Unhide the card | none | 200 | 404 `CARD_NOT_FOUND` |
 | `POST /api/cards/:id/actions` | Run a list item action | `{ itemId: string, updatedAt: string, checked?: boolean }` (`checked` defaults to true) | 200 | 404 `CARD_NOT_FOUND`, 400 `CARD_BROKEN`, 400 `INVALID_JSON`, 400 `INVALID_BODY`, 409 `CARD_CHANGED` (client `updatedAt` differs from the data version's, as an instant), 404 `ITEM_NOT_FOUND`, 400 `ITEM_NO_ACTION`, 400 `DISMISS_NOT_UNCHECKABLE` |
 | `GET /*` | Static UI | | 200 file, or `index.html` for extension-less paths (SPA) | 404 `NOT_FOUND` for missing assets, `/api/*` unknown routes, and non-GET static paths; 400 `BAD_REQUEST` for malformed URL encoding |

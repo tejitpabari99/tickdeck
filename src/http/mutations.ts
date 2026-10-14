@@ -13,6 +13,13 @@ export function mountMutations(app: Hono, ctx: AppContext): void {
   const fail = (c: Context, err: unknown) => internalError(c, err, ctx.log);
   const notFound = (c: Context) => apiError(c, 404, ERROR_CODES.CARD_NOT_FOUND, 'no card with that id; reload the page');
 
+  /** Side-column cards are permanent reference: Done/Hide are refused (DELETE variants still clear stale state). */
+  const permanent = (id: string): boolean => {
+    const entry = ctx.cards.get(id);
+    return entry !== undefined && 'card' in entry && (entry.card.layout?.column ?? 'center') !== 'center';
+  };
+  const refusePermanent = (c: Context) => apiError(c, 400, ERROR_CODES.PERMANENT_CARD, 'side cards are permanent; they cannot be done or hidden');
+
   const alertNotFound = (c: Context) => apiError(c, 404, ERROR_CODES.CARD_NOT_FOUND, 'no alert with that id; reload the page');
   /** Alert ids are file stems: a single path segment, no leading dot, no `:`. Anything else cannot be an alert. */
   const validStem = (id: string): boolean => id !== '' && !id.startsWith('.') && !/[\\/:\0]/.test(id) && !/\.tmp$/i.test(id);
@@ -40,6 +47,7 @@ export function mountMutations(app: Hono, ctx: AppContext): void {
   app.post('/api/cards/:id/done', async (c) => {
     const entry = ctx.cards.get(c.req.param('id'));
     if (!entry) return notFound(c);
+    if (permanent(entry.key)) return refusePermanent(c);
     if (entry.status !== 'ok') return apiError(c, 400, ERROR_CODES.CARD_BROKEN, 'card is broken; fix the card file');
     try {
       await ctx.state.markDone(entry.key, entry.dataVersion, ctx.clock.now().toISOString());
@@ -64,6 +72,7 @@ export function mountMutations(app: Hono, ctx: AppContext): void {
     app[method]('/api/cards/:id/hidden', async (c) => {
       const id = c.req.param('id');
       if (!ctx.cards.get(id)) return notFound(c);
+      if (hidden && permanent(id)) return refusePermanent(c);
       try {
         await ctx.state.hide(id, hidden);
       } catch (err) {

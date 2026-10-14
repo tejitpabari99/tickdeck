@@ -1,0 +1,52 @@
+/* utils.css: generic helpers. No colour literals: var()/calc()/color-mix() only. */
+.truncate, .clamp-1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.clamp-2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+
+/* link with accent arrow; arrow dims once visited */
+.visited-arrow { color: var(--color-text-paragraph); }
+.visited-arrow::after { content: ' \2197'; color: var(--color-primary); }
+.visited-arrow:visited::after { color: var(--color-text-base); }
+.visited-arrow:hover { color: var(--color-text-highlight); }
+
+.sep-dot::before { content: '\2022'; margin: 0 0.8rem; color: var(--color-text-subdue); }
+.separator-list > * + * {
+  border-top: 1px solid var(--color-separator);
+  padding-top: var(--list-half-gap); margin-top: var(--list-half-gap);
+}
+
+.thumbnail {
+  display: block; width: 100%; aspect-ratio: 16 / 8.9; object-fit: cover;
+  border: 1px solid var(--color-separator); border-radius: var(--border-radius);
+  filter: grayscale(0.2) contrast(0.9); opacity: 0.8; transition: opacity 0.2s, filter 0.2s;
+}
+.thumbnail:hover, a:hover > .thumbnail { opacity: 1; filter: none; }
+
+/* staggered reveal */
+.reveal > * { animation: page-in 0.3s ease both; }
+.reveal > *:nth-child(2) { animation-delay: 30ms; }
+.reveal > *:nth-child(3) { animation-delay: 60ms; }
+.reveal > *:nth-child(4) { animation-delay: 90ms; }
+.reveal > *:nth-child(5) { animation-delay: 120ms; }
+.reveal > *:nth-child(6) { animation-delay: 150ms; }
+.reveal > *:nth-child(7) { animation-delay: 180ms; }
+.reveal > *:nth-child(8) { animation-delay: 210ms; }
+
+/* size helpers */
+.size-h1 { font-size: var(--font-size-h1); }
+.size-h2 { font-size: var(--font-size-h2); }
+.size-h3 { font-size: var(--font-size-h3); }
+.size-h4 { font-size: var(--font-size-h4); }
+.size-base { font-size: var(--font-size-base); }
+.size-h5 { font-size: var(--font-size-h5); }
+.size-h6 { font-size: var(--font-size-h6); }
+
+/* text-tier helpers (emphasis = colour, not weight) */
+.color-highlight, .text-highlight { color: var(--color-text-highlight); }
+.color-paragraph, .text-paragraph { color: var(--color-text-paragraph); }
+.color-base, .text-base { color: var(--color-text-base); }
+.color-muted, .text-muted { color: var(--color-text-base-muted); }
+.color-subdue, .text-subdue { color: var(--color-text-subdue); }
+.color-primary { color: var(--color-primary); }
+.color-positive { color: var(--color-positive); }
+.color-negative { color: var(--color-negative); }
+.text-upper { text-transform: uppercase; letter-spacing: 0.04em; }

@@ -5,3 +5,70 @@
   font-display: swap;
   src: url('../assets/fonts/JetBrainsMono-Regular.woff2') format('woff2');
 }
+
+/* Tokens: colour inputs below are the only place colour literals live; everything else derives via calc()/var(). */
+:root {
+  color-scheme: dark;
+
+  /* inputs (Catppuccin Mocha preset); h/s/l are unitless numbers */
+  --bgh: 240;
+  --bgs: 21;
+  --bgl: 15;
+  --cm: 1.2;
+  --tsm: 1;
+  --color-primary: hsl(217, 92%, 83%);
+  --color-positive: hsl(115, 54%, 76%);
+  --color-negative: hsl(347, 70%, 65%);
+
+  /* derived: surfaces */
+  --color-background: hsl(var(--bgh) calc(var(--bgs) * 1%) calc(var(--bgl) * 1%));
+  --color-widget-background: hsl(var(--bgh) calc(var(--bgs) * 1%) calc((var(--bgl) + 1) * 1%));
+  --color-widget-content-border: hsl(var(--bgh) calc(var(--bgs) * 1%) calc((var(--bgl) + 4) * 1%));
+  --color-widget-background-highlight: hsl(var(--bgh) calc(var(--bgs) * 1%) calc((var(--bgl) + 4) * 1%));
+  --color-widget-shadow: hsl(var(--bgh) calc(var(--bgs) * 1%) calc((var(--bgl) - 0.5) * 1%));
+  --color-separator: hsl(var(--bgh) calc(var(--bgs) * 1%) calc((var(--bgl) + 4 * var(--cm)) * 1%));
+  --color-popover-background: hsl(var(--bgh) calc((var(--bgs) + 3) * 1%) calc((var(--bgl) + 3) * 1%));
+  --color-popover-border: hsl(var(--bgh) calc(var(--bgs) * 1%) calc((var(--bgl) + 12) * 1%));
+  --color-progress-border: hsl(var(--bgh) calc(var(--bgs) * 1%) calc((var(--bgl) + 10 * var(--cm)) * 1%));
+  --color-progress-value: hsl(var(--bgh) calc(var(--bgs) * var(--tsm) * 1%) calc((var(--bgl) + 26 * var(--cm)) * 1%));
+  --color-graph-gridlines: hsl(var(--bgh) calc(var(--bgs) * 1%) calc((var(--bgl) + 6 * var(--cm)) * 1%));
+
+  /* derived: text tiers (hue = bgh, sat = bgs * tsm, lightness clamped to 100) */
+  --color-text-highlight: hsl(var(--bgh) calc(var(--bgs) * var(--tsm) * 1%) min(100%, calc(85% * var(--cm))));
+  --color-text-paragraph: hsl(var(--bgh) calc(var(--bgs) * var(--tsm) * 1%) min(100%, calc(73% * var(--cm))));
+  --color-text-base: hsl(var(--bgh) calc(var(--bgs) * var(--tsm) * 1%) min(100%, calc(58% * var(--cm))));
+  --color-text-base-muted: hsl(var(--bgh) calc(var(--bgs) * var(--tsm) * 1%) min(100%, calc(52% * var(--cm))));
+  --color-text-subdue: hsl(var(--bgh) calc(var(--bgs) * var(--tsm) * 1%) min(100%, calc(35% * var(--cm))));
+
+  /* Tickdeck aliases */
+  --prio-high: var(--color-negative);
+  --prio-normal: var(--color-primary);
+  --prio-low: var(--color-text-subdue);
+  --unseen: var(--color-primary);
+  --stale: var(--color-text-subdue);
+
+  /* type + spacing scale (rem on a 10px root) */
+  --font-family: 'JetBrains Mono', monospace;
+  --font-size-h1: 1.7rem;
+  --font-size-h2: 1.6rem;
+  --font-size-h3: 1.5rem;
+  --font-size-h4: 1.4rem;
+  --font-size-base: 1.3rem;
+  --font-size-h5: 1.2rem;
+  --font-size-h6: 1.1rem;
+  --widget-gap: 2.3rem;
+  --widget-content-padding: 1.5rem 1.7rem;
+  --content-bounds-padding: 1.5rem;
+  --border-radius: 0.5rem;
+  --side-column-width: 30rem;
+  --header-height: 4.5rem;
+  --header-gap: 2.5rem;
+  --list-half-gap: 0.5rem;
+
+  /* layout tokens carried over from theme/tokens.css (old names kept until 03 Task 7) */
+  --col-side: 300px;
+  --h-S: 180px;
+  --h-M: 360px;
+  --h-L: 600px;
+  --chip-h: 32px;
+}

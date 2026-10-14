@@ -224,6 +224,64 @@ test.describe('populated feed', () => {
     expect(left).toBeLessThan(right);
   });
 
+  test('header has page padding and fits the viewport at 1280 (post-review)', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(h!.server.url);
+    const brand = (await page.locator('.header__brand').boundingBox())!;
+    expect(brand.x).toBeGreaterThanOrEqual(12);
+    const dot = (await page.getByRole('img', { name: 'Connected' }).boundingBox())!;
+    expect(dot.x + dot.width).toBeLessThanOrEqual(1280 - 12);
+    await expect(page.locator('.header__status')).toContainText('connected');
+  });
+
+  test('header fits the viewport at 360 with a gutter (post-review)', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto(h!.server.url);
+    const boxes = await page.locator('.header, .header *').evaluateAll((els) =>
+      els.map((e) => {
+        const r = e.getBoundingClientRect();
+        return { cls: String(e.getAttribute('class') ?? ''), left: r.left, right: r.right, w: r.width };
+      }),
+    );
+    for (const b of boxes.filter((x) => x.w > 0 && !/^header$/.test(String(x.cls)))) {
+      expect(b.left, String(b.cls)).toBeGreaterThanOrEqual(0);
+      expect(b.right, String(b.cls)).toBeLessThanOrEqual(360);
+    }
+    expect((await page.locator('.header__brand').boundingBox())!.x).toBeGreaterThanOrEqual(12);
+    expect((await page.locator('.search-box input').boundingBox())!.x).toBeGreaterThanOrEqual(12);
+  });
+
+  test('compact table: one-line truncating cells, aligned, wrap scrolls in-card (post-review)', async ({ page }) => {
+    for (const width of [1280, 360]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(h!.server.url);
+      const expanders = page.getByRole('button', { name: /^Expand/ });
+      while (await expanders.count()) await expanders.first().click();
+      const card = page.locator('[data-card-id="table"]').first();
+      await expect(card.locator('.cell-truncate').first()).toHaveCSS('white-space', 'nowrap');
+      await expect(card.locator('.tbl-wrap')).toHaveCSS('overflow-x', 'auto');
+      const rows = await card.locator('tbody tr').evaluateAll((trs) =>
+        trs.map((tr) => [...tr.querySelectorAll('td')].map((td) => td.getBoundingClientRect().height)),
+      );
+      expect(rows.length).toBeGreaterThan(0);
+      for (const r of rows) expect(Math.max(...r) - Math.min(...r), `${width}`).toBeLessThan(2);
+      const links = card.locator('td a.card-link:not(.tbl-rowlink *)');
+      if (await links.count()) {
+        const cell = (await links.first().locator('xpath=ancestor::td').boundingBox())!;
+        const text = (await links.first().boundingBox())!;
+        expect(Math.abs(text.y + text.height / 2 - (cell.y + cell.height / 2))).toBeLessThan(4);
+      }
+      const box = (await card.locator('.tbl-wrap').boundingBox())!;
+      expect(box.x + box.width).toBeLessThanOrEqual(width);
+      const cardBox = (await card.boundingBox())!;
+      expect(box.x + box.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 1);
+      if (process.env['TICKDECK_SHOTS']) {
+        await page.evaluate('window.scrollTo(0, 0)');
+        await page.screenshot({ path: join(process.env['TICKDECK_SHOTS'], `app-${width}.png`), fullPage: true });
+      }
+    }
+  });
+
   test('reduced motion disables animation (R12)', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(h!.server.url);

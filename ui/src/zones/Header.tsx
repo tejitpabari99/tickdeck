@@ -26,18 +26,9 @@ export function Header(p: HeaderProps) {
     <header className="header">
       <h1 className="header__brand">Tickdeck</h1>
       <span className="header__date">{date}</span>
-      {!p.minimal && p.alertCount > 0 ? (
-        <button
-          type="button"
-          className="header__badge"
-          aria-label={`${p.alertCount} ${p.alertCount === 1 ? 'alert' : 'alerts'}`}
-          onClick={scrollToNow}
-        >
-          {p.alertCount}
-        </button>
-      ) : null}
       {p.minimal ? null : (
         <>
+          <SearchBox {...p.search} />
           <div role="radiogroup" aria-label="Show" className="filter">
             {FILTERS.map((f) => (
               <button
@@ -69,15 +60,30 @@ export function Header(p: HeaderProps) {
               </button>
             ))}
           </div>
-          <SearchBox {...p.search} />
           <HiddenPopover cards={p.hidden} onUnhide={p.onUnhide} />
         </>
       )}
-      <span
-        role="img"
-        aria-label={p.connectionOk ? 'Connected' : 'Connection problem'}
-        className={`header__dot header__dot--${p.connectionOk ? 'ok' : 'bad'}`}
-      />
+      <div className="header__status">
+        {!p.minimal && p.alertCount > 0 ? (
+          <button
+            type="button"
+            className="header__badge"
+            aria-label={`${p.alertCount} ${p.alertCount === 1 ? 'alert' : 'alerts'}`}
+            onClick={scrollToNow}
+          >
+            <span className="header__dot header__dot--bad" aria-hidden="true" />
+            <span aria-hidden="true">{`${p.alertCount} ${p.alertCount === 1 ? 'alert' : 'alerts'}`}</span>
+          </button>
+        ) : null}
+        <span className="header__status-item">
+          <span
+            role="img"
+            aria-label={p.connectionOk ? 'Connected' : 'Connection problem'}
+            className={`header__dot header__dot--${p.connectionOk ? 'ok' : 'bad'}`}
+          />
+          <span aria-hidden="true">{p.connectionOk ? 'connected' : 'offline'}</span>
+        </span>
+      </div>
     </header>
   );
 }

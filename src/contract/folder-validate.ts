@@ -1,3 +1,4 @@
+import type { z } from 'zod';
 import { realClock } from '../clock.js';
 import {
   CLOCK_SKEW_MS,
@@ -12,7 +13,7 @@ import { errorMessage } from '../utils/errors.js';
 import { alertSchema, type Alert } from './alert.js';
 import { cardDefSchema, hasStrayId, type CardDef } from './card-def.js';
 import { dataFileSchema } from './data-file.js';
-import { isRegisteredType, registry } from './registry.js';
+import { isRegisteredType, registry, sidesAllowed, type TypeEntry } from './registry.js';
 
 export interface FolderIssue {
   path: string;
@@ -56,6 +57,8 @@ export interface ValidCard {
   notify: boolean;
   show?: CardDef['show'];
   staleAfter?: string;
+  /** card.json `style` (view field), when a string. */
+  style?: string;
   /** Effective updatedAt (RFC 3339): data.updatedAt, else ISO(mtime). */
   updatedAt: string;
   updatedAtSource: UpdatedAtSource;
@@ -77,6 +80,7 @@ export interface NoDataCard {
   notify: boolean;
   show?: CardDef['show'];
   staleAfter?: string;
+  style?: string;
   def: Obj;
 }
 
@@ -104,7 +108,7 @@ export type AlertResult =
   | { status: 'ok'; alert: ValidAlert; warnings: string[] }
   | {
       status: 'broken';
-      reason: Exclude<BrokenReason, 'unknown-type'>;
+      reason: Exclude<BrokenReason, 'unknown-type' | 'side-not-allowed'>;
       message: string;
       issues: FolderIssue[];
       id: string;
@@ -173,7 +177,7 @@ function hasLoneSurrogate(s: string): boolean {
   return false;
 }
 
-type TextFail = { reason: Exclude<BrokenReason, 'schema-invalid' | 'unknown-type'>; message: string };
+type TextFail = { reason: Exclude<BrokenReason, 'schema-invalid' | 'unknown-type' | 'side-not-allowed'>; message: string };
 
 function formatBytes(n: number): string {
   return n >= 1024 * 1024 ? `${n / (1024 * 1024)} MB` : `${n / 1024} KB`;
@@ -226,6 +230,8 @@ function skewWarning(updatedAt: string, source: UpdatedAtSource, nowMs: number, 
 function strayIdWarning(obj: object, file: string, id: string): string[] {
   return hasStrayId(obj) ? [`${file}: "id" key is ignored; the name "${id}" is the id`] : [];
 }
+
+const PRIORITY_SIDE_WARNING = 'priority is ignored in left/right columns';
 
 function skip(reason: SkipReason, message: string, issues: FolderIssue[] = [], id?: string): SkippedResult {
   return { status: 'skipped', reason, message, issues, ...(id !== undefined ? { id } : {}) };
@@ -304,6 +310,27 @@ function validateFolder(i: ValidateCardFolderInput): FolderResult {
   }
   const entry = registry[def.type];
 
+  const typeView: z.ZodType | undefined = (entry as TypeEntry).view;
+  if (typeView) {
+    const v = typeView.safeParse({ style: def.style });
+    if (!v.success) {
+      const issues = toIssues(v.error.issues);
+      return broken(id, def, 'schema-invalid', summarize(issues, 'card.json'), issues);
+    }
+  }
+
+  const column = def.layout.column;
+  if (column !== 'center' && !sidesAllowed(def.type)) {
+    return broken(
+      id,
+      def,
+      'side-not-allowed',
+      `type "${def.type}" is not allowed in the ${column} column: sides are permanent reference; use column "center" (or a kpi/markdown/media card)`,
+      [{ path: '/layout/column', message: 'type not allowed in a side column' }],
+    );
+  }
+  if (column !== 'center' && def.priority !== undefined) warnings.push(PRIORITY_SIDE_WARNING);
+
   const base = {
     id,
     type: def.type,
@@ -312,6 +339,7 @@ function validateFolder(i: ValidateCardFolderInput): FolderResult {
     notify: def.notify,
     ...(def.show ? { show: def.show } : {}),
     ...(def.staleAfter !== undefined ? { staleAfter: def.staleAfter } : {}),
+    ...(typeof def.style === 'string' ? { style: def.style } : {}),
     def: d.raw,
   };
 
@@ -334,6 +362,9 @@ function validateFolder(i: ValidateCardFolderInput): FolderResult {
   }
   const content = df.data;
   warnings.push(...strayIdWarning(parsed.obj, dataFile, id));
+  if (column !== 'center' && content.priority !== undefined && def.priority === undefined) {
+    warnings.push(PRIORITY_SIDE_WARNING);
+  }
 
   let payload: Obj | undefined;
   if (content.error === null) {
@@ -343,6 +374,8 @@ function validateFolder(i: ValidateCardFolderInput): FolderResult {
       return broken(id, def, 'schema-invalid', summarize(issues, dataFile), issues);
     }
     payload = p.data as Obj;
+    const typeWarnings: ((d: unknown) => string[]) | undefined = (entry as TypeEntry).warnings;
+    if (typeWarnings) warnings.push(...typeWarnings(p.data).map((w) => `${dataFile}${w}`));
   }
 
   const source: UpdatedAtSource = content.updatedAt !== undefined ? 'data' : 'mtime';
@@ -378,7 +411,7 @@ export function validateAlertFile(i: ValidateAlertFileInput): AlertResult {
 
 function validateAlert(i: ValidateAlertFileInput, id: string): AlertResult {
   const fail = (
-    reason: Exclude<BrokenReason, 'unknown-type'>,
+    reason: Exclude<BrokenReason, 'unknown-type' | 'side-not-allowed'>,
     message: string,
     issues: FolderIssue[] = [],
   ): AlertResult => ({ status: 'broken', reason, message, issues, id });

@@ -116,6 +116,7 @@ observable behavior without updating relevant docs is incomplete.
 | [0005](decisions/0005-card-folder-ingest-and-completed.md) | Card-folder ingest, Completed list and write-back rules |
 | [0006](decisions/0006-rename-to-tickdeck.md) | Rename the project to Tickdeck |
 | [0007](decisions/0007-single-theme-glance-derived-css.md) | Single theme, Glance-derived CSS, NOTICE |
+| [0008](decisions/0008-side-center-semantics.md) | Side/center semantics: allow/deny flag, reject not move |
 
 ### docs/agent_files/
 

@@ -34,8 +34,8 @@ function mount(type: string, data: unknown, mode: Mode, query = '') {
 }
 
 describe('templates/<type>/ fixtures', () => {
-  it('covers all five types', () => {
-    expect(examples.map((e) => e.type).sort()).toEqual(['kpi', 'list', 'markdown', 'media', 'table']);
+  it('covers all seven types', () => {
+    expect(examples.map((e) => e.type).sort()).toEqual(['bookmarks', 'calendar', 'kpi', 'list', 'markdown', 'media', 'table']);
   });
 
   describe.each(examples)('$type', ({ type, data }) => {

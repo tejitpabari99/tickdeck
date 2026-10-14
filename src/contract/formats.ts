@@ -83,6 +83,13 @@ export const dueSchema = z
     message: 'must be YYYY-MM-DD or an RFC 3339 datetime with offset or Z',
   });
 
+/** Colour grammar: a token name (primary|positive|negative) or HSL components "H S L" (no hsl(), no hex). */
+export const colorSchema = z
+  .string()
+  .regex(/^(primary|positive|negative|\d{1,3} \d{1,3} \d{1,3})$/, {
+    message: 'colour must be primary, positive, negative or "H S L" (e.g. "220 80 50")',
+  });
+
 const MAX_LINK = 2048;
 const LINK_SCHEMES = new Set<string>(LINK_SCHEME_LIST);
 const BAD_CHARS = /[\u0000-\u001f\u007f\s]/;

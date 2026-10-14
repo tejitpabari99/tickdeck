@@ -14,7 +14,9 @@
         "table",
         "list",
         "kpi",
-        "media"
+        "media",
+        "calendar",
+        "bookmarks"
       ]
     },
     "title": {

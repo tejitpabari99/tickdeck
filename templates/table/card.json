@@ -4,7 +4,7 @@
   "title": "Unread email",
   "data": "data.json",
   "layout": {
-    "column": "left",
+    "column": "center",
     "order": 1,
     "height": "auto"
   },

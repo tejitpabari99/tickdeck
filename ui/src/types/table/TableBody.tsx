@@ -4,7 +4,6 @@ import { PAGE } from '../../constants/types.ts';
 import { CardLink, isAllowedLink } from '../../frame/CardLink.tsx';
 import type { CardTypeProps } from '../../registry/registry.ts';
 import type { Cell, TableData } from '../../../../src/index.js';
-import { clampProps } from '../shared/clamp.ts';
 import { highlight } from '../shared/highlight.tsx';
 import { PageMore, ShowMore } from '../shared/ShowMore.tsx';
 import { useQueryFilter } from '../shared/useQueryFilter.ts';
@@ -12,6 +11,8 @@ import {
   cellText,
   distinctValues,
   filterRows,
+  columnWidths,
+  formatDateCell,
   inferColumnType,
   nextSort,
   normalizeColumns,
@@ -28,6 +29,11 @@ interface Row {
   cells: Cell[];
 }
 
+function cls(...parts: (string | false | undefined)[]): string | undefined {
+  const out = parts.filter(Boolean).join(' ');
+  return out === '' ? undefined : out;
+}
+
 function str(cell: Cell | undefined): string {
   if (cell === undefined) return '';
   const v = cellText(cell);
@@ -42,7 +48,7 @@ function cellLink(cell: Cell | undefined): string | undefined {
   return cell !== null && typeof cell === 'object' && typeof cell.link === 'string' ? cell.link : undefined;
 }
 
-function CellContent({ cell, query, compact }: { cell: Cell | undefined; query: string; compact: boolean }) {
+function CellContent({ cell, query, compact, isDate }: { cell: Cell | undefined; query: string; compact: boolean; isDate: boolean }) {
   const v = cell === undefined ? null : cellText(cell);
   const link = cellLink(cell);
   let body: ReactNode;
@@ -58,17 +64,25 @@ function CellContent({ cell, query, compact }: { cell: Cell | undefined; query: 
   } else {
     body = highlight(String(v), query);
   }
+  const date = isDate && typeof v === 'string' ? formatDateCell(v) : null;
+  if (date) body = date.display;
   const text = str(cell);
   if (link !== undefined && text !== '') {
-    return (
+    const a = (
       <span className="tbl-cell-link">
         <CardLink href={link} title={text}>
           {body}
         </CardLink>
       </span>
     );
+    return compact ? <span className="cell-truncate" title={date ? date.title : text}>{a}</span> : a;
   }
-  return compact && typeof v !== 'boolean' ? <span {...clampProps(text, 1)}>{body}</span> : <>{body}</>;
+  if (date) return <span className={compact ? 'cell-truncate' : undefined} title={date.title}>{body}</span>;
+  return compact && typeof v !== 'boolean' ? (
+    <span className="cell-truncate" title={text}>{body}</span>
+  ) : (
+    <>{body}</>
+  );
 }
 
 function FilterPopover({
@@ -111,7 +125,12 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
   const columns = useMemo(() => normalizeColumns(Array.isArray(data?.columns) ? data.columns : []), [data]);
   const rows = useMemo<Row[]>(() => (Array.isArray(data?.rows) ? (data.rows as Row[]) : []), [data]);
   const defaultSort = data?.defaultSort ?? null;
-  const [sort, setSort] = useState<SortState | null>(defaultSort);
+  // undefined = user has not sorted; effective sort is then the agent's defaultSort.
+  const [userSort, setUserSort] = useState<SortState | null | undefined>(undefined);
+  const dsCol = defaultSort?.column;
+  const dsDir = defaultSort?.dir;
+  useEffect(() => setUserSort(undefined), [dsCol, dsDir]);
+  const sort = userSort !== undefined ? userSort : defaultSort;
   const [ownQuery, setOwnQuery] = useState('');
   const [shown, setShown] = useState(PAGE);
   const [rawFilters, setFilters] = useState<Record<number, ReadonlySet<string>>>({});
@@ -122,6 +141,8 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
     () => columns.map((c, i) => inferColumnType(rows.map((r) => r.cells[i] as Cell), c.sort)),
     [columns, rows],
   );
+
+  const widths = useMemo(() => columnWidths(columns, rows, types), [columns, rows, types]);
 
   const filterable = useMemo<(string[] | null)[]>(
     () => columns.map((_, i) => (compact ? null : distinctValues(rows, i))),
@@ -168,7 +189,15 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
     () => (sort ? sortRows(matched, sort.column, sort.dir, types[sort.column] ?? 'text') : matched),
     [matched, sort, types],
   );
-  const onSort = useCallback((c: number) => setSort((s) => nextSort(s, c, defaultSort)), [defaultSort]);
+  const onSort = useCallback(
+    (c: number) =>
+      setUserSort((u) => {
+        const next = nextSort(u !== undefined ? u : defaultSort, c, defaultSort);
+        // Back at the default (third click): drop the override so later defaultSort changes apply.
+        return next === defaultSort ? undefined : next;
+      }),
+    [defaultSort],
+  );
 
   const searchable = data?.searchable !== false && (!compact || rows.length > SEARCH_MIN_ROWS);
   const hasFilters = filterable.some((f) => f !== null);
@@ -239,7 +268,7 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
                     <th
                       key={i}
                       scope="col"
-                      className={types[i] === 'number' ? 'tbl-num' : undefined}
+                      className={cls(types[i] === 'number' && 'tbl-num', widths[i] && `col-w-${widths[i]}`)}
                       {...(active ? { 'aria-sort': active === 'asc' ? ('ascending' as const) : ('descending' as const) } : {})}
                     >
                       <button type="button" className="tbl-sort" onClick={() => onSort(i)}>
@@ -283,7 +312,7 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
                 return (
                   <tr key={r} className={href ? 'tbl-row tbl-row--link' : 'tbl-row'}>
                     {columns.map((_, i) => (
-                      <td key={i} className={`tbl-cell${types[i] === 'number' ? ' tbl-num' : ''}`}>
+                      <td key={i} className={cls('tbl-cell', types[i] === 'number' && 'tbl-num', widths[i] && `col-w-${widths[i]}`)}>
                         {i === 0 && href && (
                           <span className="tbl-rowlink">
                             <CardLink href={href} title={name}>
@@ -291,7 +320,7 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
                             </CardLink>
                           </span>
                         )}
-                        <CellContent cell={row.cells[i]} query={hl} compact={compact} />
+                        <CellContent cell={row.cells[i]} query={hl} compact={compact} isDate={types[i] === 'date'} />
                       </td>
                     ))}
                   </tr>

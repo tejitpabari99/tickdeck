@@ -14,6 +14,7 @@ function card(over: Partial<ViewCard> = {}): ViewCard {
     updatedAt: '2026-10-05T10:00:00Z',
     column: 'left',
     height: 'S',
+    permanent: false,
     status: 'ok',
     collapsed: true,
     done: false,

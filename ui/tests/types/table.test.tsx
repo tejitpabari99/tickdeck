@@ -179,10 +179,10 @@ describe('table type', () => {
   it('sticky header class and compact clamp title / fullscreen wrap', () => {
     const { container } = renderTable({ columns: ['A'], rows: [{ cells: ['long text'] }] });
     expect(container.querySelector('table')!.className).toMatch(/tbl/);
-    expect(container.querySelector('td .clamp-1')!.getAttribute('title')).toBe('long text');
+    expect(container.querySelector('td .cell-truncate')!.getAttribute('title')).toBe('long text');
     cleanup();
     const full = renderTable({ columns: ['A'], rows: [{ cells: ['long text'] }] }, { mode: 'fullscreen' });
-    expect(full.container.querySelector('td .clamp-1')).toBeNull();
+    expect(full.container.querySelector('td .cell-truncate')).toBeNull();
   });
 
   it('axe: email example has no critical violations', async () => {

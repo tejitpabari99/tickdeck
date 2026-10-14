@@ -77,10 +77,10 @@ describe('computeSnapshot', () => {
 
   it('AC4: Now-pinned card is absent from its column; low priority keeps slot collapsed; hidden excluded', () => {
     const s = snap([
-      ok('hi', { priority: 3, show, column: 'left' }), ok('lo', { priority: 1, column: 'left' }), ok('h', { column: 'left' }),
+      ok('hi', { priority: 3, show }), ok('lo', { priority: 1 }), ok('h'),
     ], state({ hidden: { h: true } }));
     expect(s.now).toEqual(['hi']);
-    expect(s.columns.left).toEqual(['lo']);
+    expect(s.columns.center).toEqual(['lo']);
     expect(s.cards.lo).toMatchObject({ collapsed: true, done: false });
     expect(s.hidden).toEqual(['h']);
     expect(s.cards.hi!.data).toBeDefined();

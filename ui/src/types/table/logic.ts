@@ -14,6 +14,7 @@ export interface NormalizedColumn {
   key?: string;
   label: string;
   sort?: ColumnType;
+  width?: 'xs' | 's' | 'm' | 'l' | 'fill';
 }
 export interface RowLike {
   cells: readonly Cell[];
@@ -44,6 +45,7 @@ export function normalizeColumns(columns: TableData['columns']): NormalizedColum
     const out: NormalizedColumn = { label: c.label };
     if (c.key !== undefined) out.key = c.key;
     if (c.sort !== undefined) out.sort = c.sort;
+    if (c.width !== undefined) out.width = c.width;
     return out;
   });
 }
@@ -73,6 +75,53 @@ function parseDate(cell: Cell | undefined): number | null {
   if (!DATE_RE.test(s)) return null;
   const t = Date.parse(s);
   return Number.isNaN(t) ? null : t;
+}
+
+export interface DateCellFormat {
+  /** Short display, e.g. `Oct 9, 5:06p` / `Oct 9` / `Oct 9, 2025`. */
+  display: string;
+  /** Full localized timestamp for the `title` tooltip. */
+  title: string;
+}
+
+export interface DateFormatOpts {
+  /** IANA tz; default = browser tz. */
+  timeZone?: string;
+  /** Reference "now" for the current-year check; default = real now. */
+  now?: Date;
+}
+
+/**
+ * Short display + full-timestamp title for a parseable ISO date cell; null when unparseable
+ * (caller renders the raw text). Date-only values are calendar dates (no tz shift). Pure.
+ */
+export function formatDateCell(raw: string, opts: DateFormatOpts = {}): DateCellFormat | null {
+  const s = raw.trim();
+  if (!DATE_RE.test(s)) return null;
+  const t = Date.parse(s);
+  if (Number.isNaN(t)) return null;
+  const timed = s.length > 10;
+  const tz = timed ? opts.timeZone : 'UTC';
+  const zone = tz === undefined ? {} : { timeZone: tz };
+  const d = new Date(t);
+  const now = opts.now ?? new Date();
+  const year = (x: Date) => new Intl.DateTimeFormat('en-US', { ...zone, year: 'numeric' }).format(x);
+  const nowYear = new Intl.DateTimeFormat('en-US', {
+    ...(opts.timeZone === undefined ? {} : { timeZone: opts.timeZone }),
+    year: 'numeric',
+  }).format(now);
+  const day = new Intl.DateTimeFormat('en-US', { ...zone, month: 'short', day: 'numeric' }).format(d);
+  let display = day;
+  if (year(d) !== nowYear) display += `, ${year(d)}`;
+  if (timed) {
+    const parts = new Intl.DateTimeFormat('en-US', { ...zone, hour: 'numeric', minute: '2-digit', hour12: true }).formatToParts(d);
+    const g = (k: string) => parts.find((p) => p.type === k)?.value ?? '';
+    display += `, ${g('hour')}:${g('minute')}${g('dayPeriod').toLowerCase().startsWith('p') ? 'p' : 'a'}`;
+  }
+  const title = timed
+    ? new Intl.DateTimeFormat('en-US', { ...zone, dateStyle: 'long', timeStyle: 'long' }).format(d)
+    : new Intl.DateTimeFormat('en-US', { ...zone, dateStyle: 'long' }).format(d);
+  return { display, title };
 }
 
 /** Explicit `sort` wins; else >=80% of non-empty cells numeric -> number, >=80% ISO-date-like -> date, else text. */
@@ -146,4 +195,33 @@ export function tableSearchText(data: TableData): string {
     ? data.rows.flatMap((row) => (Array.isArray(row?.cells) ? row.cells.map(textOf) : []))
     : [];
   return [...cols, ...cells].filter((s) => s !== '').join(' ');
+}
+
+/**
+ * Width key per column: explicit `width`, else (when no column declares `fill`) the unsized text
+ * column with the longest average cell length becomes implicit `fill`.
+ */
+export function columnWidths(
+  columns: readonly NormalizedColumn[],
+  rows: readonly RowLike[],
+  types: readonly ColumnType[],
+): (NormalizedColumn['width'] | undefined)[] {
+  const out = columns.map((c) => c.width);
+  if (out.includes('fill') || rows.length === 0) return out;
+  let best = -1;
+  let bestAvg = 0;
+  columns.forEach((c, i) => {
+    if (c.width !== undefined || types[i] !== 'text') return;
+    const total = rows.reduce((n, r) => {
+      const cell = r.cells[i];
+      return n + (cell === undefined ? 0 : String(cellText(cell) ?? '').length);
+    }, 0);
+    const avg = total / rows.length;
+    if (avg > bestAvg) {
+      best = i;
+      bestAvg = avg;
+    }
+  });
+  if (best >= 0) out[best] = 'fill';
+  return out;
 }

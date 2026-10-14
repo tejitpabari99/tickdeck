@@ -20,6 +20,7 @@ function card(over: Partial<ViewCard> = {}): ViewCard {
     updatedAt: ago(2 * 3_600_000),
     column: 'center',
     height: 'M',
+    permanent: false,
     collapsed: false,
     done: false,
     status: 'ok',
@@ -138,13 +139,13 @@ describe('title bar', () => {
 });
 
 describe('hooks contract', () => {
-  it('renders .card with the look from card.column and data-permanent from column', () => {
+  it('renders .card with the look from card.column and data-permanent from card.permanent', () => {
     const { container, rerender } = render(<CardFrame {...props({ card: card({ column: 'center' }) })} />);
     let el = container.querySelector('.card')!;
     expect(el.classList.contains('card--center')).toBe(true);
     expect(el.classList.contains('card--side')).toBe(false);
     expect(el.getAttribute('data-permanent')).toBe('false');
-    rerender(<CardFrame {...props({ card: card({ column: 'left' }) })} />);
+    rerender(<CardFrame {...props({ card: card({ column: 'left', permanent: true }) })} />);
     el = container.querySelector('.card')!;
     expect(el.classList.contains('card--side')).toBe(true);
     expect(el.getAttribute('data-permanent')).toBe('true');
@@ -346,5 +347,45 @@ describe('collapsed card, expanded', () => {
     expect(isExpanded('c1')).toBe(false);
     expect(l).toHaveBeenCalled();
     off();
+  });
+});
+
+describe('permanent (side) cards', () => {
+  const perm = (over: Partial<ViewCard> = {}) => card({ column: 'left', permanent: true, priority: 9, collapsed: true, notify: true, ...over });
+
+  it('renders no Done, Hide, collapse, priority marker or unseen dot; keeps Fullscreen', () => {
+    const p = props({ card: perm() });
+    render(<CardFrame {...p} />);
+    expect(screen.queryByRole('button', { name: 'Done' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Hide' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Collapse' })).toBeNull();
+    expect(screen.queryByTestId('priority-marker')).toBeNull();
+    expect(screen.queryByTestId('notify-dot')).toBeNull();
+    expect(document.querySelector('.card--highlight, .card-frame--notify')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Fullscreen' }));
+    expect(p.onFullscreen).toHaveBeenCalledWith('c1');
+  });
+
+  it('data-permanent follows card.permanent; classes follow column', () => {
+    const { rerender } = render(<CardFrame {...props({ card: perm() })} />);
+    let root = document.querySelector('[data-card-id="c1"]')!;
+    expect(root.getAttribute('data-permanent')).toBe('true');
+    expect(root.classList.contains('card--side')).toBe(true);
+    rerender(<CardFrame {...props({ card: card() })} />);
+    root = document.querySelector('[data-card-id="c1"]')!;
+    expect(root.getAttribute('data-permanent')).toBe('false');
+    expect(root.classList.contains('card--center')).toBe(true);
+  });
+
+  it('permanent card in fullscreen mode still has no Done/Hide', () => {
+    render(<CardFrame {...props({ card: perm(), mode: 'fullscreen' })} />);
+    expect(screen.queryByRole('button', { name: 'Done' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Fullscreen' })).toBeTruthy();
+  });
+
+  it('non-permanent card keeps Done/Hide', () => {
+    render(<CardFrame {...props()} />);
+    expect(screen.getByRole('button', { name: 'Done' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Hide' })).toBeTruthy();
   });
 });

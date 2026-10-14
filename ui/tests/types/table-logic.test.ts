@@ -5,6 +5,7 @@ import {
   cellText,
   distinctValues,
   filterRows,
+  formatDateCell,
   inferColumnType,
   nextSort,
   normalizeColumns,
@@ -166,5 +167,54 @@ describe('tableSearchText', () => {
     expect(tableSearchText({ columns: [], rows: [], searchable: true } as unknown as TableData)).toBe('');
     expect(tableSearchText({ columns: ['A'], rows: [{ cells: ['x', 'extra'] }, {}], extra: 1 } as unknown as TableData)).toContain('extra');
     expect(tableSearchText(undefined as never)).toBe('');
+  });
+});
+
+describe('formatDateCell', () => {
+  const now = new Date('2026-10-14T12:00:00Z');
+  const tz = 'America/Los_Angeles';
+  it('time-bearing: short in given tz, am/pm suffix', () => {
+    expect(formatDateCell('2026-10-09T17:06:00Z', { timeZone: tz, now })?.display).toBe('Oct 9, 10:06a');
+    expect(formatDateCell('2026-10-09T22:06:00Z', { timeZone: tz, now })?.display).toBe('Oct 9, 3:06p');
+  });
+  it('tz changes the day', () => {
+    expect(formatDateCell('2026-10-10T02:30:00Z', { timeZone: 'UTC', now })?.display).toBe('Oct 10, 2:30a');
+    expect(formatDateCell('2026-10-10T02:30:00Z', { timeZone: tz, now })?.display).toBe('Oct 9, 7:30p');
+  });
+  it('date-only: no time, no tz shift', () => {
+    expect(formatDateCell('2026-10-09', { timeZone: tz, now })?.display).toBe('Oct 9');
+  });
+  it('shows year when not current', () => {
+    expect(formatDateCell('2025-10-09', { timeZone: tz, now })?.display).toBe('Oct 9, 2025');
+    expect(formatDateCell('2025-10-09T17:06:00Z', { timeZone: tz, now })?.display).toBe('Oct 9, 2025, 10:06a');
+  });
+  it('title is the full localized timestamp', () => {
+    const t = formatDateCell('2026-10-09T17:06:00Z', { timeZone: tz, now })?.title ?? '';
+    expect(t).toContain('October 9, 2026');
+    expect(t).toContain('10:06');
+  });
+  it('unparseable or non-ISO -> null (render raw)', () => {
+    for (const v of ['yesterday', 'Oct 9, 2026', '10/09/2026', '', '2026-13-45']) {
+      expect(formatDateCell(v, { timeZone: tz, now })).toBeNull();
+    }
+  });
+});
+
+describe('date sort by instant, raw and last for non-ISO', () => {
+  it('sorts by instant, not string (offsets)', () => {
+    // string order would put 10:00+05:00 (05:00Z) after 06:00Z ... instant order differs
+    const rows = [r('2026-10-09T10:00:00+05:00'), r('2026-10-09T06:00:00Z'), r('2026-10-09T03:00:00-05:00')];
+    expect(col0(sortRows(rows, 0, 'asc', 'date'))).toEqual([
+      '2026-10-09T10:00:00+05:00',
+      '2026-10-09T06:00:00Z',
+      '2026-10-09T03:00:00-05:00',
+    ]);
+    expect(col0(sortRows(rows, 0, 'desc', 'date'))[0]).toBe('2026-10-09T03:00:00-05:00');
+  });
+  it('non-ISO cells in an explicit date column sort last both directions, raw text kept', () => {
+    const rows = [r('Oct 9'), r('2026-10-02'), r('2026-10-01')];
+    expect(col0(sortRows(rows, 0, 'asc', 'date'))).toEqual(['2026-10-01', '2026-10-02', 'Oct 9']);
+    expect(col0(sortRows(rows, 0, 'desc', 'date'))).toEqual(['2026-10-02', '2026-10-01', 'Oct 9']);
+    expect(formatDateCell('Oct 9')).toBeNull();
   });
 });

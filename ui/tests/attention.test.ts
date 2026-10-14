@@ -25,6 +25,10 @@ describe('attentionCount', () => {
   it('alerts + unseen notify cards in now and columns; excludes no-data, non-notify, Done', () => {
     expect(attentionCount(snap())).toBe(4);
   });
+  it('permanent (side) cards never count', () => {
+    const s = snap({ cards: { a: c('a', { permanent: true }), quiet: c('quiet', { notify: false }) } as never, columns: { left: ['a'], center: ['quiet'], right: [] }, now: [] });
+    expect(attentionCount(s)).toBe(2);
+  });
   it('seen cards drop out', () => {
     markSeen({ id: 'a', updatedAt: 'u1' });
     expect(attentionCount(snap())).toBe(3);

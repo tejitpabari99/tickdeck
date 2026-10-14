@@ -28,6 +28,10 @@
               "caption": {
                 "type": "string"
               },
+              "meta": {
+                "type": "string",
+                "maxLength": 200
+              },
               "link": {
                 "type": "string"
               }
@@ -42,7 +46,8 @@
           "type": "string",
           "enum": [
             "grid",
-            "single"
+            "single",
+            "row"
           ]
         }
       },

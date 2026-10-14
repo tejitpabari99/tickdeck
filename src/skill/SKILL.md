@@ -32,7 +32,7 @@ tickdeck info --json   # -> { "feedDir": "...", "url": ..., "skillPath": ..., ..
 
 | file | field | notes |
 |---|---|---|
-| card.json | `type` | `markdown`, `table`, `list`, `kpi`, `media` |
+| card.json | `type` | `markdown`, `table`, `list`, `kpi`, `media`, `calendar`, `bookmarks` |
 | card.json | `title` | shown in the card header |
 | card.json | `layout` | `column`, `order`, `height` (section 6) |
 | card.json | `priority`, `show`, `staleAfter`, `notify` | section 7 |
@@ -67,7 +67,7 @@ Set `updatedAt` (ISO timestamp) in data.json only when the content truly changed
 
 In card.json `layout`:
 
-- `column`: `left`, `center` or `right` (narrow screens stack them). Put wide tables in `center`.
+- `column`: `left`, `center` or `right` (narrow screens stack them). Put wide tables in `center`. `table` and `list` are center-only: in `left`/`right` they are Broken (`side-not-allowed`). Side cards are permanent: no Done/Hide, never in Now, `priority` ignored.
 - `order`: integer; lower comes first within the column.
 - `height`: `S`, `M`, `L` or `auto`.
 

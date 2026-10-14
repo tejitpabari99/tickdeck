@@ -30,10 +30,10 @@ A card is a folder `<feed>/<id>/` with two UTF-8 JSON files: `card.json` (the vi
 | `title` | string | yes | | 1-200 chars |
 | `data` | string | no | `"data.json"` | Data file name, see the data path rule below |
 | `layout` | object | no | all defaults | `{ column?, order?, height? }` |
-| `layout.column` | `"left"`, `"center"`, `"right"` | no | `"center"` | Which column the card sits in |
+| `layout.column` | `"left"`, `"center"`, `"right"` | no | `"center"` | Which column the card sits in. `table` and `list` are center-only: in `left`/`right` the card is Broken with `side-not-allowed`. Side cards are permanent (see below) |
 | `layout.order` | integer | no | `0` | Sort position within the column (ascending, then id) |
 | `layout.height` | `"S"`, `"M"`, `"L"`, `"auto"` | no | `"auto"` | Fixed height (body scrolls) or content height up to the `L` height |
-| `priority` | integer | no | `2` | 0-5; `data.json` `priority` overrides it. 0-1 renders as a collapsed chip |
+| `priority` | integer | no | `2` | 0-5; `data.json` `priority` overrides it. 0-1 renders as a collapsed chip. Ignored (with a validation warning) on `left`/`right` cards |
 | `notify` | boolean | no | `false` | OS notification on a new data version |
 | `show` | object | no | always visible | `{ cron, for? }` |
 | `show.cron` | string | yes in `show` | | Standard 5-field cron (no aliases, no seconds): the window start |
@@ -88,11 +88,15 @@ These tables describe the `data` object inside `data.json`.
 |-------|------|-------|
 | `text` | string | required, at most 100000 chars; GitHub-flavored markdown |
 
+## Side columns (permanent cards)
+
+Cards in `left`/`right` are permanent reference: effective priority is 2, never collapsed, never in Now, never Done or hidden (`PERMANENT_CARD` 400 on those endpoints), no unseen badge. Fullscreen, stale and Broken states still apply. Allowed types: `markdown`, `kpi`, `media`.
+
 ## `table`
 
 | Field | Type | Rules |
 |-------|------|-------|
-| `columns` | array | required, 1-50 entries; each a string label or `{ label, key?, sort? }` with `sort` in `text`, `number`, `date` |
+| `columns` | array | required, 1-50 entries; each a string label or `{ label, key?, sort?, width? }` with `sort` in `text`, `number`, `date` and `width` in `xs`, `s`, `m`, `l`, `fill` (about 4, 7, 11, 18rem; `fill` takes the remaining width). Without a `fill` column the longest text column fills. Compact cells clip with an ellipsis; full text on hover. A column with explicit `sort: "date"` needs ISO 8601 cells; others warn, render raw and sort last |
 | `rows` | array | required; each `{ cells, link? }`; `cells.length` must equal `columns.length` |
 | cell | scalar or object | string, number, boolean, null, or `{ text, link? }` |
 | `defaultSort` | object | optional `{ column, dir }`; `column` a valid column index, `dir` `asc` or `desc` |

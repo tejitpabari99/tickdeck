@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import type { KnownType, KpiData, ListData, MarkdownData, MediaData, TableData } from '../../../src/index.js';
+import type { BookmarksData, CalendarData, KnownType, KpiData, ListData, MarkdownData, MediaData, TableData } from '../../../src/index.js';
 import type { ViewCard } from '../api/types.ts';
 
 export type Mode = 'column' | 'now' | 'fullscreen';
@@ -13,6 +13,8 @@ export interface DataByType {
   list: ListData;
   kpi: KpiData;
   media: MediaData;
+  calendar: CalendarData;
+  bookmarks: BookmarksData;
 }
 export type DataOf<T extends TypeName> = T extends keyof DataByType ? DataByType[T] : never;
 

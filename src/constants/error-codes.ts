@@ -11,6 +11,7 @@ export const ERROR_CODES = {
   CARD_BROKEN: 'CARD_BROKEN',
   CARD_CHANGED: 'CARD_CHANGED',
   NOT_AN_ALERT: 'NOT_AN_ALERT',
+  PERMANENT_CARD: 'PERMANENT_CARD',
   ITEM_NOT_FOUND: 'ITEM_NOT_FOUND',
   ITEM_NO_ACTION: 'ITEM_NO_ACTION',
   DISMISS_NOT_UNCHECKABLE: 'DISMISS_NOT_UNCHECKABLE',
@@ -45,6 +46,7 @@ export const BROKEN_REASONS = [
   'too-large',
   'schema-invalid',
   'unknown-type',
+  'side-not-allowed',
 ] as const;
 export type BrokenReason = (typeof BROKEN_REASONS)[number];
 

@@ -16,6 +16,7 @@ Source of truth: `src/constants/error-codes.ts`. Codes appear in HTTP bodies (`{
 | `CARD_BROKEN` | 400 | Card is Broken, so Done/action refused | Fix the card file |
 | `CARD_CHANGED` | 409 | Card changed since the client loaded it (message: `card was updated; reload and retry`) | Reload and retry |
 | `NOT_AN_ALERT` | 400 | Tick on an id that is not an alert file | Only alerts can be ticked |
+| `PERMANENT_CARD` | 400 | Done or Hide on a side-column card (sides are permanent) | Move the card to the center column; `DELETE` variants still work |
 | `ITEM_NOT_FOUND` | 404 | No list item with that id on the card | Reload |
 | `ITEM_NO_ACTION` | 400 | Item has no (known) action | Add `action` to the item in the card |
 | `DISMISS_NOT_UNCHECKABLE` | 400 | `checked: false` sent for a `dismiss` item | `dismiss` is one-way |
@@ -46,7 +47,7 @@ The reasons `validate` prints (`BROKEN <reason>` / `SKIPPED <reason>`) are the B
 
 ## Broken reasons
 
-A card folder whose `card.json` parsed but whose content cannot be shown renders as a Broken card with one of these reasons. Cards are never partially shown. `validate` and the snapshot use the same reasons (alert files use the same set except `unknown-type`).
+A card folder whose `card.json` parsed but whose content cannot be shown renders as a Broken card with one of these reasons. Cards are never partially shown. `validate` and the snapshot use the same reasons (alert files use the same set except `unknown-type` and `side-not-allowed`).
 
 | Reason | Meaning |
 |--------|---------|
@@ -56,6 +57,7 @@ A card folder whose `card.json` parsed but whose content cannot be shown renders
 | `too-large` | Over the size cap (1 MiB for a data file) |
 | `schema-invalid` | Data file envelope or `data` violates the contract, or the payload does not fit the type; issues list JSON pointers |
 | `unknown-type` | `type` in `card.json` is not registered ("Unsupported type" in the UI) |
+| `side-not-allowed` | type is `deny` in the registry (`table`, `list`) but `layout.column` is `left`/`right`; use `center` |
 | `error` | Added by the snapshot, not `validate`: the data file declares a non-empty `error` |
 | `stale` | Added by the snapshot, not `validate`: no update for longer than `staleAfter` (for no-data cards, counted from the `card.json` mtime) |
 

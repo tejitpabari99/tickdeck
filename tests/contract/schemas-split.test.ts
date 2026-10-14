@@ -8,7 +8,7 @@ const def = (o: Record<string, unknown> = {}) => cardDefSchema.safeParse({ type:
 
 describe('reason lists', () => {
   it('match the PRD sets and omit id-mismatch', () => {
-    expect([...BROKEN_REASONS]).toEqual(['unreadable', 'malformed-json', 'not-object', 'too-large', 'schema-invalid', 'unknown-type']);
+    expect([...BROKEN_REASONS]).toEqual(['unreadable', 'malformed-json', 'not-object', 'too-large', 'schema-invalid', 'unknown-type', 'side-not-allowed']);
     expect([...SKIP_REASONS]).toEqual(['card-def-missing', 'card-def-invalid', 'data-path-invalid', 'invalid-id', 'reserved-id']);
     expect([...BROKEN_REASONS, ...SKIP_REASONS]).not.toContain('id-mismatch');
   });

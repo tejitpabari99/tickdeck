@@ -1,0 +1,28 @@
+{
+  "$schema": "../../schemas/data.calendar.json",
+  "updatedAt": "2026-10-05T07:00:00Z",
+  "data": {
+    "events": [
+      {
+        "title": "Team standup",
+        "start": "2026-10-05T09:30:00Z",
+        "end": "2026-10-05T09:45:00Z",
+        "location": "Room 4",
+        "color": "primary"
+      },
+      {
+        "title": "Design review",
+        "start": "2026-10-06T14:00:00Z",
+        "end": "2026-10-06T15:00:00Z",
+        "link": "https://example.com/meet/design-review",
+        "color": "220 80 50"
+      },
+      {
+        "title": "Conference",
+        "start": "2026-10-08",
+        "end": "2026-10-09",
+        "allDay": true
+      }
+    ]
+  }
+}

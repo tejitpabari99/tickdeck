@@ -46,7 +46,7 @@ widgets.css   .card frame, header row, side/center variants, states, chip, fulls
 types/kpi.css list.css markdown.css media.css table.css   (05 adds calendar.css, bookmarks.css)
 mobile.css    @media (max-width:1200px)   -- imported LAST
 ```
-Import order: main → site → utils → widgets → types/* → mobile. Per-type css is still imported from the type's own folder? No: one tree only, imported centrally in `main.tsx` (05 adds one import line per type). Breakpoint literal 1200px kept in one comment + `ui/tests/helpers/breakpoint.ts` assertion [verified: `tokens.test.ts:4`].
+Import order: main → site → utils → widgets → types/* → mobile. One tree only, imported centrally in `main.tsx` (05 adds one import line per type). Breakpoint literal 1200px kept in one comment + `ui/tests/helpers/breakpoint.ts` assertion [verified: `tokens.test.ts:4`].
 
 ### Old → new mapping
 | Old | New home |

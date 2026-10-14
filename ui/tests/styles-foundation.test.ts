@@ -20,9 +20,9 @@ describe('foundation styles', () => {
     }
   });
 
-  it('main.tsx imports types kpi -> list -> markdown -> media -> table -> calendar after widgets', () => {
+  it('main.tsx imports types kpi -> list -> markdown -> media -> table -> calendar -> bookmarks after widgets', () => {
     const tsx = read('main.tsx');
-    const names = ['kpi', 'list', 'markdown', 'media', 'table', 'calendar'];
+    const names = ['kpi', 'list', 'markdown', 'media', 'table', 'calendar', 'bookmarks'];
     const idx = names.map((n) => tsx.indexOf(`./styles/types/${n}.css`));
     expect(idx.every((i) => i >= 0)).toBe(true);
     expect([...idx].sort((a, b) => a - b)).toEqual(idx);
@@ -39,6 +39,11 @@ describe('foundation styles', () => {
   it('calendar.css ships grid and agenda hooks', () => {
     const css = read('styles/types/calendar.css');
     for (const t of ['.cal-grid', '.cal-day', '.cal-dot', '.agenda-item', 'var(--ev, var(--color-primary))']) expect(css).toContain(t);
+  });
+
+  it('bookmarks.css ships group hooks', () => {
+    const css = read('styles/types/bookmarks.css');
+    for (const t of ['.bm-group', '.bm-title', '.bm-item', '.bm-desc', 'var(--tint', "data-mode='fullscreen'"]) expect(css).toContain(t);
   });
 
   it('list and media ship placeholder hooks', () => {
@@ -60,7 +65,7 @@ describe('foundation styles', () => {
     expect(css).toMatch(/prefers-reduced-motion: reduce[\s\S]*animation: none !important/);
   });
 
-  for (const f of ['site', 'utils', 'widgets', 'types/kpi', 'types/list', 'types/markdown', 'types/media', 'types/table', 'types/calendar', 'mobile'].map((n) => `styles/${n}.css`)) {
+  for (const f of ['site', 'utils', 'widgets', 'types/kpi', 'types/list', 'types/markdown', 'types/media', 'types/table', 'types/calendar', 'types/bookmarks', 'mobile'].map((n) => `styles/${n}.css`)) {
     it(`${f} has no colour literals`, () => {
       const css = read(f).replace(/\/\*[\s\S]*?\*\//g, '');
       expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);

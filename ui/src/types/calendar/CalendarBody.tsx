@@ -4,18 +4,8 @@ import type { CalendarData } from '../../../../src/index.js';
 import { CardLink } from '../../frame/CardLink.tsx';
 import { useNow } from '../../lib/relative-time.ts';
 import type { CardTypeProps } from '../../registry/registry.ts';
+import { colorValue } from '../shared/color.ts';
 import { buildAgenda, buildIndex, buildMonth, dayKey, localTz, weekStartDay } from './logic.ts';
-
-const TOKENS = new Set(['primary', 'positive', 'negative']);
-
-/** Event colour -> CSS value. The colour grammar is closed (token | "H S L"), so this is injection-safe. */
-function colorValue(c: string | undefined): string | undefined {
-  if (c === undefined) return undefined;
-  if (TOKENS.has(c)) return `var(--color-${c})`;
-  const m = /^(\d{1,3}) (\d{1,3}) (\d{1,3})$/.exec(c);
-  if (!m) return undefined;
-  return `hsl(${Math.min(Number(m[1]), 360)} ${Math.min(Number(m[2]), 100)}% ${Math.min(Number(m[3]), 100)}%)`;
-}
 
 function evStyle(c: string | undefined): CSSProperties | undefined {
   const v = colorValue(c);

@@ -1,3 +1,4 @@
+import type { z } from 'zod';
 import { realClock } from '../clock.js';
 import {
   CLOCK_SKEW_MS,
@@ -56,6 +57,8 @@ export interface ValidCard {
   notify: boolean;
   show?: CardDef['show'];
   staleAfter?: string;
+  /** card.json `style` (view field), when a string. */
+  style?: string;
   /** Effective updatedAt (RFC 3339): data.updatedAt, else ISO(mtime). */
   updatedAt: string;
   updatedAtSource: UpdatedAtSource;
@@ -77,6 +80,7 @@ export interface NoDataCard {
   notify: boolean;
   show?: CardDef['show'];
   staleAfter?: string;
+  style?: string;
   def: Obj;
 }
 
@@ -306,6 +310,15 @@ function validateFolder(i: ValidateCardFolderInput): FolderResult {
   }
   const entry = registry[def.type];
 
+  const typeView: z.ZodType | undefined = (entry as TypeEntry).view;
+  if (typeView) {
+    const v = typeView.safeParse({ style: def.style });
+    if (!v.success) {
+      const issues = toIssues(v.error.issues);
+      return broken(id, def, 'schema-invalid', summarize(issues, 'card.json'), issues);
+    }
+  }
+
   const column = def.layout.column;
   if (column !== 'center' && !sidesAllowed(def.type)) {
     return broken(
@@ -326,6 +339,7 @@ function validateFolder(i: ValidateCardFolderInput): FolderResult {
     notify: def.notify,
     ...(def.show ? { show: def.show } : {}),
     ...(def.staleAfter !== undefined ? { staleAfter: def.staleAfter } : {}),
+    ...(typeof def.style === 'string' ? { style: def.style } : {}),
     def: d.raw,
   };
 

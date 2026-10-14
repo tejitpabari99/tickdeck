@@ -22,6 +22,8 @@ export interface ViewCard {
   status: 'ok' | 'broken' | 'no-data';
   /** True for side-column (non-center) cards: reference only, no Done/Hide/Now/collapse. */
   permanent: boolean;
+  /** Per-type view style from card.json (validated by the type's registry `view` schema). */
+  style?: string;
   collapsed: boolean;
   done: boolean;
   /** Only while done. */

@@ -1,6 +1,6 @@
 export { listTypes, getExample, dataRequired, registry, sidesAllowed } from './registry.js';
 export type { RegisteredType, KnownType, Example } from './registry.js';
-export { parseDuration, windowActive } from './formats.js';
+export { parseDuration, windowActive, colorSchema } from './formats.js';
 export { cellText } from './types/table.js';
 export type { TableData, Cell, Column } from './types/table.js';
 export type { ListData, ListItem, Action } from './types/list.js';

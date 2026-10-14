@@ -32,6 +32,8 @@ export interface TypeEntry {
   sides: 'allow' | 'deny';
   /** Optional non-fatal payload warnings (paths relative to data.json root). */
   warnings?: (data: unknown) => string[];
+  /** Optional per-type validator for card.json view fields (`{ style }`); failures are schema-invalid at path `/style`. */
+  view?: z.ZodType;
 }
 
 /** The single place card types are registered (D7). */

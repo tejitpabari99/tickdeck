@@ -75,6 +75,53 @@ function parseDate(cell: Cell | undefined): number | null {
   return Number.isNaN(t) ? null : t;
 }
 
+export interface DateCellFormat {
+  /** Short display, e.g. `Oct 9, 5:06p` / `Oct 9` / `Oct 9, 2025`. */
+  display: string;
+  /** Full localized timestamp for the `title` tooltip. */
+  title: string;
+}
+
+export interface DateFormatOpts {
+  /** IANA tz; default = browser tz. */
+  timeZone?: string;
+  /** Reference "now" for the current-year check; default = real now. */
+  now?: Date;
+}
+
+/**
+ * Short display + full-timestamp title for a parseable ISO date cell; null when unparseable
+ * (caller renders the raw text). Date-only values are calendar dates (no tz shift). Pure.
+ */
+export function formatDateCell(raw: string, opts: DateFormatOpts = {}): DateCellFormat | null {
+  const s = raw.trim();
+  if (!DATE_RE.test(s)) return null;
+  const t = Date.parse(s);
+  if (Number.isNaN(t)) return null;
+  const timed = s.length > 10;
+  const tz = timed ? opts.timeZone : 'UTC';
+  const zone = tz === undefined ? {} : { timeZone: tz };
+  const d = new Date(t);
+  const now = opts.now ?? new Date();
+  const year = (x: Date) => new Intl.DateTimeFormat('en-US', { ...zone, year: 'numeric' }).format(x);
+  const nowYear = new Intl.DateTimeFormat('en-US', {
+    ...(opts.timeZone === undefined ? {} : { timeZone: opts.timeZone }),
+    year: 'numeric',
+  }).format(now);
+  const day = new Intl.DateTimeFormat('en-US', { ...zone, month: 'short', day: 'numeric' }).format(d);
+  let display = day;
+  if (year(d) !== nowYear) display += `, ${year(d)}`;
+  if (timed) {
+    const parts = new Intl.DateTimeFormat('en-US', { ...zone, hour: 'numeric', minute: '2-digit', hour12: true }).formatToParts(d);
+    const g = (k: string) => parts.find((p) => p.type === k)?.value ?? '';
+    display += `, ${g('hour')}:${g('minute')}${g('dayPeriod').toLowerCase().startsWith('p') ? 'p' : 'a'}`;
+  }
+  const title = timed
+    ? new Intl.DateTimeFormat('en-US', { ...zone, dateStyle: 'long', timeStyle: 'long' }).format(d)
+    : new Intl.DateTimeFormat('en-US', { ...zone, dateStyle: 'long' }).format(d);
+  return { display, title };
+}
+
 /** Explicit `sort` wins; else >=80% of non-empty cells numeric -> number, >=80% ISO-date-like -> date, else text. */
 export function inferColumnType(cells: readonly Cell[], explicit: ColumnType | undefined): ColumnType {
   if (explicit) return explicit;

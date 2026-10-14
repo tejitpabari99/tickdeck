@@ -12,6 +12,7 @@ import {
   cellText,
   distinctValues,
   filterRows,
+  formatDateCell,
   inferColumnType,
   nextSort,
   normalizeColumns,
@@ -43,7 +44,7 @@ function cellLink(cell: Cell | undefined): string | undefined {
   return cell !== null && typeof cell === 'object' && typeof cell.link === 'string' ? cell.link : undefined;
 }
 
-function CellContent({ cell, query, compact }: { cell: Cell | undefined; query: string; compact: boolean }) {
+function CellContent({ cell, query, compact, isDate }: { cell: Cell | undefined; query: string; compact: boolean; isDate: boolean }) {
   const v = cell === undefined ? null : cellText(cell);
   const link = cellLink(cell);
   let body: ReactNode;
@@ -59,6 +60,8 @@ function CellContent({ cell, query, compact }: { cell: Cell | undefined; query: 
   } else {
     body = highlight(String(v), query);
   }
+  const date = isDate && typeof v === 'string' ? formatDateCell(v) : null;
+  if (date) body = date.display;
   const text = str(cell);
   if (link !== undefined && text !== '') {
     return (
@@ -69,6 +72,7 @@ function CellContent({ cell, query, compact }: { cell: Cell | undefined; query: 
       </span>
     );
   }
+  if (date) return <span {...(compact ? clampProps(date.title, 1) : { title: date.title })}>{body}</span>;
   return compact && typeof v !== 'boolean' ? <span {...clampProps(text, 1)}>{body}</span> : <>{body}</>;
 }
 
@@ -305,7 +309,7 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
                             </CardLink>
                           </span>
                         )}
-                        <CellContent cell={row.cells[i]} query={hl} compact={compact} />
+                        <CellContent cell={row.cells[i]} query={hl} compact={compact} isDate={types[i] === 'date'} />
                       </td>
                     ))}
                   </tr>

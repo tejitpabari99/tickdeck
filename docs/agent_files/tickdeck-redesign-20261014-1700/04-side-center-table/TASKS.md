@@ -1,5 +1,5 @@
 ---
-status: draft
+status: done
 summary: 9 tasks - registry sides rule and validation, permanent snapshot/server/frame behaviour, four table fixes (truncate, widths, re-sort, dates), then ADR 0008, schemas, changeset, gates.
 date: 2026-10-14
 ---
@@ -8,15 +8,15 @@ Source of truth: [PRD.md](PRD.md). Starts after SP03 (CSS hooks `card--side`/`ca
 
 | # | Task | Depends on | Status |
 |---|---|---|---|
-| 1 | Registry `sides` flag and side-rule validation | none | todo |
-| 2 | Permanent cards in snapshot and API type | 1 | todo |
-| 3 | Server refuses Done/Hide on side cards | 1, 2 | todo |
-| 4 | Frame and attention logic for permanent cards | 2 | todo |
-| 5 | Table contract: `width` and date warning | none | todo |
-| 6 | Table layout, truncation, widths | 5 | todo |
-| 7 | Table sort re-derivation | none | todo |
-| 8 | Short date display with real-time sort | 5, 7 | todo |
-| 9 | ADR 0008, schemas, changeset, gates | 1-8 | todo |
+| 1 | Registry `sides` flag and side-rule validation | none | done |
+| 2 | Permanent cards in snapshot and API type | 1 | done |
+| 3 | Server refuses Done/Hide on side cards | 1, 2 | done |
+| 4 | Frame and attention logic for permanent cards | 2 | done |
+| 5 | Table contract: `width` and date warning | none | done |
+| 6 | Table layout, truncation, widths | 5 | done |
+| 7 | Table sort re-derivation | none | done |
+| 8 | Short date display with real-time sort | 5, 7 | done |
+| 9 | ADR 0008, schemas, changeset, gates | 1-8 | done |
 
 ## Task 1 — Registry `sides` flag and side-rule validation
 What it is / what it means: One registry flag decides where a type may render, so ingest and CLI `validate` fail identically (R1, D1, D2, D3).

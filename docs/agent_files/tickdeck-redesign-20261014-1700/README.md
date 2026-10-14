@@ -11,10 +11,10 @@ Brief: [brainstorm.md](brainstorm.md) (amends the 2026-10-07 initial brainstormi
 | # | Folder | Scope | Depends on | Phase | Status |
 |---|---|---|---|---|---|
 | 01 | [01-rename](01-rename/PRD.md) | Mechanical rename to Tickdeck (package, bin, env, data dir, skill, UI, all docs, remote); scheduler refs reworded; final task = folder move + worktree repair + `projects/README.md` | none | 1 (final task: 5) | approved |
-| 02 | [02-mockup](02-mockup/PRD.md) | One static `mockup.html` (Catppuccin Mocha, JetBrains Mono, Glance model), private Artifact; owner approval gate | none | 1 | approved |
-| 03 | [03-visual-port](03-visual-port/PRD.md) | Rewrite UI CSS on Glance's file split, single theme, bundled font, card frame, header + status-dot fix, NOTICE, CSS hook contract | 01, 02 (approved) | 2 | approved |
-| 04 | [04-side-center-table](04-side-center-table/PRD.md) | Sides = permanent reference (registry `sides`, `permanent`, server guards); table truncation, widths, re-sort, date display | 03 | 3 | approved |
-| 05 | [05-types](05-types/PRD.md) | `calendar`, `bookmarks`; list `style` + `meta`; media `meta`/`row`/restyle | 03, 04 | 4 | approved |
+| 02 | [02-mockup](02-mockup/PRD.md) | One static `mockup.html` (Catppuccin Mocha, JetBrains Mono, Glance model), private Artifact; owner approval gate | none | 1 | done |
+| 03 | [03-visual-port](03-visual-port/PRD.md) | Rewrite UI CSS on Glance's file split, single theme, bundled font, card frame, header + status-dot fix, NOTICE, CSS hook contract | 01, 02 (approved) | 2 | done |
+| 04 | [04-side-center-table](04-side-center-table/PRD.md) | Sides = permanent reference (registry `sides`, `permanent`, server guards); table truncation, widths, re-sort, date display | 03 | 3 | done |
+| 05 | [05-types](05-types/PRD.md) | `calendar`, `bookmarks`; list `style` + `meta`; media `meta`/`row`/restyle | 03, 04 | 4 | done |
 
 ```
 01 rename ─┐
@@ -69,10 +69,10 @@ None.
 
 ## Owner manual steps
 1. Open private mockup Artifact (02), check desktop + phone width, record "approved <date>" — gates 03. Mockup: https://claude.ai/artifact/Sfh39zJUSLtyYefdyPKSbM (published 2026-10-14, private). **Approved 2026-10-14.**
-2. Create/rename GitHub repo `tejitpabari99/tickdeck` (01).
+2. Create/rename GitHub repo `tejitpabari99/tickdeck` (01). **Done (gh confirms repo name tickdeck).**
 3. (done) `tickdeck` npm name verified free (01).
 4. Old data dir: none found locally; delete by hand if one exists elsewhere (01).
 5. Out-of-repo paths keyed by old name, listed not edited: `/root/.claude/projects/-root-projects-crontick-dashboard/`, `/root/.claude/history.jsonl`, any `~/.claude/skills/crontick-dashboard/`; re-run `tickdeck skill` if used (01).
-6. Provide JetBrains Mono woff2 if network-restricted; final eyeball of 03 screenshots vs mockup (03).
+6. Provide JetBrains Mono woff2 if network-restricted; final eyeball of 03 screenshots vs mockup (03). Screenshots: 03-visual-port/screenshots/, 05-types/screenshots/.
 7. Existing owner table/list cards in side columns will go Broken after 04; rewrite them (04).
 8. Final task: folder move to `/root/projects/tickdeck`, `git worktree repair`, update `/root/projects/README.md` row (01).

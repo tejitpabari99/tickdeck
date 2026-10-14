@@ -1,5 +1,5 @@
 ---
-status: draft
+status: done
 summary: 9 tasks to rewrite UI CSS on Glance's file split, single Mocha theme, bundled JetBrains Mono, card frame + hooks, header/dot fix, NOTICE, verification.
 date: 2026-10-14
 ---
@@ -8,15 +8,15 @@ Source of truth: [PRD.md](PRD.md). Precondition for the whole sub-project: 01 re
 
 | # | Task | Depends on | Status |
 |---|------|-----------|--------|
-| 1 | Bundle font and licence | 01 done, 02 approved | todo |
-| 2 | Foundation styles: tokens, page, utilities | 1 | todo |
-| 3 | Card frame, side/center looks, hooks | 2 | todo |
-| 4 | Type styles and hook placeholders | 3 | todo |
-| 5 | Header restyle, dot fix, theme removal | 3 | todo |
-| 6 | Mobile layout and motion polish | 4, 5 | todo |
-| 7 | Delete old CSS, re-point tests, enforce inputs-only colour | 6 | todo |
-| 8 | NOTICE, README, ADR, changeset | 7 | todo |
-| 9 | Full validation and screenshot sign-off prep | 8 | todo |
+| 1 | Bundle font and licence | 01 done, 02 approved | done |
+| 2 | Foundation styles: tokens, page, utilities | 1 | done |
+| 3 | Card frame, side/center looks, hooks | 2 | done |
+| 4 | Type styles and hook placeholders | 3 | done |
+| 5 | Header restyle, dot fix, theme removal | 3 | done |
+| 6 | Mobile layout and motion polish | 4, 5 | done |
+| 7 | Delete old CSS, re-point tests, enforce inputs-only colour | 6 | done |
+| 8 | NOTICE, README, ADR, changeset | 7 | done |
+| 9 | Full validation and screenshot sign-off prep | 8 | done |
 
 ## Task 1 — Bundle font and licence
 What it is: JetBrains Mono 400 served locally so the UI is offline-capable (R3, Decision 5).

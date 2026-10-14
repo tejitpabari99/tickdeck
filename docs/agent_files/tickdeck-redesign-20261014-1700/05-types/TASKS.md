@@ -1,5 +1,5 @@
 ---
-status: draft
+status: done
 summary: 12 tasks — shared view/colour plumbing, calendar + bookmarks types, list/media extensions, renderers, docs/ADR 0009, final verification.
 date: 2026-10-14
 ---
@@ -8,18 +8,18 @@ Source of truth: docs/agent_files/tickdeck-redesign-20261014-1700/05-types/PRD.m
 
 | # | Task | Depends on | Status |
 |---|---|---|---|
-| 1 | Shared plumbing: `colorSchema`, registry `view`, `ViewCard.style` | — | todo |
-| 2 | Calendar contract, summary, template, registry entry | 1 | todo |
-| 3 | Bookmarks contract, summary, template, registry entry | 1 | todo |
-| 4 | List `style`/`meta` and media `meta`/`row` contract + templates | 1 | todo |
-| 5 | Schemas generation and contract tests | 2, 3, 4 | todo |
-| 6 | Calendar pure logic (month grid, agenda, day keys) | 2 | todo |
-| 7 | Calendar renderer, CSS, registration | 6 | todo |
-| 8 | Bookmarks renderer, CSS, registration | 3 | todo |
-| 9 | List `detailed` renderer | 4 | todo |
-| 10 | Media restyle, `row` layout, keyboard access | 4 | todo |
-| 11 | Docs, ADR 0009, changeset | 5, 7, 8, 9, 10 | todo |
-| 12 | Final verification | 11 | todo |
+| 1 | Shared plumbing: `colorSchema`, registry `view`, `ViewCard.style` | — | done |
+| 2 | Calendar contract, summary, template, registry entry | 1 | done |
+| 3 | Bookmarks contract, summary, template, registry entry | 1 | done |
+| 4 | List `style`/`meta` and media `meta`/`row` contract + templates | 1 | done |
+| 5 | Schemas generation and contract tests | 2, 3, 4 | done |
+| 6 | Calendar pure logic (month grid, agenda, day keys) | 2 | done |
+| 7 | Calendar renderer, CSS, registration | 6 | done |
+| 8 | Bookmarks renderer, CSS, registration | 3 | done |
+| 9 | List `detailed` renderer | 4 | done |
+| 10 | Media restyle, `row` layout, keyboard access | 4 | done |
+| 11 | Docs, ADR 0009, changeset | 5, 7, 8, 9, 10 | done |
+| 12 | Final verification | 11 | done |
 
 ## Task 1 — Shared plumbing
 What it is / what it means: the small cross-cutting pieces both new types and list rely on (PRD Architecture, Decisions 1, 5; resolved items on `view`/`style`).

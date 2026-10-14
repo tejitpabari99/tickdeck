@@ -112,7 +112,12 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
   const columns = useMemo(() => normalizeColumns(Array.isArray(data?.columns) ? data.columns : []), [data]);
   const rows = useMemo<Row[]>(() => (Array.isArray(data?.rows) ? (data.rows as Row[]) : []), [data]);
   const defaultSort = data?.defaultSort ?? null;
-  const [sort, setSort] = useState<SortState | null>(defaultSort);
+  // undefined = user has not sorted; effective sort is then the agent's defaultSort.
+  const [userSort, setUserSort] = useState<SortState | null | undefined>(undefined);
+  const dsCol = defaultSort?.column;
+  const dsDir = defaultSort?.dir;
+  useEffect(() => setUserSort(undefined), [dsCol, dsDir]);
+  const sort = userSort !== undefined ? userSort : defaultSort;
   const [ownQuery, setOwnQuery] = useState('');
   const [shown, setShown] = useState(PAGE);
   const [rawFilters, setFilters] = useState<Record<number, ReadonlySet<string>>>({});
@@ -169,7 +174,15 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
     () => (sort ? sortRows(matched, sort.column, sort.dir, types[sort.column] ?? 'text') : matched),
     [matched, sort, types],
   );
-  const onSort = useCallback((c: number) => setSort((s) => nextSort(s, c, defaultSort)), [defaultSort]);
+  const onSort = useCallback(
+    (c: number) =>
+      setUserSort((u) => {
+        const next = nextSort(u !== undefined ? u : defaultSort, c, defaultSort);
+        // Back at the default (third click): drop the override so later defaultSort changes apply.
+        return next === defaultSort ? undefined : next;
+      }),
+    [defaultSort],
+  );
 
   const searchable = data?.searchable !== false && (!compact || rows.length > SEARCH_MIN_ROWS);
   const hasFilters = filterable.some((f) => f !== null);

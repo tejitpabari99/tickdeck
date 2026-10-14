@@ -1,6 +1,6 @@
 # tickdeck
 
-Local dashboard for agent-written cards: scheduled jobs (e.g. cron-driven agent runs) or any script write small JSON files into a feed directory, and a local web UI lays them out in three columns as tables, lists, KPIs, markdown, and media, with one-line alerts and optional OS notifications.
+Local dashboard for agent-written cards: scheduled jobs (e.g. cron-driven agent runs) or any script write small JSON files into a feed directory, and a local web UI lays them out in three columns as tables, lists, KPIs, markdown, media, calendars, and bookmarks, with one-line alerts and optional OS notifications.
 
 One npm package (Node >= 22.5): a loopback-only server, a React UI, and the `tickdeck` CLI. Version 0.1.0.
 

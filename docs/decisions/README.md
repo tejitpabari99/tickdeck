@@ -35,3 +35,4 @@ A change to a rule in [design principles](../tech/design-principles.md) that ref
 | [0006](0006-rename-to-tickdeck.md) | Rename the project to Tickdeck | Accepted | 2026-10-14 |
 | [0007](0007-single-theme-glance-derived-css.md) | Single theme, Glance-derived CSS, NOTICE | Accepted | 2026-10-14 |
 | [0008](0008-side-center-semantics.md) | Side/center semantics | Accepted | 2026-10-14 |
+| [0009](0009-new-types.md) | New card types and view-field location | Accepted | 2026-10-14 |

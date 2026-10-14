@@ -9,7 +9,7 @@
 | Feed | The `feed/` directory under the data dir; agents write cards (folders) and alerts here |
 | Data dir | Root of all state (feed, schemas, state, config, process files); see [configuration.md](configuration.md) |
 | Alert | A single file `feed/alerts/<id>.json` (title required, text and link optional), shown as a line until ticked |
-| Type | Generic visual type: `markdown`, `table`, `list`, `kpi`, `media` |
+| Type | Generic visual type: `markdown`, `table`, `list`, `kpi`, `media`, `calendar`, `bookmarks` |
 | Registry | The single list of card types and their schemas, examples and summaries |
 | Broken | Render state for an invalid, errored or stale card; names the reason |
 | No data yet | A card with a valid `card.json` and no `data.json`; shown muted, not Broken |

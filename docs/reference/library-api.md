@@ -10,7 +10,7 @@
 | `validateCardFolder` | `(input: ValidateCardFolderInput) => FolderResult` | Whole folder: `card.json` text plus the data file (`DataInput`). Result is `ok`, `no-data`, `broken` or `skipped`. The one entry point the server and `validate` use. Never throws |
 | `validateAlertFile` | `(input: ValidateAlertFileInput) => AlertResult` | One alert file: `{ name, text, mtimeMs, now? }`; id is the name stem. Result is `ok` or `broken` |
 | `isCardFolderName` | `(name: string) => 'ok' \| 'invalid' \| 'reserved' \| 'ignore'` | Classifies a `feed/` entry name: `reserved` is `alerts`, `ignore` is dot-prefixed |
-| `listTypes` | `() => RegisteredType[]` | `markdown`, `table`, `list`, `kpi`, `media` |
+| `listTypes` | `() => RegisteredType[]` | `markdown`, `table`, `list`, `kpi`, `media`, `calendar`, `bookmarks` |
 | `getExample` | `(type: string) => Example \| undefined` | Cloned example folder `{ card, data }`; `undefined` for an unknown type |
 | `dataRequired` | `(type: string) => boolean` | Whether the type needs a data file (always true today; seam for future data-optional types) |
 | `parseDuration` | `(value: string) => number` | `30m`, `12h`, `7d`, `2w` to ms; throws on invalid |
@@ -31,6 +31,6 @@
 - `BrokenReason`: `unreadable | malformed-json | not-object | too-large | schema-invalid | unknown-type`. `SkipReason`: `card-def-missing | card-def-invalid | data-path-invalid | invalid-id | reserved-id`. Meanings: [errors.md](errors.md).
 - Contract shapes: `CardDef`, `CardDefInput`, `Layout`, `Show`, `DataFile`, `DataFileInput`, `Alert`.
 - `Example`, `RegisteredType`, `KnownType` (alias).
-- Data types: `MarkdownData`, `TableData`, `Cell`, `Column`, `ListData`, `ListItem`, `Action`, `KpiData`, `KpiMetric`, `MediaData`, `MediaItem`.
+- Data types: `MarkdownData`, `TableData`, `Cell`, `Column`, `ListData`, `ListItem`, `Action`, `KpiData`, `KpiMetric`, `MediaData`, `MediaItem`, `CalendarData`, `CalendarEvent`, `BookmarksData`, `BookmarkGroup`, `BookmarkLink`.
 
 Field semantics: [card-schema.md](card-schema.md). The earlier single-file `validateCardFile` is gone with the single-file card model.

@@ -16,8 +16,10 @@ Types describe how data looks, not where it came from. There is no email widget 
 | `list` | Items with optional checkboxes, due dates, and links |
 | `kpi` | One or several metrics or states, such as deploy status |
 | `media` | Images and GIFs with captions and links |
+| `calendar` | Month grid with events and a day agenda |
+| `bookmarks` | Groups of links |
 
-All five types are card types. Alerts are a separate, simpler thing (one-line files in `feed/alerts/`), not a card type.
+All seven types are card types. Alerts are a separate, simpler thing (one-line files in `feed/alerts/`), not a card type.
 
 ## Two files, one type
 

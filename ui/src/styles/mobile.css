@@ -19,8 +19,10 @@
   .column--empty { display: none; }
   .header { flex-wrap: wrap; gap: 1rem 1.5rem; padding-bottom: 1rem; }
   .header__brand { order: 1; }
+  .header__status { order: 2; }
   .header__date { order: 3; flex: 1 1 100%; }
   .search-box { order: 4; flex: 1 1 100%; max-width: none; margin-left: 0; }
+  .filter { order: 5; }
   .alert-strip__row { flex-wrap: wrap; }
   .alert-strip__title { max-width: 100%; }
   .alert-strip__body { flex: 1 1 100%; white-space: normal; }

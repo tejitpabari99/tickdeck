@@ -162,6 +162,54 @@ test.describe('populated feed', () => {
     expect(errors).toEqual([]);
   });
 
+  test('font served locally, no external requests, weight 400 everywhere (03 A4/A7)', async ({ page }) => {
+    const origin = new URL(h!.server.url).origin;
+    const reqs: string[] = [];
+    const fonts: { url: string; status: number }[] = [];
+    // Card content images (media template thumbnails) legitimately point at remote hosts; assets/fonts/css/js must not.
+    page.on('request', (r) => {
+      if (r.resourceType() !== 'image') reqs.push(r.url());
+    });
+    page.on('response', (r) => {
+      if (/\.woff2(\?|$)/.test(r.url())) fonts.push({ url: r.url(), status: r.status() });
+    });
+    await page.goto(h!.server.url);
+    await expect(page.locator('[data-card-id="table"]').first()).toBeVisible();
+    const expanders = page.getByRole('button', { name: /^Expand/ });
+    while (await expanders.count()) await expanders.first().click();
+    await page.evaluate('document.fonts.ready');
+    expect(fonts.length).toBeGreaterThan(0);
+    for (const f of fonts) {
+      expect(f.url.startsWith(origin), f.url).toBe(true);
+      expect(f.status, f.url).toBe(200);
+    }
+    const external = reqs.filter((u) => /^https?:/.test(u) && !/^https?:\/\/(127\.0\.0\.1|localhost)(:|\/|$)/.test(u));
+    expect(external).toEqual([]);
+    const weights = (await page.evaluate(
+      `[...document.querySelectorAll('h1,h2,h3,h4,h5,h6,th,strong,b')].map((e) => getComputedStyle(e).fontWeight)`,
+    )) as string[];
+    expect(weights.length).toBeGreaterThan(0);
+    expect(weights.filter((w) => w !== '400')).toEqual([]);
+  });
+
+  test('side cards are flat; center cards show edge and updated meta (03 A7)', async ({ page }) => {
+    await page.goto(h!.server.url);
+    const side = page.locator('[data-column="left"] [data-card-id="side-note"]');
+    await expect(side).toBeVisible();
+    await expect(side).toHaveClass(/card--side/);
+    await expect(side.getByRole('button', { name: 'Done' })).toBeHidden();
+    await expect(side.getByRole('button', { name: 'Hide' })).toBeHidden();
+    await expect(side.locator('.card-meta')).toBeHidden();
+    await expect(side.locator('.unseen-dot')).toBeHidden();
+    await expect(side.locator('.card-body')).toHaveCSS('border-left-width', '1px');
+    const center = page.locator('[data-column="center"] [data-card-id="markdown"]');
+    await expect(center).toHaveClass(/card--center/);
+    await expect(center.locator('.card-meta')).toBeVisible();
+    await expect(center.locator('.card-body')).toHaveCSS('border-left-width', '3px');
+    await center.hover();
+    await expect(center.getByRole('button', { name: 'Done' })).toBeVisible();
+  });
+
   test('360px: no horizontal scroll, columns stack center/left/right (R9)', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.goto(h!.server.url);
@@ -174,6 +222,64 @@ test.describe('populated feed', () => {
     const [center, left, right] = [await top('center'), await top('left'), await top('right')];
     expect(center).toBeLessThan(left);
     expect(left).toBeLessThan(right);
+  });
+
+  test('header has page padding and fits the viewport at 1280 (post-review)', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(h!.server.url);
+    const brand = (await page.locator('.header__brand').boundingBox())!;
+    expect(brand.x).toBeGreaterThanOrEqual(12);
+    const dot = (await page.getByRole('img', { name: 'Connected' }).boundingBox())!;
+    expect(dot.x + dot.width).toBeLessThanOrEqual(1280 - 12);
+    await expect(page.locator('.header__status')).toContainText('connected');
+  });
+
+  test('header fits the viewport at 360 with a gutter (post-review)', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto(h!.server.url);
+    const boxes = await page.locator('.header, .header *').evaluateAll((els) =>
+      els.map((e) => {
+        const r = e.getBoundingClientRect();
+        return { cls: String(e.getAttribute('class') ?? ''), left: r.left, right: r.right, w: r.width };
+      }),
+    );
+    for (const b of boxes.filter((x) => x.w > 0 && !/^header$/.test(String(x.cls)))) {
+      expect(b.left, String(b.cls)).toBeGreaterThanOrEqual(0);
+      expect(b.right, String(b.cls)).toBeLessThanOrEqual(360);
+    }
+    expect((await page.locator('.header__brand').boundingBox())!.x).toBeGreaterThanOrEqual(12);
+    expect((await page.locator('.search-box input').boundingBox())!.x).toBeGreaterThanOrEqual(12);
+  });
+
+  test('compact table: one-line truncating cells, aligned, wrap scrolls in-card (post-review)', async ({ page }) => {
+    for (const width of [1280, 360]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(h!.server.url);
+      const expanders = page.getByRole('button', { name: /^Expand/ });
+      while (await expanders.count()) await expanders.first().click();
+      const card = page.locator('[data-card-id="table"]').first();
+      await expect(card.locator('.cell-truncate').first()).toHaveCSS('white-space', 'nowrap');
+      await expect(card.locator('.tbl-wrap')).toHaveCSS('overflow-x', 'auto');
+      const rows = await card.locator('tbody tr').evaluateAll((trs) =>
+        trs.map((tr) => [...tr.querySelectorAll('td')].map((td) => td.getBoundingClientRect().height)),
+      );
+      expect(rows.length).toBeGreaterThan(0);
+      for (const r of rows) expect(Math.max(...r) - Math.min(...r), `${width}`).toBeLessThan(2);
+      const links = card.locator('td a.card-link:not(.tbl-rowlink *)');
+      if (await links.count()) {
+        const cell = (await links.first().locator('xpath=ancestor::td').boundingBox())!;
+        const text = (await links.first().boundingBox())!;
+        expect(Math.abs(text.y + text.height / 2 - (cell.y + cell.height / 2))).toBeLessThan(4);
+      }
+      const box = (await card.locator('.tbl-wrap').boundingBox())!;
+      expect(box.x + box.width).toBeLessThanOrEqual(width);
+      const cardBox = (await card.boundingBox())!;
+      expect(box.x + box.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 1);
+      if (process.env['TICKDECK_SHOTS']) {
+        await page.evaluate('window.scrollTo(0, 0)');
+        await page.screenshot({ path: join(process.env['TICKDECK_SHOTS'], `app-${width}.png`), fullPage: true });
+      }
+    }
   });
 
   test('reduced motion disables animation (R12)', async ({ page }) => {

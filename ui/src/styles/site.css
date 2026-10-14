@@ -38,10 +38,12 @@ button, input { font: inherit; color: inherit; }
 .header {
   display: flex; align-items: center; gap: var(--header-gap);
   min-height: var(--header-height);
+  width: 100%; max-width: 160rem; margin: 0 auto;
+  padding: 0 var(--content-bounds-padding);
   border-bottom: 1px solid var(--color-separator);
   background: var(--color-background);
 }
-.header__brand { color: var(--color-text-highlight); font-size: 2rem; line-height: var(--header-height); }
+.header__brand { color: var(--color-text-highlight); font-size: 2rem; line-height: var(--header-height); white-space: nowrap; }
 .header__date { color: var(--color-text-base-muted); white-space: nowrap; }
 .header__btn, .header__badge, .search-box button, .hidden-popover__panel button {
   background: transparent; cursor: pointer;
@@ -51,10 +53,13 @@ button, input { font: inherit; color: inherit; }
 .header__btn:hover, .search-box button:hover, .hidden-popover__panel button:hover {
   background: var(--color-widget-background-highlight); color: var(--color-text-highlight);
 }
+.header__status { margin-left: auto; display: flex; align-items: center; gap: 1.4rem; font-size: var(--font-size-h5); color: var(--color-text-base-muted); white-space: nowrap; }
+.header__status-item { display: inline-flex; align-items: center; gap: 0.7rem; }
+.header__status .header__badge { display: inline-flex; align-items: center; gap: 0.7rem; border: 0; padding: 0; font-size: inherit; }
 .header__dot { display: inline-block; width: 0.9rem; height: 0.9rem; border-radius: 50%; flex: none; }
 .header__dot--ok { background: var(--color-positive); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-positive) 25%, transparent), 0 0 8px var(--color-positive); }
 .header__dot--bad { background: var(--color-negative); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-negative) 25%, transparent), 0 0 8px var(--color-negative); }
-.search-box { position: relative; flex: 1; max-width: 32rem; min-width: 0; margin-left: auto; display: flex; align-items: center; gap: 0.8rem; }
+.search-box { position: relative; flex: 1; max-width: 32rem; min-width: 0; display: flex; align-items: center; gap: 0.8rem; }
 .search-box input {
   flex: 1; min-width: 0; height: 3rem; padding: 0 1.2rem;
   background: var(--color-widget-background); color: var(--color-text-paragraph);

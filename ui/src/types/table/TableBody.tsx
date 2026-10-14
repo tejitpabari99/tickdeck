@@ -4,7 +4,6 @@ import { PAGE } from '../../constants/types.ts';
 import { CardLink, isAllowedLink } from '../../frame/CardLink.tsx';
 import type { CardTypeProps } from '../../registry/registry.ts';
 import type { Cell, TableData } from '../../../../src/index.js';
-import { clampProps } from '../shared/clamp.ts';
 import { highlight } from '../shared/highlight.tsx';
 import { PageMore, ShowMore } from '../shared/ShowMore.tsx';
 import { useQueryFilter } from '../shared/useQueryFilter.ts';
@@ -12,6 +11,7 @@ import {
   cellText,
   distinctValues,
   filterRows,
+  columnWidths,
   formatDateCell,
   inferColumnType,
   nextSort,
@@ -27,6 +27,11 @@ const SEARCH_MIN_ROWS = 5;
 interface Row {
   link?: string | undefined;
   cells: Cell[];
+}
+
+function cls(...parts: (string | false | undefined)[]): string | undefined {
+  const out = parts.filter(Boolean).join(' ');
+  return out === '' ? undefined : out;
 }
 
 function str(cell: Cell | undefined): string {
@@ -63,16 +68,21 @@ function CellContent({ cell, query, compact, isDate }: { cell: Cell | undefined;
   if (date) body = date.display;
   const text = str(cell);
   if (link !== undefined && text !== '') {
-    return (
+    const a = (
       <span className="tbl-cell-link">
         <CardLink href={link} title={text}>
           {body}
         </CardLink>
       </span>
     );
+    return compact ? <span className="cell-truncate" title={date ? date.title : text}>{a}</span> : a;
   }
-  if (date) return <span {...(compact ? clampProps(date.title, 1) : { title: date.title })}>{body}</span>;
-  return compact && typeof v !== 'boolean' ? <span {...clampProps(text, 1)}>{body}</span> : <>{body}</>;
+  if (date) return <span className={compact ? 'cell-truncate' : undefined} title={date.title}>{body}</span>;
+  return compact && typeof v !== 'boolean' ? (
+    <span className="cell-truncate" title={text}>{body}</span>
+  ) : (
+    <>{body}</>
+  );
 }
 
 function FilterPopover({
@@ -131,6 +141,8 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
     () => columns.map((c, i) => inferColumnType(rows.map((r) => r.cells[i] as Cell), c.sort)),
     [columns, rows],
   );
+
+  const widths = useMemo(() => columnWidths(columns, rows, types), [columns, rows, types]);
 
   const filterable = useMemo<(string[] | null)[]>(
     () => columns.map((_, i) => (compact ? null : distinctValues(rows, i))),
@@ -256,7 +268,7 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
                     <th
                       key={i}
                       scope="col"
-                      className={types[i] === 'number' ? 'tbl-num' : undefined}
+                      className={cls(types[i] === 'number' && 'tbl-num', widths[i] && `col-w-${widths[i]}`)}
                       {...(active ? { 'aria-sort': active === 'asc' ? ('ascending' as const) : ('descending' as const) } : {})}
                     >
                       <button type="button" className="tbl-sort" onClick={() => onSort(i)}>
@@ -300,7 +312,7 @@ export function TableBody({ card, data, mode, query }: CardTypeProps<TableData>)
                 return (
                   <tr key={r} className={href ? 'tbl-row tbl-row--link' : 'tbl-row'}>
                     {columns.map((_, i) => (
-                      <td key={i} className={`tbl-cell${types[i] === 'number' ? ' tbl-num' : ''}`}>
+                      <td key={i} className={cls('tbl-cell', types[i] === 'number' && 'tbl-num', widths[i] && `col-w-${widths[i]}`)}>
                         {i === 0 && href && (
                           <span className="tbl-rowlink">
                             <CardLink href={href} title={name}>

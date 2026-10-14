@@ -14,6 +14,7 @@ export interface NormalizedColumn {
   key?: string;
   label: string;
   sort?: ColumnType;
+  width?: 'xs' | 's' | 'm' | 'l' | 'fill';
 }
 export interface RowLike {
   cells: readonly Cell[];
@@ -44,6 +45,7 @@ export function normalizeColumns(columns: TableData['columns']): NormalizedColum
     const out: NormalizedColumn = { label: c.label };
     if (c.key !== undefined) out.key = c.key;
     if (c.sort !== undefined) out.sort = c.sort;
+    if (c.width !== undefined) out.width = c.width;
     return out;
   });
 }
@@ -193,4 +195,33 @@ export function tableSearchText(data: TableData): string {
     ? data.rows.flatMap((row) => (Array.isArray(row?.cells) ? row.cells.map(textOf) : []))
     : [];
   return [...cols, ...cells].filter((s) => s !== '').join(' ');
+}
+
+/**
+ * Width key per column: explicit `width`, else (when no column declares `fill`) the unsized text
+ * column with the longest average cell length becomes implicit `fill`.
+ */
+export function columnWidths(
+  columns: readonly NormalizedColumn[],
+  rows: readonly RowLike[],
+  types: readonly ColumnType[],
+): (NormalizedColumn['width'] | undefined)[] {
+  const out = columns.map((c) => c.width);
+  if (out.includes('fill') || rows.length === 0) return out;
+  let best = -1;
+  let bestAvg = 0;
+  columns.forEach((c, i) => {
+    if (c.width !== undefined || types[i] !== 'text') return;
+    const total = rows.reduce((n, r) => {
+      const cell = r.cells[i];
+      return n + (cell === undefined ? 0 : String(cellText(cell) ?? '').length);
+    }, 0);
+    const avg = total / rows.length;
+    if (avg > bestAvg) {
+      best = i;
+      bestAvg = avg;
+    }
+  });
+  if (best >= 0) out[best] = 'fill';
+  return out;
 }

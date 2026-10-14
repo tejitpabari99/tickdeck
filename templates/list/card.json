@@ -3,6 +3,7 @@
   "type": "list",
   "title": "Today's tasks",
   "data": "data.json",
+  "style": "detailed",
   "layout": {
     "column": "center",
     "order": 0,

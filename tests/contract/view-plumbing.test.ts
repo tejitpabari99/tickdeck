@@ -1,5 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
-import { z } from 'zod';
+import { describe, expect, it } from 'vitest';
 import { registry, validateCardFolder } from '../../src/contract/index.js';
 import { colorSchema } from '../../src/contract/formats.js';
 
@@ -26,22 +25,12 @@ describe('colorSchema', () => {
 });
 
 describe('registry view + ViewCard style plumbing', () => {
-  const orig = (registry.list as { view?: z.ZodType }).view;
-  afterEach(() => {
-    (registry.list as { view?: z.ZodType }).view = orig;
-  });
-  const withView = () => {
-    (registry.list as { view?: z.ZodType }).view = z.object({ style: z.enum(['rows', 'detailed']).optional() });
-  };
-
   it('invalid style on a type with view -> schema-invalid at /style', () => {
-    withView();
     const r = run('list', { style: 'cards' });
     expect(r).toMatchObject({ status: 'broken', reason: 'schema-invalid', issues: [{ path: '/style' }] });
   });
 
   it('valid or absent style passes; valid style is carried on the card', () => {
-    withView();
     expect(run('list', {})).toMatchObject({ status: 'ok' });
     const r = run('list', { style: 'detailed' });
     expect(r).toMatchObject({ status: 'ok', card: { style: 'detailed' } });

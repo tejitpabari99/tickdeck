@@ -15,6 +15,7 @@ export const listItemSchema = z
     text: z.string(),
     id: z.string().min(1).optional(),
     subtitle: z.string().optional(),
+    meta: z.string().max(200).optional(),
     checked: z.boolean().optional(),
     checkedAt: timestampSchema.optional(),
     due: dueSchema.optional(),

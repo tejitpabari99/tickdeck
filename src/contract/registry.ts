@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 import bookmarksCard from '../../templates/bookmarks/card.json' with { type: 'json' };
 import bookmarksData from '../../templates/bookmarks/data.json' with { type: 'json' };
 import calendarCard from '../../templates/calendar/card.json' with { type: 'json' };
@@ -46,7 +46,7 @@ export interface TypeEntry {
 export const registry = {
   markdown: { schema: markdownDataSchema, summary: markdownSummary, template: { card: markdownCard, data: markdownData }, sides: 'allow' },
   table: { schema: tableDataSchema, summary: tableSummary, template: { card: tableCard, data: tableData }, sides: 'deny', warnings: tableWarnings },
-  list: { schema: listDataSchema, summary: listSummary, template: { card: listCard, data: listData }, sides: 'deny' },
+  list: { schema: listDataSchema, summary: listSummary, template: { card: listCard, data: listData }, sides: 'deny', view: z.object({ style: z.enum(['rows', 'detailed']).optional() }) },
   kpi: { schema: kpiDataSchema, summary: kpiSummary, template: { card: kpiCard, data: kpiData }, sides: 'allow' },
   media: { schema: mediaDataSchema, summary: mediaSummary, template: { card: mediaCard, data: mediaData }, sides: 'allow' },
   calendar: { schema: calendarDataSchema, summary: calendarSummary, template: { card: calendarCard, data: calendarData }, sides: 'allow' },

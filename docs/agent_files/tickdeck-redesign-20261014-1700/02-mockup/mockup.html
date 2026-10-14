@@ -404,7 +404,32 @@ button, input { font: inherit; color: inherit; }
 .completed-meta { color: var(--color-text-subdue); font-size: var(--font-size-h5); white-space: nowrap; }
 
 /* === mobile.css === @media (max-width:1200px) */
-/* (Task 6) */
+@media (max-width: 1200px) {
+  :root { --content-bounds-padding: 1.6rem; }
+  .columns { grid-template-columns: minmax(0, 1fr); }
+  .col-center { order: 1; }
+  .col-left { order: 2; }
+  .col-right { order: 3; }
+  .site-header { flex-wrap: wrap; height: auto; gap: 1rem 1.5rem; padding-bottom: 1rem; }
+  .logo { height: 4.5rem; order: 1; padding-right: 1.5rem; }
+  .header-status { order: 2; margin-left: auto; }
+  .header-date { order: 3; flex: 1 1 100%; }
+  .header-search { order: 4; flex: 1 1 100%; max-width: none; }
+  .filter-group { order: 5; }
+  .alert-row { flex-wrap: wrap; }
+  .alert-text { flex: 1 1 100%; white-space: normal; }
+  .alert-row .status-dot { align-self: flex-start; margin-top: 0.7rem; }
+  .table-scroll { max-width: 100%; }
+}
+@media (max-width: 600px) {
+  .card-header { padding: 0 1rem; }
+  .card-meta { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .card-btn-label { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body, .reveal > * { animation: none; }
+  .thumbnail, .card-actions { transition: none; }
+}
 </style>
 </head>
 <body>

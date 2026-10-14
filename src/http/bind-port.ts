@@ -1,5 +1,5 @@
 /**
- * Port selection (mirrors crontick daemon/bind-port): try the preferred port; on EADDRINUSE probe the
+ * Port selection (follows the usual daemon pattern): try the preferred port; on EADDRINUSE probe the
  * occupant, emit a notice, and bind an OS-assigned port. Listen/probe are injected for unit tests.
  */
 import { APP_NAME } from '../constants/app.js';

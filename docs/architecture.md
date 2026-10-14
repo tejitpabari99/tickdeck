@@ -16,7 +16,7 @@ Single machine, single user, loopback only, no auth. Not a job runner, not a per
 ## Component map
 
 ```
- agent / crontick job / CLI-free anything that writes a file
+ agent / scheduled agent job / CLI-free anything that writes a file
         |  writes <data>/feed/<id>/{card.json,data.json}, feed/alerts/<id>.json
         v
  feed watcher + ingest ----> contract validation ----> card / alert stores

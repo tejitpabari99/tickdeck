@@ -7,10 +7,10 @@ date: 2026-10-05
 Repo/branch: tickdeck / `initial-brainstorming` · Depends on: 01-card-contract, 02-server-core · Owns: `src/cli/**`, `src/skill/SKILL.md`, `package.json`, `tsup.config.ts`, `tsconfig*.json`, `eslint.config.js`, `vitest.config.ts`, `scripts/{copy-ui,verify-package-install,verify-tarball,check-dist-built}.mjs`, `.github/workflows/ci.yml`, README install section
 
 ## TL;DR
-One npm global package `tickdeck` (D28) with one bin of the same name. The CLI is a thin Commander adapter (as crontick's `src/cli/index.ts`) over 01's validator and 02's `startServer`/lifecycle. tsup builds CLI + server; Vite builds the UI (03) and tsup `onSuccess` copies it into `dist/ui`. SKILL.md (shipped in the package) teaches agents the card format by pointing at `info`, `templates`, `validate`. A pack-and-install smoke proves the tarball works on Windows/macOS/Linux.
+One npm global package `tickdeck` (D28) with one bin of the same name. The CLI is a thin Commander adapter (daemon-style CLI) over 01's validator and 02's `startServer`/lifecycle. tsup builds CLI + server; Vite builds the UI (03) and tsup `onSuccess` copies it into `dist/ui`. SKILL.md (shipped in the package) teaches agents the card format by pointing at `info`, `templates`, `validate`. A pack-and-install smoke proves the tarball works on Windows/macOS/Linux.
 
 ## Problem
-Owner installs once and runs `tickdeck start`; agents (crontick jobs, Claude sessions) must learn the format where they already look (D10). Without packaging rules, the built UI, schemas, templates and skill don't ship, and cross-OS daemon handling drifts from crontick's proven approach.
+Owner installs once and runs `tickdeck start`; agents (scheduled agent jobs, Claude sessions) must learn the format where they already look (D10). Without packaging rules, the built UI, schemas, templates and skill don't ship, and cross-OS daemon handling drifts from a proven approach.
 
 ## Goals / Non-Goals
 Goals: D27 command set; deterministic package contents; reproducible build; agent-ready skill; install verified per OS.
@@ -39,7 +39,7 @@ Non-Goals: autostart/service install (D27, D31); a `write`/push CLI (futures.md)
 - Node >=22.5 enforced via `engines`; CLI prints a clear message on older Node before importing anything heavy.
 - No postinstall scripts (supply-chain surface, offline-safe).
 
-**Skill** (`src/skill/SKILL.md`, shipped). Frontmatter mirrors crontick: `name: tickdeck`, `description` (trigger phrases: "show on my dashboard", "write a dashboard card", "raise an alert", "notify me"), `allowed-tools: shell`. Sections:
+**Skill** (`src/skill/SKILL.md`, shipped). Frontmatter follows the usual skill convention: `name: tickdeck`, `description` (trigger phrases: "show on my dashboard", "write a dashboard card", "raise an alert", "notify me"), `allowed-tools: shell`. Sections:
 1. Purpose / when to use; identity of the feed dir: **run `tickdeck info --json` and use `feedDir`; never guess a path**.
 2. Card envelope (field table condensed from 01, links to `schemas/envelope.json`) + minimal example.
 3. Per-type pointers: `tickdeck templates <type>` and `templates <type> --schema`; one-line "use for" per type (markdown, table, list, kpi, media); `link` on rows/items (deep links, D8; every link is clickable; schemes `http|https|mailto|ms-outlook` only); `action` only `dismiss` (local tick) / `complete` (write-back, see below). `kpi` takes `data.items` (several metrics per card).
@@ -67,37 +67,37 @@ ui/             (03/04) Vite+React app; own tsconfig; builds to ui/dist (03 conf
 schemas/ templates/   (01, generated/committed)      scripts/  tests/{contract,server,cli,e2e}/
 dist/           cli/index.js  server/index.js  index.js  index.d.ts  ui/   (build output, gitignored)
 ```
-**Build pipeline** (`npm run build`): `gen:schemas` (01 script; CI diffs) → `vite build` in `ui/` → `tsup` → `onSuccess` copies `ui/dist` → `dist/ui` (tsup `clean:true` wipes `dist`, so UI builds elsewhere first; same pattern as crontick's `cpSync` of its dashboard). tsup: ESM, target node22, platform node, entries `cli/index`, `server/index`, `index`; shebang banner on CLI/server; contract compiled into both bundles (01). UI libs are devDependencies (bundled by Vite); runtime deps: `commander`, `hono`, `@hono/node-server`, `croner`, `env-paths`, `zod` (+05's).
+**Build pipeline** (`npm run build`): `gen:schemas` (01 script; CI diffs) → `vite build` in `ui/` → `tsup` → `onSuccess` copies `ui/dist` → `dist/ui` (tsup `clean:true` wipes `dist`, so UI builds elsewhere first; same `cpSync` pattern as other daemon-style CLIs). tsup: ESM, target node22, platform node, entries `cli/index`, `server/index`, `index`; shebang banner on CLI/server; contract compiled into both bundles (01). UI libs are devDependencies (bundled by Vite); runtime deps: `commander`, `hono`, `@hono/node-server`, `croner`, `env-paths`, `zod` (+05's).
 
 **UI location at runtime.** CLI/server resolve `uiDir = resolve(dirname(fileURLToPath(import.meta.url)), '../ui')` (both entries live one level under `dist/`) and pass it to 02's `startServer({uiDir})` (02: injected). Missing `index.html` → `NOT_BUILT` error "run npm run build" (dev checkout). Package root for `schemas/`, `templates/`, `SKILL.md` resolved by walking up to the nearest `package.json` named `tickdeck`; one helper `packageAssets()` used by `info`/`templates`.
 
-**Daemon.** 02 owns `src/lifecycle.ts` (foreground, spawn-detached, stop, status, stale-pid) mirroring crontick `daemon/lifecycle.ts` + `ensure.ts`; 06 only calls it. 06 requirements on it, from crontick's proven spawn: `spawn(process.execPath,[serverEntry],{detached:true, stdio:['ignore',logFd,logFd], shell:false, windowsHide:true, env})` + `unref()`; log to `<data>/daemon.log` (path shown on failure); startup wait polls `/api/health` (`app==='tickdeck'`, rejects other products on the port) with an exclusive lock file against concurrent `daemon start`; stop = HTTP shutdown first because Windows has no graceful SIGTERM. CLI HTTP calls (health, shutdown) must send `Host: 127.0.0.1:<port>`, and mutations `Content-Type: application/json` + `X-Tickdeck: 1` (02 security).
+**Daemon.** 02 owns `src/lifecycle.ts` (foreground, spawn-detached, stop, status, stale-pid) following the usual daemon pattern; 06 only calls it. 06 requirements on it, from the proven spawn recipe: `spawn(process.execPath,[serverEntry],{detached:true, stdio:['ignore',logFd,logFd], shell:false, windowsHide:true, env})` + `unref()`; log to `<data>/daemon.log` (path shown on failure); startup wait polls `/api/health` (`app==='tickdeck'`, rejects other products on the port) with an exclusive lock file against concurrent `daemon start`; stop = HTTP shutdown first because Windows has no graceful SIGTERM. CLI HTTP calls (health, shutdown) must send `Host: 127.0.0.1:<port>`, and mutations `Content-Type: application/json` + `X-Tickdeck: 1` (02 security).
 
 **Consumes:** 01 `validateCardFile`, `listTypes`, `getExample`, `schemas/`, `templates/`, `parseDuration` (not needed). 02 `startServer({env,clock,uiDir,logger})→{url,port,dataDir,stop()}`, lifecycle API, `paths.ts` (`feedDir`, `portFilePath`), `GET /api/health`, `POST /api/shutdown`. **Provides:** CLI binary, package, skill, `packageAssets()`, verify scripts.
 
-**Scripts** (mirror crontick): `build`, `build:ui`, `gen:schemas`, `typecheck` (root + `ui/`), `lint`, `format`, `test` (vitest run), `test:watch`, `verify-package-install`, `validate` (= lint && typecheck && build && test && verify-tarball), `prepublishOnly` (= validate), `release`. `package.json`: `type: module`, `bin: {"tickdeck": "./dist/cli/index.js"}`, `main/types/exports` → `dist/index.*`, `engines.node >=22.5`, `publishConfig {access: public, provenance: true}`, `files`: `dist`, `schemas`, `templates`, `src/skill/SKILL.md`, `README.md`, `LICENSE`.
+**Scripts** (daemon-style CLI conventions): `build`, `build:ui`, `gen:schemas`, `typecheck` (root + `ui/`), `lint`, `format`, `test` (vitest run), `test:watch`, `verify-package-install`, `validate` (= lint && typecheck && build && test && verify-tarball), `prepublishOnly` (= validate), `release`. `package.json`: `type: module`, `bin: {"tickdeck": "./dist/cli/index.js"}`, `main/types/exports` → `dist/index.*`, `engines.node >=22.5`, `publishConfig {access: public, provenance: true}`, `files`: `dist`, `schemas`, `templates`, `src/skill/SKILL.md`, `README.md`, `LICENSE`.
 
-**Verification (`scripts/verify-package-install.mjs`, idea from crontick):** `npm pack` real tarball → install in scratch project with isolated `TICKDECK_HOME` and a non-default `TICKDECK_PORT` → run the installed bin by resolving its `bin` path and invoking with `node` (no npx wrapper; avoids leaked processes) → assert: `--version`; `templates` lists 5 types; every shipped template passes `validate` (exit 0), a broken fixture exits 1 with `--json` parse; `info --json` paths exist (schemas, templates, skill, `dist/ui/index.html`); `daemon start` → `GET /api/health` ok and `GET /` returns HTML; write a card with tmp+rename into `feedDir` → appears in `GET /api/snapshot`; `daemon status` 0; `daemon stop` → port file gone; kill-on-fail cleanup with Windows rm retries. `verify-tarball` checks `npm pack --dry-run` file list (no `src/` except skill, no tests). CI matrix: ubuntu/macos/windows × Node 22 and 24.
+**Verification (`scripts/verify-package-install.mjs`, daemon-pattern idea):** `npm pack` real tarball → install in scratch project with isolated `TICKDECK_HOME` and a non-default `TICKDECK_PORT` → run the installed bin by resolving its `bin` path and invoking with `node` (no npx wrapper; avoids leaked processes) → assert: `--version`; `templates` lists 5 types; every shipped template passes `validate` (exit 0), a broken fixture exits 1 with `--json` parse; `info --json` paths exist (schemas, templates, skill, `dist/ui/index.html`); `daemon start` → `GET /api/health` ok and `GET /` returns HTML; write a card with tmp+rename into `feedDir` → appears in `GET /api/snapshot`; `daemon status` 0; `daemon stop` → port file gone; kill-on-fail cleanup with Windows rm retries. `verify-tarball` checks `npm pack --dry-run` file list (no `src/` except skill, no tests). CI matrix: ubuntu/macos/windows × Node 22 and 24.
 
 ## Decisions
 | # | Decision | Choice | Alternatives | Why |
 |---|---|---|---|---|
-| P1 | Arg parser | Commander ^12 | yargs, citty | crontick parity |
-| P2 | Bins | Single `tickdeck`; server entry is `dist/server/index.js` spawned by lifecycle, not a public bin | Extra `-daemon` bin as crontick | Less PATH surface; nothing to run by hand |
+| P1 | Arg parser | Commander ^12 | yargs, citty | common choice |
+| P2 | Bins | Single `tickdeck`; server entry is `dist/server/index.js` spawned by lifecycle, not a public bin | Extra `-daemon` bin | Less PATH surface; nothing to run by hand |
 | P3 | UI build handoff | Vite → `ui/dist`, tsup `onSuccess` copy to `dist/ui` | Vite emits into `dist` | tsup `clean` would delete it |
 | P4 | Asset lookup | Walk up to package root; UI by relative path from entry | Embed assets in bundle | Plain files; inspectable; trivial in tarball |
 | P5 | validate exit codes | 0 ok / 1 broken / 2 usage-IO; `--json` emits 01 result verbatim | 0/1 only | Agents can tell "bad card" from "bad invocation" |
 | P6 | Skill delivery | Ships in package; owner runs `skill install` (copy, idempotent, `--force`) | Auto-install on `npm i`; manual copy only | No postinstall; owner controls `~/.claude`; cross-platform one command |
 | P7 | Skill content | Pointers to `templates`/`schemas`, no duplicated schemas | Inline full schemas | Single source (01) |
-| P8 | Install smoke | Real tarball into scratch dir, 3-OS CI | `--dry-run` only | Proves it runs, as crontick |
-| P9 | Windows spawn | `windowsHide:true` added to crontick's recipe | Copy exactly | Avoids a flashing console window |
+| P8 | Install smoke | Real tarball into scratch dir, 3-OS CI | `--dry-run` only | Proves it runs, |
+| P9 | Windows spawn | `windowsHide:true` added to the usual recipe | Copy exactly | Avoids a flashing console window |
 
 ## Manual steps (owner only)
 - (git remote already exists: origin github.com/tejitpabari99/tickdeck.)
 - `npm publish` (npm login/2FA; optional, alternatively `npm i -g .` from a clone), choose package scope/availability of the name `tickdeck`.
 - Run `tickdeck skill install` on each machine.
 - Windows/macOS manual smoke of `daemon start` (+ OS notification, with 05).
-- Create the crontick job for the agent that reads ticked list items and completes them in TickTick (see README).
+- Create the scheduled agent job for the agent that reads ticked list items and completes them in TickTick (see README).
 
 ## Risks / Open Questions
 **01 vs 02 mismatches (06 builds on 01's interface; 02 must align):**
@@ -109,7 +109,7 @@ dist/           cli/index.js  server/index.js  index.js  index.d.ts  ui/   (buil
 - [RESOLVED: `tickdeck skill install [--dir] [--force]` added (owner 2026-10-05)] was OPEN-3.
 - [RESOLVED: freeze fields as listed] `info --json` field names are a contract for the skill; freeze at task time: `{version, dataDir, feedDir, url|null, running, configPath, templatesDir, schemasDir, skillPath}` plus 05 addition `{notifications:{mode,reason}}` (intents fields removed 2026-10-05).
 - [RESOLVED: no autostart] D27/D31.
-- [RESOLVED: Node >=22.5 kept] D28, though dashboard does not use `node:sqlite`; parity with crontick.
+- [RESOLVED: Node >=22.5 kept] D28, though dashboard does not use `node:sqlite`; common baseline.
 - [DEFERRED] `--open` browser flag, shell completions, `tickdeck doctor`, npx-only usage docs.
 - Risk: `npm i -g` on Windows builds shims that wrap node; verify script avoids them but a manual global-install check on Windows is still advised.
 - Risk: skill copy goes stale after upgrade; `info` prints version and skill file carries `tickdeck@<version>` header comment so agents/owner can spot drift.

@@ -1,5 +1,5 @@
 /**
- * Process lifecycle for the dashboard server (mirrors crontick daemon/lifecycle.ts + ensure.ts).
+ * Process lifecycle for the dashboard server (follows the usual daemon pattern).
  * 06's CLI calls these: runForeground (`start`), daemonStart/daemonStop/daemonStatus (`daemon ...`).
  * State lives in <data>/daemon.pid (written by the server process), daemon.port, daemon.log, daemon.lock.
  */

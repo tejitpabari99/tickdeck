@@ -2,7 +2,7 @@
 
 ## Repository purpose
 
-tickdeck is a local, modular personal dashboard for viewing outputs of crontick scheduled jobs (and other widgets). One npm package (Node >= 22.5, ESM): a loopback-only Hono server, a React UI (vite, `ui/`), and a CLI (`tickdeck`). The public library API is exactly the exports of `src/index.ts` (currently the card contract in `src/contract/`); everything else is internal.
+tickdeck is a local, modular personal dashboard for viewing outputs of scheduled agent jobs (and other widgets). One npm package (Node >= 22.5, ESM): a loopback-only Hono server, a React UI (vite, `ui/`), and a CLI (`tickdeck`). The public library API is exactly the exports of `src/index.ts` (currently the card contract in `src/contract/`); everything else is internal.
 
 ## Documentation map
 

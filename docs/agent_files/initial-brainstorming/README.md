@@ -59,9 +59,9 @@ None remaining. All items resolved 2026-10-05 and applied in the PRDs.
 - `npm publish` (login/2FA; optional: alternatively `npm i -g .` from a clone); confirm package name `tickdeck` is free. (Git remote already exists: origin github.com/tejitpabari99/tickdeck.)
 - Install the skill yourself: `tickdeck skill install` (copies `SKILL.md` to `~/.claude/skills/tickdeck/`; `--force` to overwrite after upgrades). Nothing to install now.
 - Windows + macOS: notification permissions, Focus Assist, manual toast test; `daemon start` smoke; global-install check on Windows.
-- Set up the crontick job(s): an agent (with its own TickTick MCP access) that on each run reads the existing card file, finds list items with `checked: true`, completes those tasks in TickTick using the item's `ticktick:{taskId,projectId}` extras, then rewrites the card with the current important tasks (new `updatedAt`). No TickTick sign-in or app registration for the dashboard.
+- Set up the scheduled agent job(s): an agent (with its own TickTick MCP access) that on each run reads the existing card file, finds list items with `checked: true`, completes those tasks in TickTick using the item's `ticktick:{taskId,projectId}` extras, then rewrites the card with the current important tasks (new `updatedAt`). No TickTick sign-in or app registration for the dashboard.
 - 2 weeks of real daily use (kill-criteria check).
 
 ## Next step
 
-Implementation complete on branch `initial-brainstorming` (not pushed); see IMPLEMENTATION.md. Owner-only next steps: Win/mac notification spike and manual test (05-notifications/spike-notes.md); `npm publish` / name check; `tickdeck skill install`; Win/mac daemon smoke and Windows global-install check; set up the crontick job that completes ticked TickTick tasks; 2 weeks of real use.
+Implementation complete on branch `initial-brainstorming` (not pushed); see IMPLEMENTATION.md. Owner-only next steps: Win/mac notification spike and manual test (05-notifications/spike-notes.md); `npm publish` / name check; `tickdeck skill install`; Win/mac daemon smoke and Windows global-install check; set up the scheduled agent job that completes ticked TickTick tasks; 2 weeks of real use.

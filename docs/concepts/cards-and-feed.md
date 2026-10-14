@@ -5,7 +5,7 @@ Non-duplication: field-by-field shapes belong to `docs/reference/` (card schema)
 
 ## The feed is the interface
 
-Agents feed the dashboard by writing files. There is no SDK, no push API, and no link to crontick or any other scheduler. Anything that can write a file (a crontick job, a Claude session, a shell script) can produce a card. The files are inspectable, survive restarts, and need no running dashboard to be written.
+Agents feed the dashboard by writing files. There is no SDK, no push API, and no link to any scheduler. Anything that can write a file (a scheduled agent job, a Claude session, a shell script) can produce a card. The files are inspectable, survive restarts, and need no running dashboard to be written.
 
 ## One card, one folder
 

@@ -4,7 +4,7 @@
 
 ## Mission
 
-tickdeck is one calm, local place to see what your agents produced. Agents (crontick jobs, Claude sessions, anything that can write a file) drop JSON "cards" into a feed folder; a small local server validates them and a browser UI renders them with generic visual types, surfacing what matters now and notifying you when it needs you.
+tickdeck is one calm, local place to see what your agents produced. Agents (scheduled agent jobs, Claude sessions, anything that can write a file) drop JSON "cards" into a feed folder; a small local server validates them and a browser UI renders them with generic visual types, surfacing what matters now and notifying you when it needs you.
 
 ## Problem it solves
 
@@ -15,7 +15,7 @@ Outputs of recurring agent jobs (daily mail rundowns, meeting notes, PR/deploy w
 | # | Tenet | What this means in practice | Status |
 |---|-------|------------------------------|--------|
 | 1 | **Local-first & private** | No cloud service, single user. The server binds 127.0.0.1 only, no auth; exposing it is the owner's infra choice. All state (feed, `state.json`, `config.json`) is plain files in the data dir. | Implemented |
-| 2 | **Agent-writable** | Any agent feeds the dashboard by writing a small card folder (`card.json` plus `data.json`) into `<data>/feed/`; `tickdeck new` scaffolds it. No SDK, no push API, no coupling to crontick. A shipped Claude skill and per-type templates teach agents the format. | Implemented |
+| 2 | **Agent-writable** | Any agent feeds the dashboard by writing a small card folder (`card.json` plus `data.json`) into `<data>/feed/`; `tickdeck new` scaffolds it. No SDK, no push API, no coupling to any scheduler. A shipped Claude skill and per-type templates teach agents the format. | Implemented |
 | 3 | **Generic visual types** | Domain-agnostic types (`markdown`, `table`, `list`, `kpi`, `media`) each with a data contract; agents decide content. No per-source widgets (no "email widget"). A new type is one contract module plus one UI renderer, registered. | Implemented |
 | 4 | **Contract-validated, never silent** | Cards are validated against the zod card contract (JSON Schemas generated from it). Required fields are strict, extras allowed. Invalid, errored, or stale cards render as Broken with a reason, never stale data. | Implemented |
 | 5 | **Calm & surfacing the right thing** | Alerts and active-window high-priority cards surface in the Now zone; the rest of the three-column layout stays spatially stable. Compact by default, declared heights, collapse for low priority, no auto-reorder. Crowding is a failure. | Implemented |

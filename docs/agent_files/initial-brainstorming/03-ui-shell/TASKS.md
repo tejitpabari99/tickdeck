@@ -33,7 +33,7 @@ Done when: unit tests (fake timers, mocked fetch) cover ETag/304, clamping, paus
 
 ## Task 3 — Optimistic mutations
 What it is: the mutation layer for done/undone, hide/unhide, tick, layout PUT and list-item actions.
-What changes at a high level: local patch applied immediately, request with JSON content type and `X-Crontick-Dashboard: 1`, then refetch; rollback plus toast on error; 409 reverts, silently refetches and toasts "card updated, try again"; 500 reverts with the server error. `onItemAction` promise resolves on success and rejects with the server message; shell-tracked `pending` set; `checked` set union (item.checked, snapshot `checked`, optimistic).
+What changes at a high level: local patch applied immediately, request with JSON content type and `X-Tickdeck: 1`, then refetch; rollback plus toast on error; 409 reverts, silently refetches and toasts "card updated, try again"; 500 reverts with the server error. `onItemAction` promise resolves on success and rejects with the server message; shell-tracked `pending` set; `checked` set union (item.checked, snapshot `checked`, optimistic).
 Done when: tests with mocked 200/409/500 verify patch, rollback, toast text, headers, and the pending/checked sets.
 
 ## Task 4 — Pure libs: placement, search, seen, relative time
@@ -63,7 +63,7 @@ Done when: tests show alerts expose only Tick, panels in Now are absent from the
 
 ## Task 9 — Header, search, Hidden popover, shortcuts
 What it is: the sticky header (D24, Hidden and Done recovery).
-What changes at a high level: date, alert-count badge (scrolls to Now), `document.title` `(n) Crontick`, global search (dim non-matches to 30% with no reflow, accent outline, match count, Enter/Shift+Enter cycling, tray/hidden matches in a dropdown with open/unhide, `query` prop passed to types), `S` / `/` / Ctrl/Cmd+K focus and two-stage Esc, `Hidden (n)` popover with Unhide, theme toggle, connection dot, toast host.
+What changes at a high level: date, alert-count badge (scrolls to Now), `document.title` `(n) Tickdeck`, global search (dim non-matches to 30% with no reflow, accent outline, match count, Enter/Shift+Enter cycling, tray/hidden matches in a dropdown with open/unhide, `query` prop passed to types), `S` / `/` / Ctrl/Cmd+K focus and two-stage Esc, `Hidden (n)` popover with Unhide, theme toggle, connection dot, toast host.
 Done when: tests cover search `dana` dimming with unchanged layout, `S` not stealing focus inside inputs, Esc behavior, hide → popover → unhide restoring slot, and the title count.
 
 ## Task 10 — Fullscreen and deep links
@@ -73,7 +73,7 @@ Done when: tests cover open/close via hash, focus restore, the highlight timing,
 
 ## Task 11 — Server-down, empty state, a11y pass
 What it is: D19 failure behavior (U9) and accessibility basics.
-What changes at a high level: after 2 failures, >2× interval since success, or failed first load, render only the "Server down" page (retry text, `crontick-dashboard daemon start` hint); store drops the snapshot, optimistic patches and pending layout writes; header reduced to theme toggle plus red dot; title "Server down"; backoff 5→10→30 s; auto-recover without reload. Empty-state hint with `crontick-dashboard info`. Landmarks, `aria-labelledby` sections, button labels, focus ring, jest-axe pass.
+What changes at a high level: after 2 failures, >2× interval since success, or failed first load, render only the "Server down" page (retry text, `tickdeck daemon start` hint); store drops the snapshot, optimistic patches and pending layout writes; header reduced to theme toggle plus red dot; title "Server down"; backoff 5→10→30 s; auto-recover without reload. Empty-state hint with `tickdeck info`. Landmarks, `aria-labelledby` sections, button labels, focus ring, jest-axe pass.
 Done when: tests assert zero card elements and no cached titles/data in the DOM while down, recovery restores the full UI, and the axe check finds no critical violations on fixtures.
 
 ## Task 12 — Browser smoke test and build handoff

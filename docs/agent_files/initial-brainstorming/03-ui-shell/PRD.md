@@ -19,7 +19,7 @@ Non-Goals (futures.md / D31): mobile layout, multi-page, embed, extra theme pres
 ## Requirements
 
 ### Zones (top to bottom)
-1. **Header** (sticky, ~44px): date; alert count badge (unticked alerts; click scrolls to Now); global search; `Hidden (n)` popover; theme toggle; connection dot. `document.title` = `(n) Crontick` where n = alerts + unseen notify cards.
+1. **Header** (sticky, ~44px): date; alert count badge (unticked alerts; click scrolls to Now); global search; `Hidden (n)` popover; theme toggle; connection dot. `document.title` = `(n) Tickdeck` where n = alerts + unseen notify cards.
 2. **Now zone** (rendered only if non-empty): *alert strip* (compact, side-by-side, wrapping, snapshot order = priority desc then newest) then *promoted panels* (full cards in a wrapping flex row, min 320px, snapshot `zones.now` order). Alert: compact row (title, priority marker, type body at `mode:'alert'`), only action is **Tick** (`POST /api/alerts/:id/tick`); alerts cannot be hidden or collapsed (unmissable, D11/D13).
 3. **Grid**: react-grid-layout, 12 columns, one breakpoint (desktop only), `rowHeight` 28px, margin 10px. Cards in `zones.grid` only.
 4. **Done tray** (bottom, only if non-empty): heading-only chips (title + small age); click = reopen (`DELETE /api/cards/:id/done`).

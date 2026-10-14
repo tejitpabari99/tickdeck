@@ -53,24 +53,24 @@ export function buildSchemas(): Record<string, string> {
   const out: Record<string, string> = {};
   const types = listTypes() as RegisteredType[];
 
-  const cardDef = convert(cardDefSchema, LOSSY_NOTES['card-def']!, 'crontick card definition (card.json)');
+  const cardDef = convert(cardDefSchema, LOSSY_NOTES['card-def']!, 'tickdeck card definition (card.json)');
   const cardProps = cardDef.properties as Json;
   cardProps.type = { type: 'string', enum: types };
   out['card-def.json'] = stable(cardDef);
 
-  const dataFile = convert(dataFileSchema, LOSSY_NOTES.data!, 'crontick card data file');
+  const dataFile = convert(dataFileSchema, LOSSY_NOTES.data!, 'tickdeck card data file');
   out['data.json'] = stable(dataFile);
 
-  out['alert.json'] = stable(convert(alertSchema, LOSSY_NOTES.alert!, 'crontick alert'));
+  out['alert.json'] = stable(convert(alertSchema, LOSSY_NOTES.alert!, 'tickdeck alert'));
 
   for (const type of types) {
-    const payload = convert(registry[type].schema, LOSSY_NOTES[type]!, `crontick ${type} card data`);
+    const payload = convert(registry[type].schema, LOSSY_NOTES[type]!, `tickdeck ${type} card data`);
     out[`${type}.json`] = stable(payload);
 
     const { $schema: _omit, ...def } = payload;
     void _omit;
     const typed: Json = JSON.parse(JSON.stringify(dataFile));
-    typed.title = `crontick ${type} card data file`;
+    typed.title = `tickdeck ${type} card data file`;
     typed.description = `Data file (data.json) for a ${type} card: the data key is bound to the ${type} payload. ${LOSSY_NOTES.data}`;
     const props = typed.properties as Json;
     props.data = def;

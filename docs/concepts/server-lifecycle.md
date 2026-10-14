@@ -5,7 +5,7 @@ Non-duplication: command flags and exit codes are owned by `docs/reference/cli.m
 
 ## One server per data directory
 
-The server is one small Node process serving the API and the built UI on `127.0.0.1`. Exactly one runs per data directory. It is started by the owner, in the style of the sibling crontick project:
+The server is one small Node process serving the API and the built UI on `127.0.0.1`. Exactly one runs per data directory. It is started by the owner, in the daemon style:
 
 - **Foreground.** `start` runs it in the terminal until interrupted.
 - **Background.** `daemon start` launches a detached process, waits until it reports healthy, and is idempotent. `daemon status` and `daemon stop` complete the set. Stopping a server that is not running is success.

@@ -61,7 +61,7 @@ Link rules: **every agent-provided link is clickable** (row `link`, cell `link`,
 
 ### Formats
 - **Duration**: `^[1-9]\d*(m|h|d|w)$` (`30m`,`12h`,`26h`,`7d`,`2w`); no compound, no seconds, max 3650d. Helper `parseDuration → ms`.
-- **Cron** (`show.cron`): standard 5-field, parsed with **croner** (same lib/dialect as sibling crontick; `@daily`-style aliases and 6-field seconds rejected). Evaluated in `config.timezone` (02), default server local timezone; `show.cron` = window start, `for` = length. Validator checks parseability only. Helper `windowActive(show, now, opts?: {timezone?: string})` lives here so 02 and tests share one implementation (02 calls it with `config.timezone`); `show.for` omitted = until end of that local day (implemented here in the helper). No `show.tz` field in the contract (timezone = 02 `config.timezone` only).
+- **Cron** (`show.cron`): standard 5-field, parsed with **croner** (`@daily`-style aliases and 6-field seconds rejected). Evaluated in `config.timezone` (02), default server local timezone; `show.cron` = window start, `for` = length. Validator checks parseability only. Helper `windowActive(show, now, opts?: {timezone?: string})` lives here so 02 and tests share one implementation (02 calls it with `config.timezone`); `show.for` omitted = until end of that local day (implemented here in the helper). No `show.tz` field in the contract (timezone = 02 `config.timezone` only).
 - **Timestamps**: `updatedAt` must parse and include offset/`Z`; naive local times = schema-invalid. Future skew > 5 min: valid, 02 may warn.
 - **Priority**: integer 0–5.
 - **List `due`**: `YYYY-MM-DD` or RFC 3339 with offset/`Z`; anything else = schema-invalid.
@@ -81,7 +81,7 @@ src/contract/
 schemas/*.json        (generated, committed; envelope.json + one per type + card.json)
 templates/<type>.example.json   (one realistic card per type; valid-by-test)
 ```
-- **Source of truth**: Zod 4 (sibling crontick uses zod 4); TS types via `z.infer`; JSON Schema via `z.toJSONSchema` in `gen-schemas.ts`. CI test regenerates and diffs `schemas/` (stale = fail). Chosen over hand-written JSON Schema + ajv (two sources → drift; ajv only adds a dep). Fallback if Zod JSON-Schema output proves lossy for refine-based rules: note them in schema `description`.
+- **Source of truth**: Zod 4 (current major); TS types via `z.infer`; JSON Schema via `z.toJSONSchema` in `gen-schemas.ts`. CI test regenerates and diffs `schemas/` (stale = fail). Chosen over hand-written JSON Schema + ajv (two sources → drift; ajv only adds a dep). Fallback if Zod JSON-Schema output proves lossy for refine-based rules: note them in schema `description`.
 - **Registry**: `registry.ts` maps `type → {schema, example, allowedKinds}`; the single place a type is registered (D7). UI registry (03) keys off the same type names.
 - **Validator API** (exposed to 02, 06):
 ```ts
@@ -99,9 +99,9 @@ Never throws. `message` is human-readable one-liner shown in the Broken card; `i
 ## Decisions
 | # | Decision | Choice | Alternatives | Why |
 |---|---|---|---|---|
-| C1 | Schema source | Zod 4 → generated JSON Schema, inferred TS types | Hand JSON Schema + ajv; json-schema-to-ts | One source, matches crontick; D9 JSON Schema still delivered |
+| C1 | Schema source | Zod 4 → generated JSON Schema, inferred TS types | Hand JSON Schema + ajv; json-schema-to-ts | One source; D9 JSON Schema still delivered |
 | C2 | Extras | Allowed + preserved everywhere; `x-` reserved | Strip; strict | D9; agents store notes |
-| C3 | Cron lib | croner, 5-field | node-cron, cron-parser | Parity with crontick |
+| C3 | Cron lib | croner, 5-field | node-cron, cron-parser | Standard 5-field dialect |
 | C4 | Ids | lowercase slug, Windows-reserved blocked, must match filename | Free text; slugify on server | Filename/archive-dir safe on all OSes; silent rewrite surprises agents |
 | C5 | Duration | single unit m/h/d/w | ISO-8601 `PT12H`; compound | Brief examples; trivial for LLMs |
 | C6 | Unknown type | Broken, not crash | Ignore card | D9/D19 visible failures |

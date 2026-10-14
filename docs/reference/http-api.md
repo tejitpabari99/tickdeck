@@ -37,7 +37,7 @@ The action type is read from the current card, never from the client. `complete`
 
 - `columns.*`, `now`, `alerts`, `hidden` are arrays of ids (cards, except `alerts` which are alert ids); each column is ordered by `layout.order`, then id. See [zones-and-layout](../concepts/zones-and-layout.md).
 - `completed` is the ordered list of Completed rows (a card or an alert, with its id), newest first. Done card ids are in `completed` only (a hidden Done card is in `hidden` only).
-- `ViewCard`: `id, type, title, priority` (effective), `notify, column, height, status ("ok" | "broken" | "no-data"), collapsed, done`; `updatedAt` (absent for no-data), `doneAt` (only while done); broken cards add `reason` and `message`; ok cards carry `data` and `checked?` (ticked item ids). No-data cards have no `data`.
+- `ViewCard`: `id, type, title, priority` (effective), `notify, column, height, permanent (true for left/right cards), status ("ok" | "broken" | "no-data"), collapsed, done`; `updatedAt` (absent for no-data), `doneAt` (only while done); broken cards add `reason` and `message`; ok cards carry `data` and `checked?` (ticked item ids). No-data cards have no `data`.
 - `ViewAlert`: `id, title, text?, link?, priority, updatedAt, status ("ok" | "broken")`, `message` when broken. `ViewCompletedAlert`: `id, title, text?, link?, priority, tickedAt`.
 - `reason` is a Broken reason or one of `error`, `stale` (see [errors.md](errors.md#broken-reasons)).
 - `warnings` carries config warnings and skipped folders (see [errors.md](errors.md#skipped-folders)).

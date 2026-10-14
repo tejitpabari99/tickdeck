@@ -4,3 +4,4 @@ import './table/index.ts';
 import './list/index.ts';
 import './kpi/index.ts';
 import './media/index.ts';
+import './calendar/index.ts';

@@ -1,4 +1,6 @@
 import type { z } from 'zod';
+import calendarCard from '../../templates/calendar/card.json' with { type: 'json' };
+import calendarData from '../../templates/calendar/data.json' with { type: 'json' };
 import kpiCard from '../../templates/kpi/card.json' with { type: 'json' };
 import kpiData from '../../templates/kpi/data.json' with { type: 'json' };
 import listCard from '../../templates/list/card.json' with { type: 'json' };
@@ -9,6 +11,7 @@ import mediaCard from '../../templates/media/card.json' with { type: 'json' };
 import mediaData from '../../templates/media/data.json' with { type: 'json' };
 import tableCard from '../../templates/table/card.json' with { type: 'json' };
 import tableData from '../../templates/table/data.json' with { type: 'json' };
+import { calendarDataSchema, calendarSummary } from './types/calendar.js';
 import { kpiDataSchema, kpiSummary } from './types/kpi.js';
 import { listDataSchema, listSummary } from './types/list.js';
 import { markdownDataSchema, markdownSummary } from './types/markdown.js';
@@ -43,6 +46,7 @@ export const registry = {
   list: { schema: listDataSchema, summary: listSummary, template: { card: listCard, data: listData }, sides: 'deny' },
   kpi: { schema: kpiDataSchema, summary: kpiSummary, template: { card: kpiCard, data: kpiData }, sides: 'allow' },
   media: { schema: mediaDataSchema, summary: mediaSummary, template: { card: mediaCard, data: mediaData }, sides: 'allow' },
+  calendar: { schema: calendarDataSchema, summary: calendarSummary, template: { card: calendarCard, data: calendarData }, sides: 'allow' },
 } as const satisfies Record<string, TypeEntry>;
 
 export type RegisteredType = keyof typeof registry;

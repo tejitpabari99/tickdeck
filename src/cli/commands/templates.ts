@@ -13,6 +13,7 @@ const SUMMARIES: Record<RegisteredType | typeof ALERT, string> = {
   list: 'items with optional checkboxes and actions',
   kpi: 'headline metrics with values and units',
   media: 'images or video',
+  calendar: 'events on a month grid with a day agenda',
   alert: 'one-off notice in feed/alerts/<id>.json',
 };
 

@@ -107,7 +107,7 @@ describe('server down', () => {
     for (const s of CACHED) expect(document.body.textContent).not.toContain(s);
     expect(screen.getByRole('heading', { name: 'Server down' })).toBeTruthy();
     expect(screen.getByText(/Retrying every 5 s/)).toBeTruthy();
-    expect(screen.getByText('crontick-dashboard daemon start')).toBeTruthy();
+    expect(screen.getByText('tickdeck daemon start')).toBeTruthy();
     expect(document.title).toBe('Server down');
     expect(t.store.getSnapshot().snapshot).toBeNull();
 
@@ -198,7 +198,7 @@ describe('first load failure', () => {
 describe('empty state', () => {
   it('shows the info hint when no zone has a card', async () => {
     mount(snapshot([], {}));
-    await screen.findByText('crontick-dashboard info');
+    await screen.findByText('tickdeck info');
     expect(document.querySelectorAll('[data-card-id]').length).toBe(0);
   });
 });

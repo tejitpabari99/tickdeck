@@ -158,7 +158,7 @@ export function App(props: AppProps = {}) {
   useSyncExternalStore(subscribeSeen, getSeenVersion);
   const count = snap ? attentionCount(snap) : 0;
   useEffect(() => {
-    document.title = down ? 'Server down' : count > 0 ? `(${count}) Crontick` : 'Crontick';
+    document.title = down ? 'Server down' : count > 0 ? `(${count}) Tickdeck` : 'Tickdeck';
   }, [count, down]);
   const empty =
     snap !== null &&
@@ -195,7 +195,7 @@ export function App(props: AppProps = {}) {
           <section className="empty-state" aria-labelledby="empty-state-h" data-testid="empty-state">
             <h2 id="empty-state-h">No cards yet</h2>
             <p>
-              Cards come from your feed folder. Run <code>crontick-dashboard info</code> to see the feed path.
+              Cards come from your feed folder. Run <code>tickdeck info</code> to see the feed path.
             </p>
           </section>
         ) : snap ? (

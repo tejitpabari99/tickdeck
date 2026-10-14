@@ -7,7 +7,7 @@ Source of truth: `src/constants/error-codes.ts`. Codes appear in HTTP bodies (`{
 | Code | Status | Trigger | What to do |
 |------|--------|---------|-----------|
 | `HOST_FORBIDDEN` | 403 | `Host` header is not `127.0.0.1:<port>` or `localhost:<port>` | Use the URL from `info`; do not proxy or use another hostname |
-| `MUTATION_HEADER_REQUIRED` | 403 | Non-GET `/api` call without `Content-Type: application/json` and `X-Crontick-Dashboard: 1` | Send both headers |
+| `MUTATION_HEADER_REQUIRED` | 403 | Non-GET `/api` call without `Content-Type: application/json` and `X-Tickdeck: 1` | Send both headers |
 | `NOT_FOUND` | 404 | Unknown API route, missing static asset | Check the path |
 | `BAD_REQUEST` | 400 | Malformed URL encoding | Fix the URL |
 | `INVALID_JSON` | 400 | Request body is not JSON | Send valid JSON |

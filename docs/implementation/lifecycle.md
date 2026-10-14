@@ -20,7 +20,7 @@ Test seams on `StartServerOptions`: `clock`, `port` (0 for ephemeral), `notifyAd
 
 ## Port binding
 
-`bindPort(preferred, deps)` tries to listen; on `EADDRINUSE` (and `preferred !== 0`) it probes the occupant with `probeHealth`, emits one notice (another crontick-dashboard with pid and data dir, or a foreign process), and listens on port 0. `probeHealth` fetches `/api/health` with a 1 s timeout and recognizes the `app` field equal to `crontick-dashboard`; any failure counts as foreign.
+`bindPort(preferred, deps)` tries to listen; on `EADDRINUSE` (and `preferred !== 0`) it probes the occupant with `probeHealth`, emits one notice (another tickdeck with pid and data dir, or a foreign process), and listens on port 0. `probeHealth` fetches `/api/health` with a 1 s timeout and recognizes the `app` field equal to `tickdeck`; any failure counts as foreign.
 
 ## Process files
 
@@ -52,4 +52,4 @@ Not running is success. Otherwise POST `/api/shutdown` (with the mutation header
 
 ## Entries
 
-`src/server/index.ts` (built to `dist/server/index.js`) resolves the UI dir (`dist/ui`, or env `CRONTICK_DASHBOARD_UI_DIR` for source-run tests), starts the server with a timestamped console logger (stdout goes to `daemon.log`), exits 0 on `POST /api/shutdown`, and handles SIGINT and SIGTERM through `stop()`. Foreground `start` is `runForeground`, which refuses when a healthy server already owns the data dir and returns its URL.
+`src/server/index.ts` (built to `dist/server/index.js`) resolves the UI dir (`dist/ui`, or env `TICKDECK_UI_DIR` for source-run tests), starts the server with a timestamped console logger (stdout goes to `daemon.log`), exits 0 on `POST /api/shutdown`, and handles SIGINT and SIGTERM through `stop()`. Foreground `start` is `runForeground`, which refuses when a healthy server already owns the data dir and returns its URL.

@@ -1,5 +1,5 @@
 /**
- * Port selection (mirrors crontick daemon/bind-port): try the preferred port; on EADDRINUSE probe the
+ * Port selection (follows the usual daemon pattern): try the preferred port; on EADDRINUSE probe the
  * occupant, emit a notice, and bind an OS-assigned port. Listen/probe are injected for unit tests.
  */
 import { APP_NAME } from '../constants/app.js';
@@ -30,9 +30,9 @@ export function formatPortFallbackMessage(preferred: number, occupant: PortOccup
   if (occupant.kind === APP_NAME) {
     const pid = occupant.pid === undefined ? 'unknown' : String(occupant.pid);
     const dir = occupant.dataDir ?? 'unknown';
-    return `Port ${preferred} is in use by another crontick-dashboard (pid ${pid}, data dir ${dir}); starting on a free port`;
+    return `Port ${preferred} is in use by another tickdeck (pid ${pid}, data dir ${dir}); starting on a free port`;
   }
-  return `Port ${preferred} is in use by another process (not crontick-dashboard); starting on a free port`;
+  return `Port ${preferred} is in use by another process (not tickdeck); starting on a free port`;
 }
 
 export async function bindPort(preferred: number, deps: BindPortDeps): Promise<BindPortResult> {
@@ -54,7 +54,7 @@ export async function bindPort(preferred: number, deps: BindPortDeps): Promise<B
   return { port, preferred, fellBack: true, occupant, message };
 }
 
-/** Probe `GET http://127.0.0.1:<port>/api/health` for the crontick-dashboard signature. */
+/** Probe `GET http://127.0.0.1:<port>/api/health` for the tickdeck signature. */
 export async function probeHealth(port: number, timeoutMs = HEALTH_PROBE_TIMEOUT_MS): Promise<PortOccupant> {
   try {
     const res = await fetch(loopbackUrl(port, '/api/health'), { signal: AbortSignal.timeout(timeoutMs) });

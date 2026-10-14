@@ -11,7 +11,7 @@ Middleware order matters:
 
 1. `hostGuard(getPort)` on `*`: Host must be `127.0.0.1:<port>` or `localhost:<port>` (lower-cased), else 403 `HOST_FORBIDDEN`. This blocks DNS rebinding. The port is read lazily because it is only known after bind.
 2. `GET /api/health` and `GET /api/snapshot` register next.
-3. `mutationGuard` on `/api/*`: any non-GET/HEAD request needs `Content-Type: application/json` and `X-Crontick-Dashboard: 1`, else 403 `MUTATION_HEADER_REQUIRED`. A custom header forces a CORS preflight, which the server never answers because no CORS headers exist anywhere.
+3. `mutationGuard` on `/api/*`: any non-GET/HEAD request needs `Content-Type: application/json` and `X-Tickdeck: 1`, else 403 `MUTATION_HEADER_REQUIRED`. A custom header forces a CORS preflight, which the server never answers because no CORS headers exist anywhere.
 4. `POST /api/shutdown`, `mountMutations`, `mountActions`.
 5. `serveStatic` as the catch-all.
 

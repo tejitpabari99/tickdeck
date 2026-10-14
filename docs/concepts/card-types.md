@@ -38,7 +38,7 @@ The core never branches on a type name (see [P1](../tech/design-principles.md)).
 
 ## Schemas and templates
 
-zod is the source of truth. JSON Schemas for `card.json`, `data.json`, alerts and each type are generated from it and committed, so a drift check in CI catches stale schemas. Each type ships an example card folder (both files) under `templates/`; agents and the Claude skill point at these. `crontick-dashboard new`, `templates` and `validate` expose them from the CLI.
+zod is the source of truth. JSON Schemas for `card.json`, `data.json`, alerts and each type are generated from it and committed, so a drift check in CI catches stale schemas. Each type ships an example card folder (both files) under `templates/`; agents and the Claude skill point at these. `tickdeck new`, `templates` and `validate` expose them from the CLI.
 
 ## Scope limits
 

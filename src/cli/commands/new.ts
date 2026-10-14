@@ -129,6 +129,6 @@ export function registerNew(program: Command, ctx: CliContext): void {
         ctx.io.stdout(json({ id, dir, cardPath, dataPath, schemasSynced: sync.synced }));
         return;
       }
-      ctx.io.stdout(`created ${dir}\nnext: write ${dataPath} (example: crontick-dashboard templates ${type})\n`);
+      ctx.io.stdout(`created ${dir}\nnext: write ${dataPath} (example: tickdeck templates ${type})\n`);
     });
 }

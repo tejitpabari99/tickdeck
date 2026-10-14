@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Start with `crontick-dashboard info` (paths, URL, notification mode) and `crontick-dashboard daemon status`. Run commands with `--verbose` to see error codes. Codes are explained in [errors.md](reference/errors.md).
+Start with `tickdeck info` (paths, URL, notification mode) and `tickdeck daemon status`. Run commands with `--verbose` to see error codes. Codes are explained in [errors.md](reference/errors.md).
 
 ## Server will not start
 
@@ -12,27 +12,27 @@ Start with `crontick-dashboard info` (paths, URL, notification mode) and `cronti
 
 ## Port in use
 
-The server prefers port 47616 (override: `--port`, `CRONTICK_DASHBOARD_PORT`, config `port`). If taken it binds a free port and warns, naming the occupant. The real URL is always in `info` or `daemon status`. Invalid `--port` exits 2; an invalid env or config port is ignored (config: with a warning). Remember `Host` must match the port, so reach the dashboard via the printed URL.
+The server prefers port 47616 (override: `--port`, `TICKDECK_PORT`, config `port`). If taken it binds a free port and warns, naming the occupant. The real URL is always in `info` or `daemon status`. Invalid `--port` exits 2; an invalid env or config port is ignored (config: with a warning). Remember `Host` must match the port, so reach the dashboard via the printed URL.
 
 ## A card shows Broken
 
-The card shows the reason. Check it locally: `crontick-dashboard validate <feed>/<id>` (the folder; it uses the same reader and validators as the server). Common causes: `schema-invalid` (see the printed JSON pointers; usually `data.json`), `malformed-json` (half-written or truncated file; write to `data.json.tmp` and rename), `unknown-type`, `stale` (no update for longer than `staleAfter`; rewrite `data.json` with real new content), `error` (`data.json` declares an `error`), `too-large`. See [Broken reasons](reference/errors.md#broken-reasons).
+The card shows the reason. Check it locally: `tickdeck validate <feed>/<id>` (the folder; it uses the same reader and validators as the server). Common causes: `schema-invalid` (see the printed JSON pointers; usually `data.json`), `malformed-json` (half-written or truncated file; write to `data.json.tmp` and rename), `unknown-type`, `stale` (no update for longer than `staleAfter`; rewrite `data.json` with real new content), `error` (`data.json` declares an `error`), `too-large`. See [Broken reasons](reference/errors.md#broken-reasons).
 
 ## A card is missing and a warning appears
 
-A folder that cannot be a card is skipped with a snapshot warning: `card-def-missing` (no `card.json`), `card-def-invalid`, `data-path-invalid` (`data` must be a plain file name inside the folder), `invalid-id` (use lowercase letters, digits, `.`, `_`, `-`), `reserved-id` (`alerts`). Loose files directly in `feed/` are ignored with a warning (cards are folders). `validate <folder>` prints the same `SKIPPED <reason>`. Scaffold correctly with `crontick-dashboard new <id> --type <type>`. See [Skipped folders](reference/errors.md#skipped-folders).
+A folder that cannot be a card is skipped with a snapshot warning: `card-def-missing` (no `card.json`), `card-def-invalid`, `data-path-invalid` (`data` must be a plain file name inside the folder), `invalid-id` (use lowercase letters, digits, `.`, `_`, `-`), `reserved-id` (`alerts`). Loose files directly in `feed/` are ignored with a warning (cards are folders). `validate <folder>` prints the same `SKIPPED <reason>`. Scaffold correctly with `tickdeck new <id> --type <type>`. See [Skipped folders](reference/errors.md#skipped-folders).
 
 ## A card says "No data yet"
 
-Normal after `new`: the folder has a valid `card.json` and no `data.json`. Write `data.json` (shape: `crontick-dashboard templates <type> --file data`). If it never goes away, check the file name matches `data` in `card.json` (default `data.json`) and that it sits inside the card folder.
+Normal after `new`: the folder has a valid `card.json` and no `data.json`. Write `data.json` (shape: `tickdeck templates <type> --file data`). If it never goes away, check the file name matches `data` in `card.json` (default `data.json`) and that it sits inside the card folder.
 
 ## "Unsupported type" / `unknown-type`
 
-`type` in `card.json` is not one of `markdown`, `table`, `list`, `kpi`, `media`. Check spelling and case; list types with `crontick-dashboard templates`.
+`type` in `card.json` is not one of `markdown`, `table`, `list`, `kpi`, `media`. Check spelling and case; list types with `tickdeck templates`.
 
 ## Validating an example or a document before writing it
 
-Pipe a document with `--as`, since stdin has no folder: `crontick-dashboard templates list --file data | crontick-dashboard validate - --as data --type list`. `--as card` checks `card.json` text; `--as alert` checks an alert file. Stdin takes one document per call and does not check folder-name rules; `new` covers those.
+Pipe a document with `--as`, since stdin has no folder: `tickdeck templates list --file data | tickdeck validate - --as data --type list`. `--as card` checks `card.json` text; `--as alert` checks an alert file. Stdin takes one document per call and does not check folder-name rules; `new` covers those.
 
 ## Card does not appear or update
 

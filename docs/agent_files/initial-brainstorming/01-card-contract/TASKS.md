@@ -19,7 +19,7 @@ Source of truth: docs/agent_files/initial-brainstorming/01-card-contract/PRD.md.
 
 ## Task 1 — Minimal repo scaffold
 What it is / what it means: Greenfield repo has no package yet; 01 needs build, test and lint to land code. 06 owns the final layout (package.json, tsup, tsconfig, eslint, vitest configs) and completes it later; this task must not diverge from it.
-What changes at a high level: Create `package.json` (name `crontick-dashboard`, `type: module`, `engines.node >=22.5`, deps `zod`, `croner`; dev deps typescript, vitest, eslint, tsx), `tsconfig.json`, `vitest.config.ts`, `eslint.config.js`, `.gitignore` for `dist/`, and empty `src/contract/`, `src/index.ts`, `scripts/`, `tests/contract/` per 06's layout block. Scripts limited to `typecheck`, `lint`, `test`, `gen:schemas`; no tsup, bin, UI or CI yet (06). Add a trivial passing test to prove the toolchain.
+What changes at a high level: Create `package.json` (name `tickdeck`, `type: module`, `engines.node >=22.5`, deps `zod`, `croner`; dev deps typescript, vitest, eslint, tsx), `tsconfig.json`, `vitest.config.ts`, `eslint.config.js`, `.gitignore` for `dist/`, and empty `src/contract/`, `src/index.ts`, `scripts/`, `tests/contract/` per 06's layout block. Scripts limited to `typecheck`, `lint`, `test`, `gen:schemas`; no tsup, bin, UI or CI yet (06). Add a trivial passing test to prove the toolchain.
 Done when: `npm install`, `npm run typecheck`, `npm run lint`, `npm test` all pass; layout paths match 06's block (C1, C3).
 
 ## Task 2 — Formats and helpers

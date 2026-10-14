@@ -1,9 +1,9 @@
 ---
 status: done
-summary: Index for the crontick-dashboard design set — 6 sub-project PRDs, dependency graph, locked cross-cutting picks, consolidated owner decisions and manual steps.
+summary: Index for the tickdeck design set — 6 sub-project PRDs, dependency graph, locked cross-cutting picks, consolidated owner decisions and manual steps.
 date: 2026-10-05
 ---
-# crontick-dashboard — initial-brainstorming design set
+# tickdeck — initial-brainstorming design set
 
 Source of truth: [`brainstorming.md`](brainstorming.md) (32 locked decisions D1-D32). Future ideas: [`../futures.md`](../futures.md). Implementation is approved and underway: six approved PRDs and six settled TASKS.md files cover 59 tasks. All owner choices are settled; the work follows the build order below.
 
@@ -37,7 +37,7 @@ Build order: 01 -> 02 -> (03, 05 in parallel) -> 04 -> 06.
 - Language: TypeScript everywhere (owner-confirmed). Node >=22.5 ESM, tsup (server/CLI), vitest, UI = React + Vite + TS. Commander, Hono, croner, env-paths, zod.
 - Schema: Zod 4 is the source; JSON Schema generated + committed (CI diff); TS types inferred (01).
 - Ingest: `fs.watch` flat + 10 s rescan, 200 ms debounce, settle-retry on truncated JSON before Broken (02).
-- API: pure `GET /api/snapshot` (ETag, poll 15-60 s); mutations need JSON content-type + `X-Crontick-Dashboard` header; Host check; loopback only (02). Default port `47616`.
+- API: pure `GET /api/snapshot` (ETag, poll 15-60 s); mutations need JSON content-type + `X-Tickdeck` header; Host check; loopback only (02). Default port `47616`.
 - Repo layout (06): `src/contract` (01), `src/{paths,config,lifecycle}.ts` + `src/{state,feed,compute,actions,http,shared}` (02), `src/integrations/notify` (05), `src/cli` + `src/skill` (06), `ui/` (03/04), `schemas/`, `templates/`, `scripts/`, `tests/`. Shared DTOs: `src/shared/api-types.ts` (02-owned, type-only).
 - Build: gen:schemas -> `vite build` (`ui/dist`) -> tsup, `onSuccess` copies to `dist/ui`.
 - Theme (03): Glance-style HSL token triples + CSS `calc()` derivation, system default + toggle, system-ui fonts, no JS theme runtime.
@@ -56,12 +56,12 @@ None remaining. All items resolved 2026-10-05 and applied in the PRDs.
 
 ## Owner-only manual steps
 
-- `npm publish` (login/2FA; optional: alternatively `npm i -g .` from a clone); confirm package name `crontick-dashboard` is free. (Git remote already exists: origin github.com/tejitpabari99/crontick-dashboard.)
-- Install the skill yourself: `crontick-dashboard skill install` (copies `SKILL.md` to `~/.claude/skills/crontick-dashboard/`; `--force` to overwrite after upgrades). Nothing to install now.
+- `npm publish` (login/2FA; optional: alternatively `npm i -g .` from a clone); confirm package name `tickdeck` is free. (Git remote already exists: origin github.com/tejitpabari99/tickdeck.)
+- Install the skill yourself: `tickdeck skill install` (copies `SKILL.md` to `~/.claude/skills/tickdeck/`; `--force` to overwrite after upgrades). Nothing to install now.
 - Windows + macOS: notification permissions, Focus Assist, manual toast test; `daemon start` smoke; global-install check on Windows.
-- Set up the crontick job(s): an agent (with its own TickTick MCP access) that on each run reads the existing card file, finds list items with `checked: true`, completes those tasks in TickTick using the item's `ticktick:{taskId,projectId}` extras, then rewrites the card with the current important tasks (new `updatedAt`). No TickTick sign-in or app registration for the dashboard.
+- Set up the scheduled agent job(s): an agent (with its own TickTick MCP access) that on each run reads the existing card file, finds list items with `checked: true`, completes those tasks in TickTick using the item's `ticktick:{taskId,projectId}` extras, then rewrites the card with the current important tasks (new `updatedAt`). No TickTick sign-in or app registration for the dashboard.
 - 2 weeks of real daily use (kill-criteria check).
 
 ## Next step
 
-Implementation complete on branch `initial-brainstorming` (not pushed); see IMPLEMENTATION.md. Owner-only next steps: Win/mac notification spike and manual test (05-notifications/spike-notes.md); `npm publish` / name check; `crontick-dashboard skill install`; Win/mac daemon smoke and Windows global-install check; set up the crontick job that completes ticked TickTick tasks; 2 weeks of real use.
+Implementation complete on branch `initial-brainstorming` (not pushed); see IMPLEMENTATION.md. Owner-only next steps: Win/mac notification spike and manual test (05-notifications/spike-notes.md); `npm publish` / name check; `tickdeck skill install`; Win/mac daemon smoke and Windows global-install check; set up the scheduled agent job that completes ticked TickTick tasks; 2 weeks of real use.

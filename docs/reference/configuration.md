@@ -2,7 +2,7 @@
 
 ## Data directory
 
-All state lives under one data directory, resolved as: env `CRONTICK_DASHBOARD_HOME` if set, else the platform default for the app name `crontick-dashboard` (via `env-paths`, no suffix; e.g. `~/.local/share/crontick-dashboard` on Linux). `crontick-dashboard info` prints the real paths.
+All state lives under one data directory, resolved as: env `TICKDECK_HOME` if set, else the platform default for the app name `tickdeck` (via `env-paths`, no suffix; e.g. `~/.local/share/tickdeck` on Linux). `tickdeck info` prints the real paths.
 
 | Path | Purpose |
 |------|---------|
@@ -34,15 +34,15 @@ A JSON object. Missing file means defaults, silently. A non-object or invalid JS
 
 | Variable | Effect |
 |----------|--------|
-| `CRONTICK_DASHBOARD_HOME` | Data directory override |
-| `CRONTICK_DASHBOARD_PORT` | Preferred port; invalid values are ignored |
-| `CRONTICK_DASHBOARD_VERBOSE` | Verbose CLI errors (see [cli.md](cli.md)) |
-| `CRONTICK_DASHBOARD_UI_DIR` | Override the built UI directory of the server entry (source-checkout testing; not for normal use) |
+| `TICKDECK_HOME` | Data directory override |
+| `TICKDECK_PORT` | Preferred port; invalid values are ignored |
+| `TICKDECK_VERBOSE` | Verbose CLI errors (see [cli.md](cli.md)) |
+| `TICKDECK_UI_DIR` | Override the built UI directory of the server entry (source-checkout testing; not for normal use) |
 
 ## Precedence (port)
 
 1. `start --port <n>` (foreground only)
-2. env `CRONTICK_DASHBOARD_PORT`
+2. env `TICKDECK_PORT`
 3. `config.json` `port`
 4. Default `47616`
 

@@ -122,11 +122,11 @@ describe('header filter', () => {
   it('Hidden popover and attention count ignore the filter', async () => {
     mount();
     await screen.findByText('CenterCard');
-    await waitFor(() => expect(document.title).toBe('(1) Crontick'));
+    await waitFor(() => expect(document.title).toBe('(1) Tickdeck'));
     for (const f of ['Alerts', 'Cards']) {
       fireEvent.click(radio(f));
       expect(screen.getByRole('button', { name: /hidden \(1\)/i })).toBeTruthy();
-      expect(document.title).toBe('(1) Crontick');
+      expect(document.title).toBe('(1) Tickdeck');
     }
   });
 

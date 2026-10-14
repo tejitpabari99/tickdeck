@@ -18,12 +18,12 @@ Source of truth: [PRD.md](PRD.md). OS notifications only (TickTick was removed 2
 
 ## Task 1 — Win/mac notification spike (decides adapter)
 What it is / what it means: Resolved OPEN-2: `node-notifier` is the default but unverified on real machines (unmaintained ~4 years); this early task settles the adapter before any other code depends on it.
-What changes at a high level: A throwaway script (kept under the notify folder, not shipped) that fires a toast via `node-notifier` on Windows and macOS with title, body, `Crontick.Dashboard` AppUserModelID, and a click callback opening a URL. Owner runs it on real Win and mac; record outcomes (toast shown, click-through, permission-denied behaviour, Focus Assist, Node 22 compatibility) in a short findings note appended to the PRD-adjacent spike notes. Decision: node-notifier stands, or the shell-out adapter (`osascript`, PowerShell WinRT toast with AUMID, `notify-send`) becomes the default.
+What changes at a high level: A throwaway script (kept under the notify folder, not shipped) that fires a toast via `node-notifier` on Windows and macOS with title, body, `Tickdeck` AppUserModelID, and a click callback opening a URL. Owner runs it on real Win and mac; record outcomes (toast shown, click-through, permission-denied behaviour, Focus Assist, Node 22 compatibility) in a short findings note appended to the PRD-adjacent spike notes. Decision: node-notifier stands, or the shell-out adapter (`osascript`, PowerShell WinRT toast with AUMID, `notify-send`) becomes the default.
 Done when: a written go/no-go per platform exists and names the adapter Task 2 builds first.
 
 ## Task 2 — NotifyAdapter + chosen implementation
 What it is / what it means: Architecture's `NotifyAdapter { notify({title, body, openUrl}): Promise<void> }` seam, so the library is swappable.
-What changes at a high level: Define the interface and one production adapter per the spike result (node-notifier with fixed AUMID `Crontick.Dashboard` and best-effort click opening `openUrl` in the default browser; or the shell-out set, losing macOS click-through). Platform dispatch is internal. Where clicks cannot be reported the toast is still shown. A fake adapter for tests ships alongside.
+What changes at a high level: Define the interface and one production adapter per the spike result (node-notifier with fixed AUMID `Tickdeck` and best-effort click opening `openUrl` in the default browser; or the shell-out set, losing macOS click-through). Platform dispatch is internal. Where clicks cannot be reported the toast is still shown. A fake adapter for tests ships alongside.
 Done when: adapter conforms to the interface, unit-tested with the underlying library/process spawn stubbed (arguments, AUMID, click handler wiring); manual smoke on the dev platform shows a toast.
 
 ## Task 3 — Headless gate (`notifications.os` auto/on/off)
@@ -53,4 +53,4 @@ Done when: every unit and detection bullet in the PRD's Acceptance Criteria maps
 
 ## Manual steps (owner)
 - Run the Task 1 spike and the final manual test on Windows and macOS: sample `notify:true` card shows a toast, click opens the dashboard, denied permission still leaves the in-page highlight working.
-- Grant permissions: macOS System Settings > Notifications (terminal-notifier / host app); Windows Settings > Notifications, allow "Crontick.Dashboard", check Focus Assist. Linux desktop test optional.
+- Grant permissions: macOS System Settings > Notifications (terminal-notifier / host app); Windows Settings > Notifications, allow "Tickdeck", check Focus Assist. Linux desktop test optional.

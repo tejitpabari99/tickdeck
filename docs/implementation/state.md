@@ -23,7 +23,7 @@ Typed helpers (`markDone`, `unack`, `hide`, `setChecks`, `setNotified`) are one-
 
 `src/config.ts`: `parseConfig(raw)` starts from `defaultConfig()` and validates each field independently; an invalid field is replaced by its default and adds a warning (`config.json: invalid <name>; using ...`). A non-object or unparsable file yields all defaults with one warning. A missing file yields defaults with no warning. Defaults and bounds come from `src/constants/config.ts`, `http.ts`, and `poll.ts`.
 
-`createConfigReader().get()` caches the parsed result and re-reads when the file's mtime changes (or it appears or disappears), so edits apply without a restart except `port`. Port precedence in `resolvePort`: env `CRONTICK_DASHBOARD_PORT`, then config, then 47616; an invalid env value is ignored. The CLI `--port` flag and `startServer({ port })` override all.
+`createConfigReader().get()` caches the parsed result and re-reads when the file's mtime changes (or it appears or disappears), so edits apply without a restart except `port`. Port precedence in `resolvePort`: env `TICKDECK_PORT`, then config, then 47616; an invalid env value is ignored. The CLI `--port` flag and `startServer({ port })` override all.
 
 `ensureDirs` (`src/paths.ts`) creates the data, `feed/`, and `feed/alerts/` dirs with mode 0700 and writes `{}` to `config.json` only if missing (`wx`).
 

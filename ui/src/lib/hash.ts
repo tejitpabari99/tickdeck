@@ -17,7 +17,7 @@ export function buildCardHash(id: string, full: boolean): string {
   return `#card=${encodeURIComponent(id)}${full ? '&view=full' : ''}`;
 }
 
-const INTERNAL = 'crontick-hash';
+const INTERNAL = 'tickdeck-hash';
 
 /** Rewrites the hash without adding history and notifies subscribers (replaceState fires no hashchange). */
 export function replaceHash(hash: string): void {

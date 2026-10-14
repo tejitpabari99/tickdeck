@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-ADRs capture a single significant, lasting technical decision for crontick-dashboard: the context, the choice, the alternatives evaluated, and the consequences. The design history that produced them lives in `docs/agent_files/initial-brainstorming/` (the brainstorm's 32-row decision log and the six PRDs).
+ADRs capture a single significant, lasting technical decision for tickdeck: the context, the choice, the alternatives evaluated, and the consequences. The design history that produced them lives in `docs/agent_files/initial-brainstorming/` (the brainstorm's 32-row decision log and the six PRDs).
 
 ## When to write a new ADR
 
@@ -32,3 +32,4 @@ A change to a rule in [design principles](../tech/design-principles.md) that ref
 | [0003](0003-toolchain-and-distribution.md) | Toolchain and distribution | Accepted, amended 2026-10-07 | 2026-10-07 |
 | [0004](0004-os-notifications-via-node-notifier.md) | OS notifications via node-notifier | Proposed | 2026-10-05 |
 | [0005](0005-card-folder-ingest-and-completed.md) | Card-folder ingest, Completed list and write-back rules | Accepted | 2026-10-08 |
+| [0006](0006-rename-to-tickdeck.md) | Rename the project to Tickdeck | Accepted | 2026-10-14 |

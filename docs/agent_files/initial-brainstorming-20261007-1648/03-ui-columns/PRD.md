@@ -4,7 +4,7 @@ summary: UI redraw around three fixed columns with declared heights, Now at top 
 date: 2026-10-08
 ---
 # PRD: UI columns (SP03)
-Repo/branch: crontick-dashboard / `initial-brainstorming` · Depends on: SP01 (types only), SP02 (snapshot DTO) · Owns: `ui/**` (`src/App.tsx`, `src/zones/`, `src/frame/`, `src/api/`, `src/lib/placement.ts` + `src/constants/grid.ts` + `zones/layout-writer.ts` (delete), `src/theme/tokens.css`, `ui/tests/**`), `package.json` + lockfile (drop `react-grid-layout` only), `docs/implementation/ui.md` is SP04's
+Repo/branch: tickdeck / `initial-brainstorming` · Depends on: SP01 (types only), SP02 (snapshot DTO) · Owns: `ui/**` (`src/App.tsx`, `src/zones/`, `src/frame/`, `src/api/`, `src/lib/placement.ts` + `src/constants/grid.ts` + `zones/layout-writer.ts` (delete), `src/theme/tokens.css`, `ui/tests/**`), `package.json` + lockfile (drop `react-grid-layout` only), `docs/implementation/ui.md` is SP04's
 
 ## TL;DR
 `Grid` (react-grid-layout), `layout-writer`, `placement`, `DoneTray` and the layout mutation go away. `App` draws: header (with All/Alerts/Cards filter), full-width alert strip of one-line rows, then three CSS-grid columns (left 300px, center flexible, right 300px; stack center, left, right under 1200px). Center starts with Now. `CardFrame` gets fixed heights S/M/L/auto and one engine-applied chip: the **collapsed chip** (low priority; click = expand), in the card's own slot. Done cards and ticked alerts leave the page and are listed in a full-width, collapsible **Completed** section below the columns (Done card row has Reopen). The old in-slot Done chip is removed. Visual types are untouched except the dead `alert` mode.
@@ -153,4 +153,4 @@ New files: `zones/Columns.tsx` (+`columns.css`), `zones/Completed.tsx` (+css), `
 - Tokens/breakpoint test: `--col-side`, `--col-gap`, `--h-*` present, `1200px` literal in `columns.css` equals the test constant.
 - Poll test: re-render with a changed `data` on an unchanged column leaves DOM order and element identity (`key`) intact.
 - Type tests (`ui/tests/types/*`) green after `alert`/`grid` mode rename; Glance bits (visited link color, relative time, `clamp`, `+N more`, search shortcuts) still covered by existing tests.
-- Manual: `crontick-dashboard start` with sample folders in left/center/right; tick an alert and Done a card (both appear in Completed, Reopen works, filter and toggle persist across reload); resize window across 1200px; table template in left column is readable.
+- Manual: `tickdeck start` with sample folders in left/center/right; tick an alert and Done a card (both appear in Completed, Reopen works, filter and toggle persist across reload); resize window across 1200px; table template in left column is readable.

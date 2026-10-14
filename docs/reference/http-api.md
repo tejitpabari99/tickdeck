@@ -7,7 +7,7 @@ The server binds `127.0.0.1` only and serves the UI plus a small JSON API used b
 | Rule | Detail |
 |------|--------|
 | Host allowlist | `Host` must be `127.0.0.1:<port>` or `localhost:<port>` (case-insensitive) else 403 `HOST_FORBIDDEN`. Applies to every route including static files |
-| Mutation guard | Every non-GET/HEAD request under `/api/` must send `Content-Type: application/json` and `X-Crontick-Dashboard: 1`, else 403 `MUTATION_HEADER_REQUIRED` (even with no body, and before 404 routing) |
+| Mutation guard | Every non-GET/HEAD request under `/api/` must send `Content-Type: application/json` and `X-Tickdeck: 1`, else 403 `MUTATION_HEADER_REQUIRED` (even with no body, and before 404 routing) |
 | CORS | No CORS headers are ever sent |
 
 Errors are `{ "error": "<message>", "code": "<CODE>" }`. Internal errors are 500 `INTERNAL` with a fixed message (details only in the server log).
@@ -18,7 +18,7 @@ Mutation success bodies are `{ "rev": "<snapshot rev>" }` unless noted.
 
 | Method and path | Purpose | Body | Success | Errors |
 |-----------------|---------|------|---------|--------|
-| `GET /api/health` | Identity probe | none | 200 `{ app: "crontick-dashboard", pid, dataDir }` | |
+| `GET /api/health` | Identity probe | none | 200 `{ app: "tickdeck", pid, dataDir }` | |
 | `GET /api/snapshot` | Everything the UI renders | none | 200 `Snapshot` with `ETag` and `Cache-Control: no-cache`; 304 when `If-None-Match` matches | |
 | `POST /api/shutdown` | Graceful stop | none | 200 `{ ok: true }` | |
 | `POST /api/alerts/:id/tick` | Move an alert file to `feed/alerts/.done/` (its file time becomes the tick time) | none | 200; repeating on an already-ticked id is 200 | 404 `CARD_NOT_FOUND` (no such alert); 400 `NOT_AN_ALERT` (the id is a card) |

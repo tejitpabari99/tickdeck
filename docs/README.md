@@ -1,6 +1,6 @@
 # Documentation
 
-All crontick-dashboard documentation, organized by audience and purpose. Use the table to find
+All tickdeck documentation, organized by audience and purpose. Use the table to find
 what you need or to decide where new content belongs.
 
 ---
@@ -113,6 +113,7 @@ observable behavior without updating relevant docs is incomplete.
 | [0002](decisions/0002-generic-visual-types-and-card-contract.md) | Generic visual types and a validated card contract |
 | [0003](decisions/0003-toolchain-and-distribution.md) | Toolchain and distribution |
 | [0004](decisions/0004-os-notifications-via-node-notifier.md) | OS notifications via node-notifier (Proposed) |
+| [0006](decisions/0006-rename-to-tickdeck.md) | Rename the project to Tickdeck |
 
 ### docs/agent_files/
 

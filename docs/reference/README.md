@@ -1,6 +1,6 @@
 # Reference
 
-Precise, lookup-oriented facts about what crontick-dashboard supports. For mental models see [concepts](../concepts/); for rationale see [decisions](../decisions/). Each topic has one owner here; other docs link instead of repeating.
+Precise, lookup-oriented facts about what tickdeck supports. For mental models see [concepts](../concepts/); for rationale see [decisions](../decisions/). Each topic has one owner here; other docs link instead of repeating.
 
 | File | Contents |
 |------|----------|

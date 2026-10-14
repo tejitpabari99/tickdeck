@@ -41,11 +41,11 @@ Production code takes its side effects as parameters (P5), and tests pass fakes;
 - **Clock.** `fakeClock(start)` from `src/clock.ts` has `set` and `advance`. Pass it to `startServer({ clock })`, `createStateStore`, `daemonStart`, and `moveToDone`.
 - **Timers.** Components accept `TimeoutTimers` or `IntervalTimers` (`src/utils/timers.ts`). Feed tests use vitest fake timers (`vi.useFakeTimers()`), so debounce and settle schedules (200 ms; 250 ms, 1 s, 3 s) run instantly. The UI store takes `setTimeout`, `clearTimeout`, `now`, and a visibility `doc`.
 - **Notify adapter.** `FakeNotifyAdapter` (`src/integrations/notify/fake.ts`) records `calls` and can be set to `throw` or `reject` through `failWith`. `startServer({ notifyAdapter, notifyPlatform })` plus a `fakeClock` exercises the whole path from file write to toast, including bursts.
-- **Lifecycle.** `daemonStart` takes `clock`, `sleep`, `spawn`; a fake child with `exitWith` simulates failed startup without a process. Tests that need a real daemon use an isolated `CRONTICK_DASHBOARD_HOME` temp dir and `port: 0`.
+- **Lifecycle.** `daemonStart` takes `clock`, `sleep`, `spawn`; a fake child with `exitWith` simulates failed startup without a process. Tests that need a real daemon use an isolated `TICKDECK_HOME` temp dir and `port: 0`.
 - **Filesystem races.** `actionTestDeps` (`rename`, `sleep`, `hooks.beforeCompare`) forces the write-back compare-and-swap window; the state store takes `renameFn` and `retryDelayMs` to simulate Windows `EPERM`.
 - **CLI.** Build a `CliIo` with captured stdout and stderr; call `run([...], io)` and assert the returned exit code.
 
-Rules (AGENTS.md): every bug fix adds a regression test; assert observable behavior; no order dependence. Always use a temp `CRONTICK_DASHBOARD_HOME` and clean up in `afterEach`.
+Rules (AGENTS.md): every bug fix adds a regression test; assert observable behavior; no order dependence. Always use a temp `TICKDECK_HOME` and clean up in `afterEach`.
 
 ## CI
 

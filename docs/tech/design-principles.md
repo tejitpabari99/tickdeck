@@ -1,6 +1,6 @@
 # Design Principles
 
-Rules every design and implementation in crontick-dashboard must follow. This is a **living doc** — reviewers check PRs against it, and it should be updated (with an ADR where it's a lasting decision) whenever a real change forces a rule to move.
+Rules every design and implementation in tickdeck must follow. This is a **living doc** — reviewers check PRs against it, and it should be updated (with an ADR where it's a lasting decision) whenever a real change forces a rule to move.
 
 ## 1. Common card-type framework, per-type modules
 
@@ -43,7 +43,7 @@ Constants that are shared (used in more than one file, including tests), tunable
 
 ## 4. Single core, thin shims
 
-CLI commands (`src/cli/`) and HTTP routes (`src/http/`) are adapters over core modules (`src/contract`, `src/compute`, `src/feed`, `src/state`, `src/actions`). They parse transport input, call one core function, and format the result. Validation, visibility/Now computation, and orchestration live in the core, so `crontick-dashboard validate` and the server accept exactly the same cards.
+CLI commands (`src/cli/`) and HTTP routes (`src/http/`) are adapters over core modules (`src/contract`, `src/compute`, `src/feed`, `src/state`, `src/actions`). They parse transport input, call one core function, and format the result. Validation, visibility/Now computation, and orchestration live in the core, so `tickdeck validate` and the server accept exactly the same cards.
 
 - **Do** put validation, error construction, and orchestration in core modules.
 - **Exempt:** composition roots (`src/http/server.ts`, `src/server/index.ts`, `src/cli/main.ts`) wire core modules together; CLI presentation formatting (tables, `render()`) belongs in `src/cli/`.
@@ -71,7 +71,7 @@ Pre-1.0, a removed feature is removed, not deprecated-and-kept. A capability tha
 
 Every error surfaced to a consumer is a typed error with a machine-readable `code` and a message that tells the user what to do, not just what went wrong. CLI failures use `CliError` (message + exit code); HTTP errors return `{ error, code }` with a proper status; card problems surface as Broken with a reason naming the fix. For the CLI, "code" means the `CliError` exit code plus the error `code` in `--verbose`/JSON output. Internal pure helpers (e.g. `parseDuration`, assertions) may throw plain `Error` when always caught and converted at the boundary.
 
-- **Do** give a new failure mode its own code and a message that names the fix (e.g. "run `crontick-dashboard info`").
+- **Do** give a new failure mode its own code and a message that names the fix (e.g. "run `tickdeck info`").
 - **Don't** surface a raw `Error`, a stack trace, or a message that only restates the failure with no next step.
 
 ## 8. Platform APIs over dependencies

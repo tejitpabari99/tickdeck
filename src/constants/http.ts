@@ -5,6 +5,6 @@ export const MIN_PORT = 1;
 export const MAX_PORT = 65535;
 
 /** Mutating requests must send this header with value `MUTATION_HEADER_VALUE` and a JSON content type. */
-export const MUTATION_HEADER = 'X-Crontick-Dashboard';
+export const MUTATION_HEADER = 'X-Tickdeck';
 export const MUTATION_HEADER_VALUE = '1';
 export const JSON_CONTENT_TYPE = 'application/json';

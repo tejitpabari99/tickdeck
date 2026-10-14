@@ -1,13 +1,13 @@
 # Architecture
 
-Audience: everyone -- the entry point for understanding how crontick-dashboard's pieces fit together.
+Audience: everyone -- the entry point for understanding how tickdeck's pieces fit together.
 Non-duplication: this page is a components-and-links map. Mental models live in `docs/concepts/`, mechanics in `docs/implementation/`, exact lookups (routes, fields, flags, config keys, error codes) in `docs/reference/`, rationale in `docs/decisions/`. Each section links to its one narrative owner instead of restating it.
 
 ## Purpose
 
-crontick-dashboard is a local, single-user dashboard for what your agents produced. Agents write a small folder per card (a `card.json` view and a `data.json` content file) and one-line alert files into a feed directory. A small local server validates the cards and computes what is visible, a browser UI renders them with generic visual types, and the server raises OS notifications for cards that ask for it. See [mission](tech/mission.md) for tenets and non-goals.
+tickdeck is a local, single-user dashboard for what your agents produced. Agents write a small folder per card (a `card.json` view and a `data.json` content file) and one-line alert files into a feed directory. A small local server validates the cards and computes what is visible, a browser UI renders them with generic visual types, and the server raises OS notifications for cards that ask for it. See [mission](tech/mission.md) for tenets and non-goals.
 
-It ships as one npm package (`crontick-dashboard`): a CLI, the server, the built UI, JSON Schemas, card templates, and a Claude skill.
+It ships as one npm package (`tickdeck`): a CLI, the server, the built UI, JSON Schemas, card templates, and a Claude skill.
 
 ## Scope and non-goals
 
@@ -16,7 +16,7 @@ Single machine, single user, loopback only, no auth. Not a job runner, not a per
 ## Component map
 
 ```
- agent / crontick job / CLI-free anything that writes a file
+ agent / scheduled agent job / CLI-free anything that writes a file
         |  writes <data>/feed/<id>/{card.json,data.json}, feed/alerts/<id>.json
         v
  feed watcher + ingest ----> contract validation ----> card / alert stores
@@ -67,7 +67,7 @@ Prefer `node:*` and browser APIs. Runtime dependencies are deliberately few: a s
 
 ## Data locations
 
-The data directory is resolved with `env-paths` per platform, overridable with `CRONTICK_DASHBOARD_HOME`.
+The data directory is resolved with `env-paths` per platform, overridable with `TICKDECK_HOME`.
 
 ```
 <data>/feed/<id>/       one card: card.json (view) + data.json (content)
@@ -79,7 +79,7 @@ The data directory is resolved with `env-paths` per platform, overridable with `
 <data>/daemon.{pid,port,log,lock}   server process files
 ```
 
-`crontick-dashboard info` prints the real paths. State is created lazily; restarting loses nothing.
+`tickdeck info` prints the real paths. State is created lazily; restarting loses nothing.
 
 ## Build and distribution
 

@@ -23,7 +23,7 @@ export function createSkillRegister(overrides: Partial<SkillDeps> = {}) {
     const skill = program.command('skill').description('Manage the Claude skill that teaches agents to write cards');
     skill
       .command('install')
-      .description('Copy the packaged SKILL.md to <skillsDir>/crontick-dashboard/SKILL.md (never a symlink)')
+      .description('Copy the packaged SKILL.md to <skillsDir>/tickdeck/SKILL.md (never a symlink)')
       .option('--dir <skillsDir>', 'skills directory (default ~/.claude/skills)')
       .option('--force', 'overwrite a differing installed SKILL.md')
       .action((opts: { dir?: string; force?: boolean }) => {

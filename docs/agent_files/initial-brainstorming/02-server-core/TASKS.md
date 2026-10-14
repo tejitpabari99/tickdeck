@@ -23,7 +23,7 @@ Source of truth: [PRD.md](PRD.md). Each task includes its vitest tests (real tem
 
 ## Task 1 — Paths, config, clock
 What it is / what it means: Foundations every other module uses: data-dir resolution, config loading, injectable time.
-What changes at a high level: `paths.ts` mirroring crontick (`env-paths`, `CRONTICK_DASHBOARD_HOME`, all paths take `env`); first-run creation of data dir (0o700), `feed/`, `feed/done/`, `archive/`, default `config.json`, no `state.json`. `config.ts` with per-field fallback + warnings, `DEFAULT_PORT = 47616`, port precedence env > config > default, mtime re-read. A `Clock` interface with real and fake impls.
+What changes at a high level: `paths.ts` following the daemon pattern (`env-paths`, `TICKDECK_HOME`, all paths take `env`); first-run creation of data dir (0o700), `feed/`, `feed/done/`, `archive/`, default `config.json`, no `state.json`. `config.ts` with per-field fallback + warnings, `DEFAULT_PORT = 47616`, port precedence env > config > default, mtime re-read. A `Clock` interface with real and fake impls.
 Done when: tests cover first-run layout/perms, each config field's fallback and warning, port precedence, mtime reload.
 
 ## Task 2 — State store (serial writer)
@@ -53,7 +53,7 @@ Done when: restart emits nothing for unchanged cards but emits for changed-while
 
 ## Task 7 — HTTP server, security, startServer
 What it is / what it means: Hono API surface for reads plus the security envelope.
-What changes at a high level: `http/*` with `GET /api/snapshot` (ETag/304), `GET /api/health`, `POST /api/shutdown`, static UI from injected `uiDir` with SPA fallback excluding `/api/*`, no CSP. Loopback-only bind, Host allowlist, mutation guard (JSON content-type + `X-Crontick-Dashboard`), no CORS. `startServer({env,clock,uiDir,logger})` wiring everything, `bindPort` fallback (probe health, notice, `listen(0)`), port file written after listen, removed on stop.
+What changes at a high level: `http/*` with `GET /api/snapshot` (ETag/304), `GET /api/health`, `POST /api/shutdown`, static UI from injected `uiDir` with SPA fallback excluding `/api/*`, no CSP. Loopback-only bind, Host allowlist, mutation guard (JSON content-type + `X-Tickdeck`), no CORS. `startServer({env,clock,uiDir,logger})` wiring everything, `bindPort` fallback (probe health, notice, `listen(0)`), port file written after listen, removed on stop.
 Done when: non-loopback Host or missing header → 403; listens only on 127.0.0.1; occupied default port → free port, correct port file, notice; 304 on matching ETag.
 
 ## Task 8 — Mutations: tick, done, hidden, layout
@@ -72,8 +72,8 @@ What changes at a high level: preconditions (ok card, item has `complete`, `upda
 Done when: only that item changes, extras and key order preserved, no temp left, no event/archive version, Done ack still valid; simulated agent rewrite mid-flight → no clobber (retry or 409); rename EPERM retried; restart-before-ingest yields no event.
 
 ## Task 11 — Lifecycle (daemon, port, pid)
-What it is / what it means: Process management that 06's CLI calls (mirrors crontick `daemon/lifecycle.ts` + `ensure.ts`).
-What changes at a high level: `lifecycle.ts` with foreground run, detached daemon spawn (`process.execPath`, log fd to `daemon.log`, `shell:false`, `windowsHide`, `unref`), start under exclusive `daemon.lock` waiting on `/api/health` (`app==='crontick-dashboard'`), stop via `POST /api/shutdown` then kill after timeout, status via pid+port files, stale-pid detection, second server on same data dir refuses to start.
+What it is / what it means: Process management that 06's CLI calls (follows the usual daemon pattern).
+What changes at a high level: `lifecycle.ts` with foreground run, detached daemon spawn (`process.execPath`, log fd to `daemon.log`, `shell:false`, `windowsHide`, `unref`), start under exclusive `daemon.lock` waiting on `/api/health` (`app==='tickdeck'`), stop via `POST /api/shutdown` then kill after timeout, status via pid+port files, stale-pid detection, second server on same data dir refuses to start.
 Done when: start/status/stop cycle works in tests; stale pid recovered; double start refused; port and pid files cleaned on stop.
 
 ## Task 12 — End-to-end acceptance suite

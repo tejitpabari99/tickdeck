@@ -183,7 +183,7 @@ describe('title count', () => {
     s.columns.center = ['a', 'b', 'n'];
     mount(s);
     await screen.findByText('Notify');
-    await waitFor(() => expect(document.title).toBe('(2) Crontick'));
+    await waitFor(() => expect(document.title).toBe('(2) Tickdeck'));
     expect(screen.getByRole('button', { name: /1 alert/i })).toBeTruthy();
   });
 
@@ -193,15 +193,15 @@ describe('title count', () => {
     s.columns.center = ['a', 'b', 'n'];
     mount(s);
     await screen.findByText('Notify');
-    await waitFor(() => expect(document.title).toBe('(1) Crontick'));
+    await waitFor(() => expect(document.title).toBe('(1) Tickdeck'));
     act(() => markSeen({ id: 'n', updatedAt: s.cards['n']!.updatedAt! }));
-    expect(document.title).toBe('Crontick'); // synchronous: no snapshot/poll re-render involved
+    expect(document.title).toBe('Tickdeck'); // synchronous: no snapshot/poll re-render involved
   });
 
   it('is plain when nothing needs attention', async () => {
     mount();
     await screen.findByText('Alpha');
-    await waitFor(() => expect(document.title).toBe('Crontick'));
+    await waitFor(() => expect(document.title).toBe('Tickdeck'));
   });
 });
 

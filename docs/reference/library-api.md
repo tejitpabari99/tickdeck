@@ -1,6 +1,6 @@
 # Library API reference
 
-`import ... from 'crontick-dashboard'`. The public API is exactly the exports of `src/index.ts`, which re-exports `src/contract/index.ts`: the card contract. Everything else (server, CLI internals, feed, state) is private and may change without notice. ESM only, Node >= 22.5; types in `dist/index.d.ts`. There is no filesystem access here: validators take text and file times, and the caller (server, CLI) does the reading.
+`import ... from 'tickdeck'`. The public API is exactly the exports of `src/index.ts`, which re-exports `src/contract/index.ts`: the card contract. Everything else (server, CLI internals, feed, state) is private and may change without notice. ESM only, Node >= 22.5; types in `dist/index.d.ts`. There is no filesystem access here: validators take text and file times, and the caller (server, CLI) does the reading.
 
 ## Functions
 

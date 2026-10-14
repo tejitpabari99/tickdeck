@@ -4,7 +4,7 @@ summary: Card-folder contract — zod schemas for card.json, data.json and alert
 date: 2026-10-08
 ---
 # PRD: Card folder contract (SP01)
-Repo/branch: crontick-dashboard / `initial-brainstorming` · Depends on: none · Owns: `src/contract/**`, `src/constants/contract.ts`, `src/constants/error-codes.ts` (reason lists), `scripts/schemas-build.ts` + `gen-schemas.ts`, `schemas/**`, `templates/**`, `tests/contract/**`, `docs/reference/errors.md` (reason tables only; rest of docs = SP04)
+Repo/branch: tickdeck / `initial-brainstorming` · Depends on: none · Owns: `src/contract/**`, `src/constants/contract.ts`, `src/constants/error-codes.ts` (reason lists), `scripts/schemas-build.ts` + `gen-schemas.ts`, `schemas/**`, `templates/**`, `tests/contract/**`, `docs/reference/errors.md` (reason tables only; rest of docs = SP04)
 
 ## TL;DR
 `envelope.ts` splits into three zod schemas: card.json (view def), data.json (content), alert file. A pure validator turns raw file contents (+ mtime) into one of: ok card, "no data yet" card, Broken, or skipped-with-warning. SP02 reads files and calls it; SP04's `validate` calls it. Ids come from folder/file names, never from file bodies. Per-type data schemas and the registry shape stay; templates become example folders.

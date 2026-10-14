@@ -64,4 +64,4 @@ What changes at a high level: add the poll test (changed `data` leaves DOM order
 Done when: all acceptance bullets map to passing tests or the grep is empty; `npm run validate` green.
 
 ## Closing note
-Human-only manual checks (PRD Manual acceptance): run `crontick-dashboard start` with sample cards in left, center and right; tick an alert and Done a card and confirm both appear in Completed and Reopen works; confirm filter and Completed toggle persist across reload; resize the window across 1200px; confirm a table template in the left column is readable. The deferred horizontal-scroll hint for tables is decided only after this visual check. `docs/implementation/ui.md` belongs to SP04.
+Human-only manual checks (PRD Manual acceptance): run `tickdeck start` with sample cards in left, center and right; tick an alert and Done a card and confirm both appear in Completed and Reopen works; confirm filter and Completed toggle persist across reload; resize the window across 1200px; confirm a table template in the left column is readable. The deferred horizontal-scroll hint for tables is decided only after this visual check. `docs/implementation/ui.md` belongs to SP04.

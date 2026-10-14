@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "crontick table card data",
+  "title": "tickdeck table card data",
   "description": "Not expressible in JSON Schema, enforced by the validator: every row must have exactly as many cells as columns; defaultSort.column must be within range; link values must be http, https, mailto or ms-outlook (max 2048 chars, no whitespace).",
   "type": "object",
   "properties": {

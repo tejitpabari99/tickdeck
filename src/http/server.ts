@@ -211,7 +211,7 @@ export async function startServer(opts: StartServerOptions): Promise<RunningServ
     throw err;
   }
 
-  logger.info(`crontick-dashboard listening on ${loopbackUrl(boundPort)}`);
+  logger.info(`tickdeck listening on ${loopbackUrl(boundPort)}`);
   return {
     url: loopbackUrl(boundPort),
     port: boundPort,

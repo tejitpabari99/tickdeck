@@ -32,7 +32,7 @@ Each registry entry has a `summary(data)` defensive over unvalidated data: markd
 
 ## Adapter
 
-`NotifyAdapter.notify(payload): Promise<void>` (`adapter.ts`) is the only seam. `node-notifier-adapter.ts` wraps node-notifier with `appID: 'Crontick.Dashboard'` and `wait: true`. node-notifier reports errors through its callback, not exceptions, and with `wait: true` the callback can stay open until click or timeout, so the adapter resolves after a 1.5 s grace (`NOTIFY_DELIVERY_GRACE_MS`) if no error arrived. On click (`click`, `activate` events or callback response) it opens the URL once.
+`NotifyAdapter.notify(payload): Promise<void>` (`adapter.ts`) is the only seam. `node-notifier-adapter.ts` wraps node-notifier with `appID: 'Tickdeck'` and `wait: true`. node-notifier reports errors through its callback, not exceptions, and with `wait: true` the callback can stay open until click or timeout, so the adapter resolves after a 1.5 s grace (`NOTIFY_DELIVERY_GRACE_MS`) if no error arrived. On click (`click`, `activate` events or callback response) it opens the URL once.
 
 Opening is locked down: `isSafeOpenUrl` accepts only `http:` on `127.0.0.1` or `localhost` and rejects whitespace and shell metacharacters; the command is `cmd /c start "" <url>`, `open`, or `xdg-open`, spawned detached with `shell: false`. node-notifier is loaded lazily on first delivery (`startServer` wraps the adapter) and is the one tsup external, so install-time failures do not break startup. `FakeNotifyAdapter` (`fake.ts`) records calls and can throw or reject on demand.
 

@@ -11,5 +11,5 @@ export function apiError(c: Context, status: ContentfulStatusCode, code: ErrorCo
 /** Fixed-message 500; the detail goes to the server log only. */
 export function internalError(c: Context, err: unknown, log?: (m: string) => void): Response {
   log?.(`internal error on ${c.req.method} ${c.req.path}: ${errorMessage(err)}`);
-  return apiError(c, 500, ERROR_CODES.INTERNAL, 'internal server error; see the server log (crontick-dashboard daemon status shows its path)');
+  return apiError(c, 500, ERROR_CODES.INTERNAL, 'internal server error; see the server log (tickdeck daemon status shows its path)');
 }

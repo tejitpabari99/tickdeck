@@ -4,7 +4,7 @@ summary: Five generic card-body React components (markdown, table, list, kpi, me
 date: 2026-10-05
 ---
 # PRD: Visual type components (04)
-Repo/branch: crontick-dashboard / `initial-brainstorming` · Depends on: 01 (data types, examples), 03 (registry, `CardLink`, frame) · Owns: `ui/src/types/**` (per-type folders + `shared/`), `ui/tests/types/**`
+Repo/branch: tickdeck / `initial-brainstorming` · Depends on: 01 (data types, examples), 03 (registry, `CardLink`, frame) · Owns: `ui/src/types/**` (per-type folders + `shared/`), `ui/tests/types/**`
 
 ## TL;DR
 Five small, domain-agnostic body components. Each renders 01's `data` shape, registers once via 03's `registerCardType`, uses 03's `CardLink` for every link, and adapts to `grid | now | alert | fullscreen`. Agent content is untrusted text: nothing is ever injected as HTML. Compact mode shows the gist (capped); fullscreen shows everything. Deep links (kill criterion, D8) are first-class: every agent-provided link is clickable: a table row, table cell, list item (plus secondary `links[]`) or kpi tile with a link is one click away.

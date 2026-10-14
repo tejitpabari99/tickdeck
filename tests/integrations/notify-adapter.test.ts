@@ -39,7 +39,7 @@ describe('node-notifier adapter', () => {
     expect(s.notify.mock.calls[0]?.[0]).toMatchObject({
       title: 'T',
       message: 'B',
-      appID: 'Crontick.Dashboard',
+      appID: 'Tickdeck',
       wait: true,
     });
   });

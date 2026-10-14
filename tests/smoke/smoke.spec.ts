@@ -35,7 +35,7 @@ function writeAtomic(file: string, text: string): void {
 }
 
 async function boot(cards: FixtureCard[], alerts: Record<string, unknown>[] = []): Promise<Harness> {
-  const home = mkdtempSync(join(tmpdir(), 'crontick-smoke-'));
+  const home = mkdtempSync(join(tmpdir(), 'tickdeck-smoke-'));
   const env = { ...process.env, [ENV_HOME]: home };
   ensureDirs(env);
   for (const c of cards) {

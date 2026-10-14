@@ -28,7 +28,7 @@ export function Header(p: HeaderProps) {
   };
   return (
     <header className="header">
-      <h1 className="header__brand">Crontick</h1>
+      <h1 className="header__brand">Tickdeck</h1>
       <span className="header__date">{date}</span>
       {!p.minimal && p.alertCount > 0 ? (
         <button

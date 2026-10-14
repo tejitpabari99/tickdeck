@@ -1,16 +1,16 @@
 # CLI reference
 
-Binary: `crontick-dashboard` (package `bin`). Requires Node >= 22.5; older Node prints `error: crontick-dashboard requires Node >=22.5 (found X). Please upgrade Node.` and exits 1.
+Binary: `tickdeck` (package `bin`). Requires Node >= 22.5; older Node prints `error: tickdeck requires Node >=22.5 (found X). Please upgrade Node.` and exits 1.
 
 ```
-crontick-dashboard [--verbose] [-V|--version] [-h|--help] <command>
+tickdeck [--verbose] [-V|--version] [-h|--help] <command>
 ```
 
 ## Global options
 
 | Option | Meaning |
 |--------|---------|
-| `--verbose` | Print stack traces on unexpected errors and the machine `code:` line on coded errors. Also enabled by env `CRONTICK_DASHBOARD_VERBOSE` set to anything other than empty or `0`. |
+| `--verbose` | Print stack traces on unexpected errors and the machine `code:` line on coded errors. Also enabled by env `TICKDECK_VERBOSE` set to anything other than empty or `0`. |
 | `-V, --version` | Print the package version. |
 | `-h, --help` | Help for the program or a command. |
 
@@ -48,7 +48,7 @@ Scaffold a card folder `<feed>/<id>/` containing `card.json` only. The agent the
 - Only flags you give appear under `layout` in `card.json`; it starts with `"$schema": "../../schemas/card-def.json"`. The generated text is self-checked with the same parser the server uses.
 - The folder is built under a dot-prefixed temp name and renamed into place, so the server never sees an empty folder.
 - Also creates `feed/` and `feed/alerts/` if missing (never anything else) and copies the packaged JSON Schemas into `<data>/schemas/`; sync problems are warnings on stderr.
-- Output: `created <dir>` then `next: write <dir>/data.json (example: crontick-dashboard templates <type>)`.
+- Output: `created <dir>` then `next: write <dir>/data.json (example: tickdeck templates <type>)`.
 - Errors: id reserved (`alerts`), dot-prefixed or not a valid id: exit 2 (`BAD_REQUEST`); unknown `--type`: exit 2 (`UNKNOWN_TYPE`); bad `--column`, `--height`, `--order` or `--priority`: exit 2 (`INVALID_OPTION`); id already exists without `--force`: exit 1 (`CARD_EXISTS`).
 
 ### `validate [--json] [--as card|data|alert] [--type <type>] [--id <id>] <path...>`
@@ -79,7 +79,7 @@ Works with the server stopped. Fields: `version`, `dataDir`, `feedDir`, `url` (n
 
 ### `start [--port <n>]`
 
-Run the server in the foreground; Ctrl+C (SIGINT/SIGTERM) or `POST /api/shutdown` stops it. Prints `crontick-dashboard running at <url>`, `Feed dir: <path>`, `Press Ctrl+C to stop`. Server warnings (e.g. port fallback) go to stderr.
+Run the server in the foreground; Ctrl+C (SIGINT/SIGTERM) or `POST /api/shutdown` stops it. Prints `tickdeck running at <url>`, `Feed dir: <path>`, `Press Ctrl+C to stop`. Server warnings (e.g. port fallback) go to stderr.
 
 - `--port <n>`: preferred port, integer 0-65535 (0 = OS-assigned). Falls back to a free port if taken. Invalid: exit 2 (`INVALID_PORT`). Port precedence: see [configuration.md](configuration.md).
 - Another healthy server owns the data dir: exit 1 (`ALREADY_RUNNING`), message names its URL and pid.
@@ -99,4 +99,4 @@ Exit 0 running, 3 stopped. Text: `running[ (unhealthy)]: <url> (pid N)` or `stop
 
 ### `skill install [--dir <skillsDir>] [--force]`
 
-Copy the packaged `SKILL.md` to `<skillsDir>/crontick-dashboard/SKILL.md` (default skills dir `~/.claude/skills`) as a regular file, never a symlink, written atomically. Prints `installed <path> (vX)` or `already up to date`. A differing installed copy without `--force`: exit 1 (`SKILL_DIFFERS`). Missing packaged file: `SKILL_NOT_FOUND`.
+Copy the packaged `SKILL.md` to `<skillsDir>/tickdeck/SKILL.md` (default skills dir `~/.claude/skills`) as a regular file, never a symlink, written atomically. Prints `installed <path> (vX)` or `already up to date`. A differing installed copy without `--force`: exit 1 (`SKILL_DIFFERS`). Missing packaged file: `SKILL_NOT_FOUND`.

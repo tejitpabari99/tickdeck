@@ -4,7 +4,7 @@ summary: React/Vite UI shell — HSL theme tokens, header/Now/grid/Done-tray zon
 date: 2026-10-05
 ---
 # PRD: UI shell (03)
-Repo/branch: crontick-dashboard / `initial-brainstorming` · Depends on: 01 (types only), 02 (HTTP API) · Owns: `ui/**` (Vite root: `index.html`, `src/`, `tests/`, `vite.config.ts`), `tests/smoke/**`, `ui` tsconfig + vitest project
+Repo/branch: tickdeck / `initial-brainstorming` · Depends on: 01 (types only), 02 (HTTP API) · Owns: `ui/**` (Vite root: `index.html`, `src/`, `tests/`, `vite.config.ts`), `tests/smoke/**`, `ui` tsconfig + vitest project
 
 ## TL;DR
 A single-page React app that renders 02's snapshot: slim header, Now zone, fixed-position react-grid-layout grid, Done tray. Every card sits in one uniform frame (title, fullscreen, Done, hide, Broken, collapsed chip); 04's five type components plug in through a typed client registry. Calm, dense, flat, Glance-derived HSL tokens, one accent, light + dark. Built by Vite to `ui/dist/`; 06's build copies it to `dist/ui/`, served by 02.
@@ -19,7 +19,7 @@ Non-Goals (futures.md / D31): mobile layout, multi-page, embed, extra theme pres
 ## Requirements
 
 ### Zones (top to bottom)
-1. **Header** (sticky, ~44px): date; alert count badge (unticked alerts; click scrolls to Now); global search; `Hidden (n)` popover; theme toggle; connection dot. `document.title` = `(n) Crontick` where n = alerts + unseen notify cards.
+1. **Header** (sticky, ~44px): date; alert count badge (unticked alerts; click scrolls to Now); global search; `Hidden (n)` popover; theme toggle; connection dot. `document.title` = `(n) Tickdeck` where n = alerts + unseen notify cards.
 2. **Now zone** (rendered only if non-empty): *alert strip* (compact, side-by-side, wrapping, snapshot order = priority desc then newest) then *promoted panels* (full cards in a wrapping flex row, min 320px, snapshot `zones.now` order). Alert: compact row (title, priority marker, type body at `mode:'alert'`), only action is **Tick** (`POST /api/alerts/:id/tick`); alerts cannot be hidden or collapsed (unmissable, D11/D13).
 3. **Grid**: react-grid-layout, 12 columns, one breakpoint (desktop only), `rowHeight` 28px, margin 10px. Cards in `zones.grid` only.
 4. **Done tray** (bottom, only if non-empty): heading-only chips (title + small age); click = reopen (`DELETE /api/cards/:id/done`).
@@ -65,9 +65,9 @@ Glance-style tokens (D25): per theme `--bg: H S L`, `--primary: H S L`, `--posit
 ### Data loading & connection
 - Poll `GET /api/snapshot` with `If-None-Match`; interval = `snapshot.config.pollIntervalMs` clamped 15–60 s (default 30 s before first load); immediate refetch on tab regain-visibility and after any mutation; pause while tab hidden *except* one slow tick (60 s) to keep title count fresh.
 - 304 → no re-render. Snapshot structurally shared so unchanged cards don't re-render.
-- **Optimistic mutations**: done/undone, hide/unhide, tick, layout, list-item action (tick and untick; `complete` write-back and `dismiss`) apply a local patch immediately (the `onItemAction` promise resolves on success, rejects with the server message on rollback/409/500), send with `Content-Type: application/json` + `X-Crontick-Dashboard: 1`, then refetch; on error roll back and show a toast with server `error`. `409` (item action: `updatedAt` mismatch or write-back conflict, 02) → item reverts, silent refetch + toast "card updated, try again". `500` (write-back failed) → item reverts, toast shows the error. On `200` the refetched snapshot carries `item.checked`/`checkedAt` from the file.
-- **Server down** (owner decision 2026-10-05; D19 literal): after 2 consecutive failures, or > 2× interval since last success, or a failed first load, the UI shows **only** a clear full-page "Server down" state (icon, "Server down", "Retrying every N s…", hint `crontick-dashboard daemon start`). **No cards, no zones, no cached or stale data, no dimmed grid.** The store drops the last snapshot from memory and discards optimistic patches and pending layout writes; header reduced to theme toggle + red connection dot (search, Hidden popover, badges removed); `document.title` = "Server down"; backoff 5→10→30 s; auto-recovers on first success (full UI returns, no reload).
-- Empty state (no cards): short hint showing `crontick-dashboard info` for the feed path.
+- **Optimistic mutations**: done/undone, hide/unhide, tick, layout, list-item action (tick and untick; `complete` write-back and `dismiss`) apply a local patch immediately (the `onItemAction` promise resolves on success, rejects with the server message on rollback/409/500), send with `Content-Type: application/json` + `X-Tickdeck: 1`, then refetch; on error roll back and show a toast with server `error`. `409` (item action: `updatedAt` mismatch or write-back conflict, 02) → item reverts, silent refetch + toast "card updated, try again". `500` (write-back failed) → item reverts, toast shows the error. On `200` the refetched snapshot carries `item.checked`/`checkedAt` from the file.
+- **Server down** (owner decision 2026-10-05; D19 literal): after 2 consecutive failures, or > 2× interval since last success, or a failed first load, the UI shows **only** a clear full-page "Server down" state (icon, "Server down", "Retrying every N s…", hint `tickdeck daemon start`). **No cards, no zones, no cached or stale data, no dimmed grid.** The store drops the last snapshot from memory and discards optimistic patches and pending layout writes; header reduced to theme toggle + red connection dot (search, Hidden popover, badges removed); `document.title` = "Server down"; backoff 5→10→30 s; auto-recovers on first success (full UI returns, no reload).
+- Empty state (no cards): short hint showing `tickdeck info` for the feed path.
 - Errors in a type component are contained by a per-card error boundary → frame shows "Render error" (not a blank page).
 
 ### Accessibility basics
@@ -88,7 +88,7 @@ ui/src/  main.tsx  App.tsx
 ui/tests/  (vitest)   tests/smoke/ (browser)
 ```
 - Vite `root: ui`, default `build.outDir` (`ui/dist`; tsup `clean` would wipe `dist/`, so 06 copies it after), `base: './'`. 02's `startServer({uiDir})` is given `dist/ui` by 06's CLI (resolved relative to the package). 06's build = `vite build` then `tsup` whose `onSuccess` copies `ui/dist` to `dist/ui`; `package.json files` includes `dist`.
-- Dev: `vite dev` proxies `/api` to the port in `daemon.port` / `CRONTICK_DASHBOARD_PORT`.
+- Dev: `vite dev` proxies `/api` to the port in `daemon.port` / `TICKDECK_PORT`.
 - Deps: `react`, `react-dom`, `react-grid-layout`; no router, no data-fetching or state lib (store = `useSyncExternalStore`). UI imports 01/02 types with `import type` only, so zod/Node code never enters the bundle.
 
 ### Interface consumed from 02 (and assumed)

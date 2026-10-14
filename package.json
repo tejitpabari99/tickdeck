@@ -19,7 +19,8 @@
     "templates",
     "src/skill/SKILL.md",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "NOTICE"
   ],
   "license": "MIT",
   "engines": {

@@ -20,6 +20,8 @@ export interface ViewCard {
   column: Column;
   height: 'S' | 'M' | 'L' | 'auto';
   status: 'ok' | 'broken' | 'no-data';
+  /** True for side-column (non-center) cards: reference only, no Done/Hide/Now/collapse. */
+  permanent: boolean;
   collapsed: boolean;
   done: boolean;
   /** Only while done. */

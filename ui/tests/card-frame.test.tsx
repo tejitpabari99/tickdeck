@@ -20,6 +20,7 @@ function card(over: Partial<ViewCard> = {}): ViewCard {
     updatedAt: ago(2 * 3_600_000),
     column: 'center',
     height: 'M',
+    permanent: false,
     collapsed: false,
     done: false,
     status: 'ok',

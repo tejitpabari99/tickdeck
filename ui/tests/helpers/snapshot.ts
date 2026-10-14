@@ -11,6 +11,7 @@ export function vcard(id: string, type: string, over: Partial<ViewCard> = {}): V
     updatedAt: '2026-10-05T10:00:00Z',
     column: 'center',
     height: 'M',
+    permanent: false,
     status: 'ok',
     collapsed: false,
     done: false,

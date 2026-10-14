@@ -58,16 +58,18 @@ function okItem(e: OkEntry, st: Readonly<StateData>, now: Date, tz: string): Ite
   const c = e.card;
   if (!inWindow(c.show, now, tz)) return null;
   const l = slot(e.card.layout);
+  const permanent = l.column !== 'center';
   const view: ViewCard = {
     id: c.id,
     type: c.type,
     title: c.title,
-    priority: c.priority,
+    priority: permanent ? 2 : c.priority,
     notify: c.notify,
     updatedAt: c.updatedAt,
     column: l.column,
     height: l.height,
-    collapsed: c.priority <= 1,
+    permanent,
+    collapsed: !permanent && c.priority <= 1,
     done: false,
     status: 'ok',
   };
@@ -89,6 +91,7 @@ function noDataItem(e: NoDataEntry, now: Date, tz: string): Item | null {
   const c = e.card;
   if (!inWindow(c.show, now, tz)) return null;
   const l = slot(c.layout);
+  const permanent = l.column !== 'center';
   const stale = brokenReason(
     { updatedAt: new Date(e.viewMtimeMs).toISOString(), ...(c.staleAfter !== undefined ? { staleAfter: c.staleAfter } : {}) },
     now,
@@ -97,11 +100,12 @@ function noDataItem(e: NoDataEntry, now: Date, tz: string): Item | null {
     id: c.id,
     type: c.type,
     title: c.title,
-    priority: c.priority,
+    priority: permanent ? 2 : c.priority,
     notify: c.notify,
     column: l.column,
     height: l.height,
-    collapsed: c.priority <= 1,
+    permanent,
+    collapsed: !permanent && c.priority <= 1,
     done: false,
     status: 'no-data',
   };
@@ -125,6 +129,7 @@ function brokenItem(e: BrokenEntry): Item {
       updatedAt: new Date(e.mtimeMs).toISOString(),
       column: l.column,
       height: l.height,
+      permanent: l.column !== 'center',
       collapsed: false,
       done: false,
       status: 'broken',
@@ -163,7 +168,9 @@ export function computeSnapshot(
   const hidden: string[] = [];
   const doneCards: string[] = [];
   for (const [id, { view, hasCron }] of items) {
-    if (Object.hasOwn(state.hidden, id)) hidden.push(id);
+    // Permanent side cards have no work lifecycle; stored hidden/acks are ignored (not purged).
+    if (view.permanent) columns[view.column].push(id);
+    else if (Object.hasOwn(state.hidden, id)) hidden.push(id);
     else if (view.updatedAt !== undefined && Object.hasOwn(state.acks, id) && sameInstant(state.acks[id]!, view.updatedAt)) {
       view.done = true;
       if (Object.hasOwn(state.doneAt, id)) view.doneAt = state.doneAt[id]!;

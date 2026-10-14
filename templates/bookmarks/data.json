@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schemas/data.bookmarks.json",
+  "updatedAt": "2026-10-05T07:00:00Z",
+  "data": {
+    "groups": [
+      {
+        "title": "Work",
+        "color": "primary",
+        "links": [
+          { "title": "Repository", "url": "https://example.com/repo", "description": "Source and issues", "icon": "GH" },
+          { "title": "Dashboard", "url": "https://example.com/dash", "icon": "📊" }
+        ]
+      },
+      {
+        "links": [
+          { "title": "Docs", "url": "https://example.com/docs", "description": "Reference" }
+        ]
+      }
+    ]
+  }
+}

@@ -8,6 +8,7 @@ export type { KpiData, KpiMetric } from './types/kpi.js';
 export type { MarkdownData } from './types/markdown.js';
 export type { MediaData, MediaItem } from './types/media.js';
 export type { CalendarData, CalendarEvent } from './types/calendar.js';
+export type { BookmarksData, BookmarkGroup, BookmarkLink } from './types/bookmarks.js';
 export type { Show, CardDef, CardDefInput, Layout } from './card-def.js';
 export type { DataFile, DataFileInput } from './data-file.js';
 export type { Alert } from './alert.js';

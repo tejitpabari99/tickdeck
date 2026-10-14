@@ -32,7 +32,7 @@ tickdeck info --json   # -> { "feedDir": "...", "url": ..., "skillPath": ..., ..
 
 | file | field | notes |
 |---|---|---|
-| card.json | `type` | `markdown`, `table`, `list`, `kpi`, `media`, `calendar` |
+| card.json | `type` | `markdown`, `table`, `list`, `kpi`, `media`, `calendar`, `bookmarks` |
 | card.json | `title` | shown in the card header |
 | card.json | `layout` | `column`, `order`, `height` (section 6) |
 | card.json | `priority`, `show`, `staleAfter`, `notify` | section 7 |

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "crontick alert",
+  "title": "tickdeck alert",
   "description": "Not expressible in JSON Schema, enforced by the validator: the alert id is the file name stem (feed/alerts/<id>.json), same id rules as card folders; text must be a single line (max 200 chars); link must be http, https, mailto or ms-outlook (max 2048 chars, no whitespace); show.cron must be a valid 5-field cron; durations match ^[1-9]\\d*(m|h|d|w)$; updatedAt must be an RFC 3339 timestamp; defaults applied by the validator (priority 2, notify false).",
   "type": "object",
   "properties": {

@@ -249,8 +249,59 @@ button, input { font: inherit; color: inherit; }
 .broken-reason { color: var(--color-negative); }
 .broken-detail { color: var(--color-text-subdue); font-size: var(--font-size-h5); }
 
-/* === types/kpi | markdown | table | list | media | calendar | bookmarks === */
-/* (Tasks 3-5) */
+/* === types/kpi === */
+.kpi-row { display: flex; align-items: baseline; gap: 1rem; padding: var(--list-half-gap) 0; }
+.kpi-row + .kpi-row { border-top: 1px solid var(--color-separator); }
+.kpi-label { flex: 1; min-width: 0; color: var(--color-text-base-muted); }
+.kpi-value { font-size: var(--font-size-h1); line-height: 1.3; color: var(--color-text-highlight); }
+.kpi-delta { min-width: 6rem; text-align: right; font-size: var(--font-size-h5); }
+.kpi-delta.up { color: var(--color-positive); }
+.kpi-delta.down { color: var(--color-negative); }
+.card--stale .kpi-value { color: var(--color-text-base-muted); }
+.card--stale .kpi-delta { opacity: 0.6; }
+
+/* === types/calendar === */
+.cal-top { display: flex; align-items: center; justify-content: space-between; }
+.cal-month { color: var(--color-text-paragraph); }
+.cal-today-btn {
+  background: transparent; cursor: pointer;
+  border: 1px solid var(--color-widget-content-border); border-radius: var(--border-radius);
+  padding: 0 0.9rem; font-size: var(--font-size-h6); color: var(--color-text-base-muted);
+}
+.cal-today-btn:hover { background: var(--color-widget-background-highlight); color: var(--color-text-highlight); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.2rem; }
+.cal-wd { text-align: center; font-size: var(--font-size-h6); color: var(--color-text-subdue); }
+.cal-day {
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 0.1rem;
+  height: 3.8rem; padding-top: 0.2rem; cursor: pointer;
+  background: transparent; border: 1px solid transparent; border-radius: var(--border-radius);
+  color: var(--color-text-base); font-size: var(--font-size-h5); line-height: 1.5;
+}
+.cal-day:hover { background: var(--color-widget-background-highlight); color: var(--color-text-highlight); }
+.cal-day.today { background: var(--color-primary); color: var(--color-background); }
+.cal-day.selected:not(.today) { border-color: var(--color-primary); background: var(--color-widget-background-highlight); color: var(--color-text-highlight); }
+.cal-dots { display: flex; gap: 0.2rem; height: 0.5rem; }
+.cal-dot { width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--color-primary); }
+.cal-dot.c-positive { background: var(--color-positive); }
+.cal-dot.c-negative { background: var(--color-negative); }
+.cal-day.today .cal-dot { box-shadow: 0 0 0 1px var(--color-background); }
+.agenda-head { color: var(--color-text-base-muted); font-size: var(--font-size-h5); padding-bottom: 0.6rem; border-bottom: 1px solid var(--color-separator); }
+.agenda { list-style: none; }
+.agenda[hidden], .agenda-none[hidden] { display: none; }
+.agenda-item {
+  --accent: var(--color-primary);
+  display: grid; grid-template-columns: 6rem 1fr; column-gap: 0.8rem;
+  padding: var(--list-half-gap) 0 var(--list-half-gap) 1rem;
+  border-left: 3px solid var(--accent); margin-top: 0.8rem;
+}
+.agenda-item.c-positive { --accent: var(--color-positive); }
+.agenda-item.c-negative { --accent: var(--color-negative); }
+.agenda-time { color: var(--color-text-base-muted); font-size: var(--font-size-h5); }
+.agenda-title { color: var(--color-text-paragraph); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.agenda-loc { grid-column: 2; color: var(--color-text-subdue); font-size: var(--font-size-h6); }
+.agenda-none { margin-top: 0.8rem; color: var(--color-text-subdue); }
+/* === types/markdown | table | list | media | bookmarks === */
+/* (Tasks 4-5) */
 
 /* === mobile.css === @media (max-width:1200px) */
 /* (Task 6) */
@@ -291,17 +342,32 @@ button, input { font: inherit; color: inherit; }
 
   <main class="columns">
     <aside class="col col-left">
-      <!-- TASK 3 PLACEHOLDER: Calendar + KPI (with stale treatment). Task 3 replaces the sample cards below. -->
-      <div class="placeholder">Left column: calendar + KPI (Task 3)</div>
-      <!-- SAMPLE (Task 2): side card, delete when Task 3 lands -->
-      <article class="card card--side">
-        <header class="card-header"><span class="card-title">Sample side</span><div class="card-actions"><button class="card-btn card-btn--icon" type="button" aria-label="Fullscreen"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 1.5h3v3M4.5 10.5h-3v-3M10.5 1.5 7 5M1.5 10.5 5 7"/></svg><span class="card-btn-label">fullscreen</span></button></div></header>
-        <div class="card-body"><p>Side card: flat frame, title only, no priority edge, no unseen dot, no updated-ago. Hover for fullscreen icon.</p></div>
+<article class="card card--side calendar">
+        <header class="card-header"><span class="card-title">Calendar</span><div class="card-actions"><button class="card-btn card-btn--icon" type="button" aria-label="Fullscreen"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 1.5h3v3M4.5 10.5h-3v-3M10.5 1.5 7 5M1.5 10.5 5 7"/></svg><span class="card-btn-label">fullscreen</span></button></div></header>
+        <div class="card-body">
+          <div class="cal-top"><span class="cal-month">October 2026</span><button class="cal-today-btn" type="button">today</button></div>
+          <div class="cal-grid" role="group" aria-label="October 2026">
+            <span class="cal-wd">Mo</span><span class="cal-wd">Tu</span><span class="cal-wd">We</span><span class="cal-wd">Th</span><span class="cal-wd">Fr</span><span class="cal-wd">Sa</span><span class="cal-wd">Su</span>
+            <span class="cal-blank"></span><span class="cal-blank"></span><span class="cal-blank"></span><button class="cal-day" type="button" data-day="1" data-label="Thu Oct 1" aria-label="Thursday, October 1, no events" aria-pressed="false"><span class="cal-num">1</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="2" data-label="Fri Oct 2" aria-label="Friday, October 2, no events" aria-pressed="false"><span class="cal-num">2</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="3" data-label="Sat Oct 3" aria-label="Saturday, October 3, no events" aria-pressed="false"><span class="cal-num">3</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="4" data-label="Sun Oct 4" aria-label="Sunday, October 4, no events" aria-pressed="false"><span class="cal-num">4</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="5" data-label="Mon Oct 5" aria-label="Monday, October 5, no events" aria-pressed="false"><span class="cal-num">5</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="6" data-label="Tue Oct 6" aria-label="Tuesday, October 6, no events" aria-pressed="false"><span class="cal-num">6</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="7" data-label="Wed Oct 7" aria-label="Wednesday, October 7, no events" aria-pressed="false"><span class="cal-num">7</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="8" data-label="Thu Oct 8" aria-label="Thursday, October 8, no events" aria-pressed="false"><span class="cal-num">8</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="9" data-label="Fri Oct 9" aria-label="Friday, October 9, 1 event" aria-pressed="false"><span class="cal-num">9</span><span class="cal-dots"><i class="cal-dot c-primary"></i></span></button><button class="cal-day" type="button" data-day="10" data-label="Sat Oct 10" aria-label="Saturday, October 10, no events" aria-pressed="false"><span class="cal-num">10</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="11" data-label="Sun Oct 11" aria-label="Sunday, October 11, no events" aria-pressed="false"><span class="cal-num">11</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="12" data-label="Mon Oct 12" aria-label="Monday, October 12, no events" aria-pressed="false"><span class="cal-num">12</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="13" data-label="Tue Oct 13" aria-label="Tuesday, October 13, no events" aria-pressed="false"><span class="cal-num">13</span><span class="cal-dots"></span></button><button class="cal-day today selected" type="button" data-day="14" data-label="Today, Wed Oct 14" aria-label="Wednesday, October 14, 3 events" aria-pressed="true"><span class="cal-num">14</span><span class="cal-dots"><i class="cal-dot c-negative"></i><i class="cal-dot c-positive"></i><i class="cal-dot c-primary"></i></span></button><button class="cal-day" type="button" data-day="15" data-label="Thu Oct 15" aria-label="Thursday, October 15, no events" aria-pressed="false"><span class="cal-num">15</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="16" data-label="Fri Oct 16" aria-label="Friday, October 16, 1 event" aria-pressed="false"><span class="cal-num">16</span><span class="cal-dots"><i class="cal-dot c-positive"></i></span></button><button class="cal-day" type="button" data-day="17" data-label="Sat Oct 17" aria-label="Saturday, October 17, no events" aria-pressed="false"><span class="cal-num">17</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="18" data-label="Sun Oct 18" aria-label="Sunday, October 18, no events" aria-pressed="false"><span class="cal-num">18</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="19" data-label="Mon Oct 19" aria-label="Monday, October 19, 1 event" aria-pressed="false"><span class="cal-num">19</span><span class="cal-dots"><i class="cal-dot c-primary"></i></span></button><button class="cal-day" type="button" data-day="20" data-label="Tue Oct 20" aria-label="Tuesday, October 20, no events" aria-pressed="false"><span class="cal-num">20</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="21" data-label="Wed Oct 21" aria-label="Wednesday, October 21, no events" aria-pressed="false"><span class="cal-num">21</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="22" data-label="Thu Oct 22" aria-label="Thursday, October 22, 1 event" aria-pressed="false"><span class="cal-num">22</span><span class="cal-dots"><i class="cal-dot c-negative"></i></span></button><button class="cal-day" type="button" data-day="23" data-label="Fri Oct 23" aria-label="Friday, October 23, no events" aria-pressed="false"><span class="cal-num">23</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="24" data-label="Sat Oct 24" aria-label="Saturday, October 24, no events" aria-pressed="false"><span class="cal-num">24</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="25" data-label="Sun Oct 25" aria-label="Sunday, October 25, no events" aria-pressed="false"><span class="cal-num">25</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="26" data-label="Mon Oct 26" aria-label="Monday, October 26, no events" aria-pressed="false"><span class="cal-num">26</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="27" data-label="Tue Oct 27" aria-label="Tuesday, October 27, no events" aria-pressed="false"><span class="cal-num">27</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="28" data-label="Wed Oct 28" aria-label="Wednesday, October 28, no events" aria-pressed="false"><span class="cal-num">28</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="29" data-label="Thu Oct 29" aria-label="Thursday, October 29, no events" aria-pressed="false"><span class="cal-num">29</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="30" data-label="Fri Oct 30" aria-label="Friday, October 30, no events" aria-pressed="false"><span class="cal-num">30</span><span class="cal-dots"></span></button><button class="cal-day" type="button" data-day="31" data-label="Sat Oct 31" aria-label="Saturday, October 31, no events" aria-pressed="false"><span class="cal-num">31</span><span class="cal-dots"></span></button><span class="cal-blank"></span><span class="cal-blank"></span>
+          </div>
+          <div class="agenda-wrap" aria-live="polite">
+            <div class="agenda-head">Today, Wed Oct 14</div>
+            <ul class="agenda" data-day="9" hidden><li class="agenda-item c-primary"><span class="agenda-time">4:00p</span><span class="agenda-title">Sprint retro</span></li></ul>
+          <ul class="agenda" data-day="14"><li class="agenda-item c-negative"><span class="agenda-time">All day</span><span class="agenda-title">Release freeze</span></li><li class="agenda-item c-positive"><span class="agenda-time">10:00a</span><span class="agenda-title">Standup</span></li><li class="agenda-item c-primary"><span class="agenda-time">2:30p</span><span class="agenda-title">Design review</span><span class="agenda-loc">Room 4B</span></li></ul>
+          <ul class="agenda" data-day="16" hidden><li class="agenda-item c-positive"><span class="agenda-time">9:30a</span><span class="agenda-title">Release cut</span></li></ul>
+          <ul class="agenda" data-day="19" hidden><li class="agenda-item c-primary"><span class="agenda-time">1:00p</span><span class="agenda-title">1:1 with Dana</span></li></ul>
+          <ul class="agenda" data-day="22" hidden><li class="agenda-item c-negative"><span class="agenda-time">6:30p</span><span class="agenda-title">Team dinner</span><span class="agenda-loc">Luca's, 5th St</span></li></ul>
+          <p class="agenda-none" hidden>No events</p>
+          </div>
+        </div>
       </article>
-      <!-- SAMPLE (Task 2): stale side card -->
-      <article class="card card--side card--stale">
-        <header class="card-header"><span class="card-title">Sample stale</span><span class="stale-tag">stale 3h</span><div class="card-actions"><button class="card-btn card-btn--icon" type="button" aria-label="Fullscreen"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 1.5h3v3M4.5 10.5h-3v-3M10.5 1.5 7 5M1.5 10.5 5 7"/></svg><span class="card-btn-label">fullscreen</span></button></div></header>
-        <div class="card-body"><p>Muted body. Data has not refreshed for 3 hours.</p></div>
+      <article class="card card--side card--stale kpi">
+        <header class="card-header"><span class="card-title">KPI</span><span class="stale-tag">stale 3h</span><div class="card-actions"><button class="card-btn card-btn--icon" type="button" aria-label="Fullscreen"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 1.5h3v3M4.5 10.5h-3v-3M10.5 1.5 7 5M1.5 10.5 5 7"/></svg><span class="card-btn-label">fullscreen</span></button></div></header>
+        <div class="card-body">
+          <div class="kpi-row"><span class="kpi-label">Open PRs</span><span class="kpi-value">7</span><span class="kpi-delta up">+2</span></div>
+          <div class="kpi-row"><span class="kpi-label">Build</span><span class="kpi-value">ok</span><span class="kpi-delta down">-1 flaky</span></div>
+          <div class="kpi-row"><span class="kpi-label">Disk</span><span class="kpi-value">63%</span><span class="kpi-delta down">+4%</span></div>
+        </div>
       </article>
     </aside>
     <section class="col col-center">
@@ -326,5 +392,21 @@ button, input { font: inherit; color: inherit; }
 
   <footer class="site-footer">Mockup - made-up data</footer>
 </div>
+<script>
+(function () {
+  var cal = document.querySelector('.calendar');
+  var days = cal.querySelectorAll('.cal-day'), lists = cal.querySelectorAll('.agenda');
+  var head = cal.querySelector('.agenda-head'), none = cal.querySelector('.agenda-none');
+  function pick(btn) {
+    var found = false;
+    days.forEach(function (d) { var on = d === btn; d.classList.toggle('selected', on); d.setAttribute('aria-pressed', on); });
+    head.textContent = btn.dataset.label;
+    lists.forEach(function (l) { var m = l.dataset.day === btn.dataset.day; l.hidden = !m; found = found || m; });
+    none.hidden = found;
+  }
+  days.forEach(function (d) { d.addEventListener('click', function () { pick(d); }); });
+  cal.querySelector('.cal-today-btn').addEventListener('click', function () { pick(cal.querySelector('.today')); });
+})();
+</script>
 </body>
 </html>

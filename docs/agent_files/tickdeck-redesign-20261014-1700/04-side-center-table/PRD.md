@@ -4,7 +4,7 @@ summary: Side columns become permanent reference (no table/list, no priority/Now
 date: 2026-10-14
 ---
 # PRD: Side/center semantics and table fixes (SP04)
-Repo/branch: tickdeck / `initial-brainstorming` · Depends on: SP03 (CSS tree; this PRD only adds class hooks) · Owns: `src/contract/{registry,card-def,folder-validate}.ts`, `src/contract/types/table.ts`, `src/constants/error-codes.ts`, `src/compute/snapshot.ts`, `src/shared/api-types.ts`, `src/http/mutations.ts`, `ui/src/frame/CardFrame.tsx`, `ui/src/zones/{Columns,Completed}.tsx`, `ui/src/lib/attention.ts`, `ui/src/types/table/{logic.ts,TableBody.tsx}`, `templates/table/*`, `schemas/` (generated), ADR 0006, changeset, tests. **Shared with SP05:** `src/contract/registry.ts`, `schemas/*`.
+Repo/branch: tickdeck / `initial-brainstorming` · Depends on: SP03 (CSS tree; this PRD only adds class hooks) · Owns: `src/contract/{registry,card-def,folder-validate}.ts`, `src/contract/types/table.ts`, `src/constants/error-codes.ts`, `src/compute/snapshot.ts`, `src/shared/api-types.ts`, `src/http/mutations.ts`, `ui/src/frame/CardFrame.tsx`, `ui/src/zones/{Columns,Completed}.tsx`, `ui/src/lib/attention.ts`, `ui/src/types/table/{logic.ts,TableBody.tsx}`, `templates/table/*`, `schemas/` (generated), ADR 0008, changeset, tests. **Shared with SP05:** `src/contract/registry.ts`, `schemas/*` (05 adds registry `view`, `ViewCard.style?`, the `view` check in `folder-validate.ts`). **Shared with SP03:** `ui/src/frame/CardFrame.tsx` (03 lands first: class hooks; 04 adds behaviour + `data-permanent`).
 
 ## TL;DR
 Left/right = permanent reference, center = moving work. One registry flag (`sides: 'deny' | 'allow'` per type) drives rejection in `validateCardFolder`, so CLI `validate` and ingest fail identically with a new broken reason `side-not-allowed`. The snapshot marks side cards `permanent: true` and applies none of the work-lifecycle logic to them; the frame hides Done/Hide/unseen for them; the server refuses Done/Hide on them. Table: truncate-with-tooltip, content-sized columns with `width` hints, re-sort when data refreshes, short date display with real-time sort.
@@ -42,7 +42,7 @@ export interface TypeEntry { schema; summary; template;
 // existing: table: {..., sides:'deny'}, list: {..., sides:'deny'}; markdown, kpi, media: 'allow'
 export function sidesAllowed(type: string): boolean   // registry[type].sides === 'allow'
 ```
-`as const satisfies Record<string, TypeEntry>` makes `sides` mandatory, so SP05 cannot add `calendar`/`bookmarks` without declaring it (both `'allow'`). Check lives in `validateFolder` right after the `isRegisteredType` check [verified: src/contract/folder-validate.ts:300-305], before data validation, so it fails even when data is absent. `BROKEN_REASONS` gains `'side-not-allowed'` [verified: src/constants/error-codes.ts:41].
+05 extends the entry with optional `view` (per-type card.json view zod) and `ViewCard.style?`; 04 adds neither. `as const satisfies Record<string, TypeEntry>` makes `sides` mandatory, so SP05 cannot add `calendar`/`bookmarks` without declaring it (both `'allow'`). Check lives in `validateFolder` right after the `isRegisteredType` check [verified: src/contract/folder-validate.ts:300-305], before data validation, so it fails even when data is absent. `BROKEN_REASONS` gains `'side-not-allowed'` [verified: src/constants/error-codes.ts:41].
 
 ### Priority on a side card
 `priority` on a side card is **ignored with a warning** (`validateCardFolder` warnings, surfaced by `validate` and ingest warnings): `priority is ignored in left/right columns`. Snapshot forces neutral. Not rejected because priority is a valid field on the same type elsewhere and has no harm here, unlike table/list which cannot render correctly.
@@ -53,7 +53,7 @@ export function sidesAllowed(type: string): boolean   // registry[type].sides ==
 - No change to `Completed` shape; side cards simply never enter it.
 
 ### Frame
-`CardFrame` branches on `card.permanent` [verified: ui/src/frame/CardFrame.tsx:131 priority marker, :185 Done, :189 Hide]. `ui/src/lib/attention.ts` / seen logic skip permanent cards. SP03 styles via `.card-frame[data-permanent="true"]` (data attribute is this PRD's hook; no CSS here).
+`CardFrame` branches on `card.permanent` [verified: ui/src/frame/CardFrame.tsx:131 priority marker, :185 Done, :189 Hide]. `ui/src/lib/attention.ts` / seen logic skip permanent cards. The frame renders BOTH the class `card--side`|`card--center` (derived from column; SP03 styles off these) and the `data-permanent` attribute (this PRD's behaviour/test hook; no CSS here).
 
 ### Table contract delta
 ```ts
@@ -63,8 +63,8 @@ width: z.enum(['xs', 's', 'm', 'l', 'fill']).optional(),
 Plus superRefine: for a column with explicit `sort:'date'`, every non-empty cell text must be an ISO-8601 date or date-time string (`Date.parse` valid, matches `DATE_RE`); otherwise issue at `/rows/i/cells/j` "date column needs ISO 8601". Inferred date columns unchanged (>=80% rule).
 
 ### Table rendering
-- Layout: `table-layout: auto; width: 100%` in compact and fullscreen (drop `.tbl--compact` fixed layout). Wide tables scroll inside `.tbl-wrap`.
-- Width mapping (class `tbl-w-<k>` on `th` and `td`, `width = min-width = max-width`):
+- Layout: `table-layout: auto; width: 100%` in compact and fullscreen (drop `.tbl--compact` fixed layout). Wide tables scroll inside `.tbl-wrap`. CSS for these rules lives in SP03's `ui/src/styles/types/table.css`; the values here are the spec and 03 may retune.
+- Width mapping (class `col-w-<k>` on `th` and `td`, `width = min-width = max-width`):
 
 | key | value |
 |---|---|
@@ -76,12 +76,12 @@ Plus superRefine: for a column with explicit `sort:'date'`, every non-empty cell
 | unset | auto, capped by `--tbl-auto-max: 24rem` |
 
 - If no column declares `fill`, the text column with the longest average cell length becomes implicit `fill`.
-- Truncation: each cell body is wrapped in `<span class="tbl-cell__text" title={fullText}>` (`display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap`) in compact mode. Fullscreen keeps wrapping (`overflow-wrap:anywhere`, table.css:13). `.tbl-cell__text` is the hook SP03 may restyle; the clipping properties are functional and must be kept. Link cells put the anchor inside the span.
+- Truncation: each cell body is wrapped in `<span class="cell-truncate" title={fullText}>` (`display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap`) in compact mode. Fullscreen keeps wrapping (`overflow-wrap:anywhere`, table.css:13). `.cell-truncate` is the hook from SP03's CSS hook table (SP03 may restyle); the clipping properties are functional and must be kept. Link cells put the anchor inside the span.
 - Sort pipeline: `userSort: SortState | null | undefined` (undefined = untouched). `effective = userSort !== undefined ? userSort : defaultSort`. A `useEffect` keyed on `defaultSort?.column/dir` resets `userSort` to undefined, so an agent changing `defaultSort` wins; user header clicks persist across refreshes with unchanged `defaultSort`. `sortRows` already runs in a `useMemo` over refreshed `rows` [verified: TableBody.tsx:~165], so every refresh re-sorts. `nextSort` third click returns to `undefined` (default), not `null`.
 - Dates: pure `formatDateCell(iso, tz)` in `logic.ts`: time-bearing -> `Oct 9, 5:06p` (browser tz), date-only -> `Oct 9`; year shown when not the current year. Applied to cells in date-typed columns that parse; unparseable cells show raw. `title` = full localized timestamp. Sort/filter/search keep using the raw ISO.
 
 ### ADR
-ADR 0006 `side-center-semantics` records the allow/deny registry flag, reject-not-move, and priority-ignored.
+ADR 0008 `side-center-semantics` records the allow/deny registry flag, reject-not-move, and priority-ignored.
 
 ## Decisions
 | # | Decision | Choice | Alternatives | Why |
@@ -100,7 +100,7 @@ ADR 0006 `side-center-semantics` records the allow/deny registry flag, reject-no
 
 ## Risks / Open Questions
 - [OPEN] D10 as hard error breaks a whole card for one bad cell; downgrade to warning if owner prefers lenient.
-- [OPEN] Width px values (4/7/11/18rem) are guesses; SP03 may retune once JetBrains Mono at 13px is in.
+- [OPEN] Width px values (4/7/11/18rem) are guesses; SP03 may retune once JetBrains Mono at 13px is in (03's hook table is the contract for class names).
 - [RESOLVED: ignored + warning] `priority` on side cards.
 - [RESOLVED: 03 owns look] side flat vs center edge/badge visuals; this PRD ships only `data-permanent` and the behaviour.
 - [DEFERRED] Per-card `alignment` of numeric columns; column resize by user.
@@ -122,7 +122,7 @@ Regression tests (named):
 - `tests/server/snapshot-permanent.test.ts`: side card never in Now / `completed` / `hidden`, `collapsed:false`, `permanent:true`, stale ack ignored.
 - `tests/server/mutations-permanent.test.ts`: Done/Hide on side -> 400, DELETE ok.
 - `ui/tests/card-frame.test.tsx`: permanent frame has no Done/Hide/unseen, keeps Fullscreen.
-- `ui/tests/table-overflow.test.tsx`: compact cell has `.tbl-cell__text` with `title`; table not `table-layout: fixed`; width classes applied; implicit fill.
+- `ui/tests/table-overflow.test.tsx`: compact cell has `.cell-truncate` with `title`; table not `table-layout: fixed`; `col-w-*` classes applied; implicit fill.
 - `ui/tests/table-resort.test.tsx`: rerender with new rows/`defaultSort` re-orders; user click persists until `defaultSort` changes.
 - `ui/tests/table-logic.test.ts`: `formatDateCell`, ISO date sort by instant not string, non-ISO explicit date rejected in `tests/contract/table.test.ts`.
-- Gates: `npm run gen:schemas` diff committed, changeset, ADR 0006, `npm run validate`, `npm run test:smoke`.
+- Gates: `npm run gen:schemas` diff committed, changeset, ADR 0008, `npm run validate`, `npm run test:smoke`.

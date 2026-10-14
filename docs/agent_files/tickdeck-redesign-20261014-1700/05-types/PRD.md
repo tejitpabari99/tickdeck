@@ -4,7 +4,7 @@ summary: Add calendar (month grid + agenda) and bookmarks types; list gains styl
 date: 2026-10-14
 ---
 # PRD: New and extended card types (SP05)
-Repo/branch: tickdeck / `initial-brainstorming` · Depends on: SP03 (CSS tree, utils, hooks), SP04 (registry `sides` flag) · Owns: `src/contract/types/{calendar,bookmarks,list,media}.ts`, `src/contract/formats.ts` (adds `colorSchema`), `ui/src/types/{calendar,bookmarks}/**`, `ui/src/types/{list,media}/*` (bodies/logic), `ui/src/styles/types/{calendar,bookmarks,list,media}.css`, `templates/{calendar,bookmarks,list,media}/*`, `src/skill/SKILL.md` + `docs/reference/card-schema.md` (type sections), `schemas/*` (generated), ADR 0007, changeset, tests. **Shared:** `src/contract/registry.ts`, `src/contract/card-def.ts`, `src/shared/api-types.ts` (04 owns; 05 adds one field), `schemas/*`, `ui/src/types/index.ts`, `ui/src/registry/registry.ts` (type union).
+Repo/branch: tickdeck / `initial-brainstorming` · Depends on: SP03 (CSS tree, utils, hooks), SP04 (registry `sides` flag) · Owns: `src/contract/types/{calendar,bookmarks,list,media}.ts`, `src/contract/formats.ts` (adds `colorSchema`), `ui/src/types/{calendar,bookmarks}/**`, `ui/src/types/{list,media}/*` (bodies/logic), `ui/src/styles/types/{calendar,bookmarks,list,media}.css`, `templates/{calendar,bookmarks,list,media}/*`, `src/skill/SKILL.md` + `docs/reference/card-schema.md` (type sections), `schemas/*` (generated), ADR 0009, changeset, tests. **Shared:** `src/contract/registry.ts`, `src/contract/card-def.ts`, `src/shared/api-types.ts` (04 owns; 05 adds one field), `schemas/*`, `ui/src/types/index.ts`, `ui/src/registry/registry.ts` (type union).
 
 ## TL;DR
 Two new types and two extended ones, all as self-contained zod schema + summary fn + template + renderer. `calendar` = mini month grid with event dots + N-day agenda; `bookmarks` = Glance bookmark groups. `list` gets `style: rows|detailed` (card.json) and per-item `meta`; `media` gets `meta`, caption-as-title, and a horizontal `row` layout. Tickdeck still fetches nothing: agents write the events/links. New types register with `sides: 'allow'`; list stays `deny`.
@@ -105,7 +105,7 @@ list:      { ..., view: z.object({ style: z.enum(['rows','detailed']).optional()
 7. Bad/ambiguous input never reaches here (contract rejects); logic additionally guards `Number.isNaN` and skips.
 
 ### Files
-New: `src/contract/types/{calendar,bookmarks}.ts`, `ui/src/types/{calendar,bookmarks}/*`, `ui/src/styles/types/{calendar,bookmarks}.css`, `templates/{calendar,bookmarks}/{card,data}.json`, `schemas/data.{calendar,bookmarks}.json`, `tests/contract/types-calendar-bookmarks.test.ts`, `ui/tests/{calendar-logic,calendar-body,bookmarks-body,list-detailed,media-layouts}.test.tsx`, `docs/decisions/0007-new-types.md`, changeset.
+New: `src/contract/types/{calendar,bookmarks}.ts`, `ui/src/types/{calendar,bookmarks}/*`, `ui/src/styles/types/{calendar,bookmarks}.css`, `templates/{calendar,bookmarks}/{card,data}.json`, `schemas/data.{calendar,bookmarks}.json`, `tests/contract/types-calendar-bookmarks.test.ts`, `ui/tests/{calendar-logic,calendar-body,bookmarks-body,list-detailed,media-layouts}.test.tsx`, `docs/decisions/0009-new-types.md`, changeset.
 Edited: `registry.ts`, `formats.ts`, `list.ts`, `media.ts`, `src/index.ts` (export types/schemas), `api-types.ts` (`style?`), `folder-validate.ts` (view check), templates for list (`style: detailed` example) and media (`meta`, `row` example), `SKILL.md`, `docs/reference/card-schema.md`, `ui/src/types/{index.ts,list/*,media/*}`, `ui/src/registry/registry.ts`.
 
 ## Decisions
@@ -126,8 +126,8 @@ Edited: `registry.ts`, `formats.ts`, `list.ts`, `media.ts`, `src/index.ts` (expo
 | Item | Status |
 |---|---|
 | `getWeekInfo` missing in Firefox | [RESOLVED: fallback Monday via try/catch; test both paths] |
-| Per-type `view` zod touches 04's `folder-validate.ts`/`registry.ts` | [OPEN] 05 merges after 04 (dep order); confirm 04 doesn't already add a view hook |
-| `ViewCard.style` addition in 04-owned `api-types.ts` | [OPEN] one-line additive; alternatively expose generic `view?: Record<string,unknown>` for future types |
+| Per-type `view` zod touches 04's `folder-validate.ts`/`registry.ts` | [RESOLVED: 05 owns the registry `view` zod and `folder-validate.ts` view check as additive edits; 04 adds neither (04 Architecture notes the extension)] |
+| `ViewCard.style` addition in 04-owned `api-types.ts` | [RESOLVED: 05 owns `ViewCard.style?: string` as a one-line additive edit in 04's `api-types.ts`; generic `view` bag not adopted] |
 | Click-day-filters-agenda vs plain info | [DEFERRED] ship visual-only dots + today highlight; day click is a stretch, decide at mockup review |
 | Tickdeck cards with `meta` in `rows` confuse agents | [RESOLVED: SKILL.md states meta is detailed-only] |
 | Media `row` scroll on mobile / keyboard access | [OPEN] needs `tabindex` on scroll container; verify in smoke |

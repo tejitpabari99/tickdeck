@@ -65,9 +65,9 @@ Import order: main → site → utils → widgets → types/* → mobile. One tr
 | `.prio-high\|normal\|low` | 03 | center left-edge colour |
 | `.card-header`, `.card-title`, `.card-meta`, `.card-actions`, `.unseen-dot`, `.stale-tag` | 03 | frame parts |
 | `.card--stale`, `.card--broken`, `.card--empty` | 03 | states |
-| `[data-snapshot="true"]` on `.card` | 04 (flag semantics) | 03 ships style: no actions, no "updated", subdued edge |
+| `[data-permanent="true"]` on `.card` (from 04's `ViewCard.permanent`; frame renders BOTH this and `.card--side`/`.card--center`) | 04 (flag semantics) | 03 styles off `.card--side`/`.card--center` (derived from column): no actions, no "updated", subdued edge; the attribute is for behaviour/tests |
 | `.card-actions[hidden]` | 04 | side cards omit actions; CSS also hides under `.card--side` |
-| `.col-w-xs\|s\|m\|l\|fill` on `<col>`/`<th>`, `.cell-truncate` | 04 (table) | 03 supplies widths + ellipsis rules, 04 applies classes |
+| `.col-w-xs\|s\|m\|l\|fill` on `<col>`/`<th>`/`<td>`, `.cell-truncate` (block span inside each compact cell, `title`=full text), `.tbl-wrap` (in-card scroll container), `--tbl-auto-max` (cap for unset width, 24rem) | 04 (table) | 03 supplies widths + ellipsis rules (values per 04 PRD width table, 03 may retune), 04 applies classes |
 | `.list--rows\|detailed`, `.meta-line`, `.media-grid`, `.media-row` | 05 | 03 provides empty/placeholder rules only; 05 fills |
 | utilities in R8 | anyone | shared |
 
@@ -85,7 +85,7 @@ Import order: main → site → utils → widgets → types/* → mobile. One tr
 |---|---|---|---|---|
 | 1 | CSS strategy | Rewrite from scratch, Glance file split | Re-skin existing tokens | Owner choice; 609 lines is cheap, reskin = few inputs |
 | 2 | Tree location | One central `ui/src/styles/`, central imports | Per-component css beside TSX | Mirrors Glance; one place for 04/05 to extend |
-| 3 | Licence | Re-implement values/structure; MIT stays; `NOTICE` credits Glance | Paste Glance CSS (forces AGPL) | Brief constraint. 02 PRD says SP01 owns NOTICE; brief assigns 03, so **03 owns it** |
+| 3 | Licence | Re-implement values/structure; MIT stays; `NOTICE` credits Glance | Paste Glance CSS (forces AGPL) | Brief constraint. brief assigns NOTICE to 03, so **03 owns it** |
 | 4 | Theme | Mocha only, no toggle, old key ignored | Keep light, migrate key | Owner decision; dead key harmless |
 | 5 | Font | woff2 in repo, vite-hashed + licence in `public/` | CDN; npm `@fontsource` | Offline, no new dep |
 | 6 | Side/center | Class from column prop; hooks for 04 | Wait for 04 snapshot flag | 03 stays visually complete; 04 owns behaviour |
@@ -104,11 +104,11 @@ Import order: main → site → utils → widgets → types/* → mobile. One tr
 | Uppercase title (Glance has `.uppercase` on h2, `widget-base.html:7`; header size `widgets.css:68`) | [RESOLVED: uppercase + .04em, per 02] |
 | NOTICE owner conflict 02 vs brief | [RESOLVED: 03] |
 | Old CSS deleted before 04/05 need their hooks → intermediate breakage | [RESOLVED: 03 ships empty per-type placeholders + hooks] |
-| `[data-snapshot]` flag name finalised by 04 | [OPEN: 04 may rename; 03 uses the name above, one grep to change] |
+| Side/permanent flag name | [RESOLVED: snapshot field is 04's `ViewCard.permanent`; frame renders class `card--side`/`card--center` (from column) + `data-permanent`; 03 styles off the classes] |
 | Header `Hidden (n)` popover, search dropdown restyle depth | [RESOLVED: restyle with popover tokens] |
 | Screenshot compare needs mockup HTML local (Artifact private) | [OPEN: use `02-mockup/mockup.html` in repo as reference] |
 | Subset font to Latin? | [DEFERRED] |
-| Old `crontick-dashboard.theme` key cleanup | [DEFERRED: harmless] |
+| Old `tickdeck.theme` key (renamed by 01) cleanup | [DEFERRED: harmless] |
 
 ## Acceptance Criteria
 1. No `ui/src/theme/`, no per-component `*.css`; `ui/src/styles/` has main/site/utils/widgets/mobile + types/{kpi,list,markdown,media,table}.css.
@@ -120,4 +120,4 @@ Import order: main → site → utils → widgets → types/* → mobile. One tr
 7. Computed values match 02 derived table (spot-check 5); weight 400 everywhere; side cards flat, center cards show edge, "updated", dot, hover actions.
 8. `npm run validate` and `npm run test:smoke` pass (smoke updated: no toggle, dots coloured).
 9. Screenshots at 1280 and 360px match approved mockup (owner sign-off); no horizontal scroll at 360px.
-10. Changeset added; ADR in `docs/decisions/` (single theme + Glance-derived CSS + NOTICE).
+10. Changeset added; ADR 0007 in `docs/decisions/` (single theme + Glance-derived CSS + NOTICE).

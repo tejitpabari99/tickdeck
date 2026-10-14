@@ -160,7 +160,7 @@ Text hue/sat = `bgh, bgs·tsm`. Tickdeck-only additions (derived from the same i
 | Uppercase titles: Glance's `.widget-header` is 14px, no explicit `text-transform` found in widgets.css; brief says uppercase | [RESOLVED: apply `text-transform:uppercase`, letter-spacing 0.04em; owner can veto in review] |
 | `--cm: 1.2` pushes highlight text to pure white (clamped) | [RESOLVED: accepted; matches Glance preset] |
 | Status-dot colour bug fix itself | [DEFERRED: SP03/04; mockup only shows intended look] |
-| AGPL: mockup copies no Glance CSS verbatim, only values + structure | [RESOLVED: write fresh selectors; NOTICE is SP01/03] |
+| AGPL: mockup copies no Glance CSS verbatim, only values + structure | [RESOLVED: write fresh selectors; NOTICE is SP03] |
 | Artifact font load blocked offline | [RESOLVED: monospace fallback] |
 | Does SP03 need pixel screenshot reference? | [DEFERRED: SP03 takes screenshots of the approved Artifact] |
 

@@ -32,3 +32,4 @@ A change to a rule in [design principles](../tech/design-principles.md) that ref
 | [0003](0003-toolchain-and-distribution.md) | Toolchain and distribution | Accepted, amended 2026-10-07 | 2026-10-07 |
 | [0004](0004-os-notifications-via-node-notifier.md) | OS notifications via node-notifier | Proposed | 2026-10-05 |
 | [0005](0005-card-folder-ingest-and-completed.md) | Card-folder ingest, Completed list and write-back rules | Accepted | 2026-10-08 |
+| [0006](0006-rename-to-tickdeck.md) | Rename the project to Tickdeck | Accepted | 2026-10-14 |

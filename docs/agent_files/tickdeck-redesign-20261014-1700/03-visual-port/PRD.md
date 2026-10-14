@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 summary: Rewrite all UI CSS from scratch in Glance's file split (main/site/utils/widgets/mobile + per-type), Catppuccin Mocha only, JetBrains Mono bundled, side-vs-center card look, restyled header with status-dot fix, NOTICE; reskin = change ~6 inputs.
 date: 2026-10-14
 ---
@@ -17,7 +17,7 @@ Replace ~609 lines of tokenised, dual-theme CSS with a fresh Glance-shaped style
 
 ## Goals / Non-Goals
 Goals: look equals approved mockup; reskin via inputs only; no light mode/toggle anywhere; font offline and in tarball; Glance credited; dot bug fixed with test; CSS hooks documented for 04/05.
-Non-goals: behaviour (side-card actions, snapshot flag, contract rejecting table/list on sides → 04); table width hints/truncation logic/re-sort → 04; list `style`/`meta`, media `meta`/`row`, calendar, bookmarks → 05 (03 only gives the file slots and utility classes); mobile redesign (stacking kept, restyled); new runtime deps.
+Non-goals: behaviour (side-card actions, snapshot flag, contract rejecting table/list on sides → 04); table width-hint schema, class application, truncation wiring, re-sort → 04 (03 ships the table CSS classes themselves: `col-w-*`, `.cell-truncate`, `.tbl-wrap`); list `style`/`meta`, media `meta`/`row`, calendar, bookmarks → 05 (03 only gives the file slots and utility classes); mobile redesign (stacking kept, restyled); new runtime deps.
 
 ## Requirements
 | # | Requirement |
@@ -67,7 +67,7 @@ Import order: main → site → utils → widgets → types/* → mobile. One tr
 | `.card--stale`, `.card--broken`, `.card--empty` | 03 | states |
 | `[data-permanent="true"]` on `.card` (from 04's `ViewCard.permanent`; frame renders BOTH this and `.card--side`/`.card--center`) | 04 (flag semantics) | 03 styles off `.card--side`/`.card--center` (derived from column): no actions, no "updated", subdued edge; the attribute is for behaviour/tests |
 | `.card-actions[hidden]` | 04 | side cards omit actions; CSS also hides under `.card--side` |
-| `.col-w-xs\|s\|m\|l\|fill` on `<col>`/`<th>`/`<td>`, `.cell-truncate` (block span inside each compact cell, `title`=full text), `.tbl-wrap` (in-card scroll container), `--tbl-auto-max` (cap for unset width, 24rem) | 04 (table) | 03 supplies widths + ellipsis rules (values per 04 PRD width table, 03 may retune), 04 applies classes |
+| `.col-w-xs\|s\|m\|l\|fill` on `<col>`/`<th>`/`<td>`, `.cell-truncate` (block span inside each compact cell, `title`=full text), `.tbl-wrap` (in-card scroll container), `--tbl-auto-max` (cap for unset width, 24rem) | 04 (table) | 03 ships the CSS classes (widths + ellipsis rules; values per 04 PRD width table, approved as starting values, 03 may retune once JetBrains Mono 13px is in); 04 only applies classes and owns behaviour |
 | `.list--rows\|detailed`, `.meta-line`, `.media-grid`, `.media-row` | 05 | 03 provides empty/placeholder rules only; 05 fills |
 | utilities in R8 | anyone | shared |
 
@@ -106,7 +106,7 @@ Import order: main → site → utils → widgets → types/* → mobile. One tr
 | Old CSS deleted before 04/05 need their hooks → intermediate breakage | [RESOLVED: 03 ships empty per-type placeholders + hooks] |
 | Side/permanent flag name | [RESOLVED: snapshot field is 04's `ViewCard.permanent`; frame renders class `card--side`/`card--center` (from column) + `data-permanent`; 03 styles off the classes] |
 | Header `Hidden (n)` popover, search dropdown restyle depth | [RESOLVED: restyle with popover tokens] |
-| Screenshot compare needs mockup HTML local (Artifact private) | [OPEN: use `02-mockup/mockup.html` in repo as reference] |
+| Screenshot compare needs mockup HTML local (Artifact private) | [RESOLVED: use `02-mockup/mockup.html` in repo as reference (owner 2026-10-14)] |
 | Subset font to Latin? | [DEFERRED] |
 | Old `tickdeck.theme` key (renamed by 01) cleanup | [DEFERRED: harmless] |
 

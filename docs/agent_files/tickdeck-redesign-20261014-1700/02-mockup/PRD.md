@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 summary: One static HTML mockup (Tickdeck, Catppuccin Mocha, JetBrains Mono, Glance box/title/spacing model) with made-up data, published as a private Artifact; owner approval gates sub-project 03.
 date: 2026-10-14
 ---
@@ -24,7 +24,7 @@ Non-goals: real data, React, interactivity beyond CSS `:hover`, `<details>` for 
 |---|---|
 | Header | "Tickdeck" logo (highlight colour, 20px, right border, like Glance `.logo`), date, search input, All/Alerts/Cards segmented filter (All active), status dots: connection (ok = positive green) + one alert-count dot (negative), both visibly coloured with a soft glow ring |
 | Alert strip | Full width, 2 one-line rows: one high (negative dot), one normal; tick button right |
-| Left (300) | **Calendar** (side, flat): mini month grid, today highlighted, event dots under days, agenda below grouped by day (Today / Tomorrow / Fri Oct 16), 5-6 events, one all-day. **KPI**, with one **stale** treatment (muted + "stale 3h" tag) |
+| Left (300) | **Calendar** (side, flat): mini month grid, today highlighted, event dots under days, agenda below showing TODAY's events only (3-4 events, one all-day) by default; clicking a day selects it (own highlight, today stays highlighted) and the agenda shows that day's events (or "No events"); clicking today or the "today" control returns. Static mockup implements this with a tiny inline script (the only script in the mockup). **KPI**, with one **stale** treatment (muted + "stale 3h" tag) |
 | Center | **Now zone**: 1 card, priority high, left edge negative, "updated 2m ago", unseen dot. **Email table** (priority normal, left edge primary): columns Time (xs), From (s, ellipsis), Subject (fill, ellipsis), short dates "Oct 9, 5:06p", one sortable header marked, one row hover. **Detailed list** (`style: detailed`): title, muted `meta` line, link arrow. **Media grid**: 4 thumbs (CSS gradients, no remote images), 16:9, 2-line clamped caption, muted meta. One card **hovered** (forced `:hover` class) showing Done / hide / fullscreen buttons. One **priority-low** card with muted edge. One **Broken** card (negative tint, reason). **Completed (3)** collapsed `<details>` full width below columns |
 | Right (300) | **Bookmarks**: 3 groups, one colour-tinted title, links with emoji icon + muted description, `↗` arrows. **Markdown**: heading, paragraph, bullet list, inline code, link (unvisited colour primary). One Broken or stale side card allowed if space (not required) |
 | Footer note (small, subdue) | "Mockup - made-up data" |
@@ -127,7 +127,7 @@ Text hue/sat = `bgh, bgs·tsm`. Tickdeck-only additions (derived from the same i
 | Card | Data |
 |---|---|
 | Now | "Standup in 10 min" markdown/kpi style, high |
-| Calendar (left) | 6 events over 5 days relative to a fixed date (Wed Oct 14, 2026): 1 all-day, one with location, colours from the 3 accents |
+| Calendar (left) | 6 events over 5 days relative to a fixed date (Wed Oct 14, 2026): 1 all-day, one with location, colours from the 3 accents; today (Oct 14) has 3-4 of them, at least one other day has events so click-to-select is demonstrable, one day has none ("No events") |
 | KPI | 3 numbers ("Open PRs 7", "Build ok", "Disk 63%") with `+/-` delta in positive/negative |
 | Email table | 8 rows, fake senders ("Billing Bot", "Calendar", "Dana R."), long subjects (must truncate), times "Oct 14, 9:02a"; no real mail |
 | Detailed list | 5 items: title, `meta` ("deploy · 12m ago · prod"), 1 with a link |
@@ -156,7 +156,7 @@ Text hue/sat = `bgh, bgs·tsm`. Tickdeck-only additions (derived from the same i
 ## Risks / Open Questions
 | Item | Tag |
 |---|---|
-| Even Glance styling looks flat with sparse data | [OPEN] mitigated by realistic fill (8 rows etc.); owner judges |
+| Even Glance styling looks flat with sparse data | [RESOLVED: mitigated by realistic fill (8 rows etc.); owner review/approval of the published mockup is the gate for 03, no further decision now (owner 2026-10-14)] |
 | Uppercase titles: Glance's `.widget-header` is 14px, no explicit `text-transform` found in widgets.css; brief says uppercase | [RESOLVED: apply `text-transform:uppercase`, letter-spacing 0.04em; owner can veto in review] |
 | `--cm: 1.2` pushes highlight text to pure white (clamped) | [RESOLVED: accepted; matches Glance preset] |
 | Status-dot colour bug fix itself | [DEFERRED: SP03/04; mockup only shows intended look] |
@@ -168,6 +168,7 @@ Text hue/sat = `bgh, bgs·tsm`. Tickdeck-only additions (derived from the same i
 1. `02-mockup/mockup.html` exists, opens standalone, product name "Tickdeck" everywhere, no "crontick".
 2. Published as a **private** Artifact; URL recorded in the run notes.
 3. All cards in the Page content table present with the listed states (stale side, Broken, forced-hover center, priority-high Now, priority-low, Completed collapsed).
+3b. Calendar: agenda shows today's events by default; clicking another day in the grid selects it (distinct highlight) and swaps the agenda; clicking today returns.
 4. `:root` token inputs equal the Token table; derived tokens use calc() from them; computed lightness values match the Derived table (spot-check 5 in devtools).
 5. Sides contain no table/list, no buttons, no priority edge, no unseen dot; center cards have all four.
 6. Items 1-10 of the "Why Glance looks good" list are visible (shadow, outside title, tinted greys, 23px gaps, ↗ accent, dim thumbs, etc.); weight is 400 everywhere.

@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 summary: Mechanical rename of the whole repo to Tickdeck (package, bin, env vars, data dir, skill, UI, docs incl. history, remote), scheduler references reworded away, folder move deferred to the very last task of the initiative.
 date: 2026-10-14
 ---
@@ -87,7 +87,7 @@ Out of scope: `node_modules`, `dist`, `ui/dist`, `.worktrees/`. After the pass, 
 - [RESOLVED: D5 exclusion] Zero-match grep vs. redesign docs that name the old token.
 - [RESOLVED: D3] Scheduler references: reword, not substitute.
 - [RESOLVED: D2] Existing user data: none present.
-- [OPEN] `tickdeck` on npm is unchecked; irrelevant while unpublished, but `release.yml`/`RELEASING.md` assume publishing. Decide before first release.
+- [RESOLVED: keep unscoped package name `tickdeck`; owner verified it is not on the npm registry (`npm install tickdeck` → E404; name-exists found nothing similar) (owner 2026-10-14)] `tickdeck` on npm; `release.yml`/`RELEASING.md` assume publishing.
 - [DEFERRED] Sub-project 02 mockup and any private artifact titles may say "Tickdeck"; no coordination needed, new strings use Tickdeck.
 - [DEFERRED] Merge to `main`: until this branch merges, `main` keeps the old name; no cross-branch work should start.
 - Risk: sed hits inside `package-lock.json` integrity hashes or vendored text — mitigated by regenerating the lock and excluding it from the sed.

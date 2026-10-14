@@ -75,3 +75,14 @@ describe('permanent side cards', () => {
     expect(s.cards.b).toMatchObject({ permanent: true });
   });
 });
+
+describe('ViewCard.style', () => {
+  it('is surfaced from the card when set and omitted otherwise (ok and no-data)', () => {
+    const s = snap([ok('a', { style: 'detailed' }), ok('b'), nd('c', { style: 'detailed' }), nd('d')]);
+    const byId = Object.fromEntries(Object.values(s.cards).map((c) => [c.id, c]));
+    expect(byId['a']!.style).toBe('detailed');
+    expect(byId['c']!.style).toBe('detailed');
+    expect('style' in byId['b']!).toBe(false);
+    expect('style' in byId['d']!).toBe(false);
+  });
+});

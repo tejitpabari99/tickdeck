@@ -38,7 +38,7 @@ describe('side rule', () => {
     }
   });
 
-  it.each(['kpi', 'markdown', 'media'])('%s in right/left is allowed', (type) => {
+  it.each(['kpi', 'markdown', 'media', 'calendar', 'bookmarks'])('%s in right/left is allowed', (type) => {
     expect(run(type, 'right').status).toBe('no-data');
     expect(run(type, 'left').status).toBe('no-data');
   });
@@ -64,5 +64,13 @@ describe('side rule', () => {
       expect(sidesAllowed(t)).toBe(registry[t].sides === 'allow');
     }
     expect(sidesAllowed('nope')).toBe(false);
+  });
+
+  it('new types: calendar/bookmarks allow, list/table deny; template data validates in left column', () => {
+    expect(listTypes().filter((t) => sidesAllowed(t)).sort()).toEqual(['bookmarks', 'calendar', 'kpi', 'markdown', 'media']);
+    for (const type of ['calendar', 'bookmarks']) {
+      expect(run(type, 'left', {}, registry[type as 'calendar'].template.data).status).toBe('ok');
+    }
+    expect(run('list', 'left')).toMatchObject({ reason: 'side-not-allowed' });
   });
 });

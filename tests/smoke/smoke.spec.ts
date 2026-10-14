@@ -162,6 +162,54 @@ test.describe('populated feed', () => {
     expect(errors).toEqual([]);
   });
 
+  test('font served locally, no external requests, weight 400 everywhere (03 A4/A7)', async ({ page }) => {
+    const origin = new URL(h!.server.url).origin;
+    const reqs: string[] = [];
+    const fonts: { url: string; status: number }[] = [];
+    // Card content images (media template thumbnails) legitimately point at remote hosts; assets/fonts/css/js must not.
+    page.on('request', (r) => {
+      if (r.resourceType() !== 'image') reqs.push(r.url());
+    });
+    page.on('response', (r) => {
+      if (/\.woff2(\?|$)/.test(r.url())) fonts.push({ url: r.url(), status: r.status() });
+    });
+    await page.goto(h!.server.url);
+    await expect(page.locator('[data-card-id="table"]').first()).toBeVisible();
+    const expanders = page.getByRole('button', { name: /^Expand/ });
+    while (await expanders.count()) await expanders.first().click();
+    await page.evaluate('document.fonts.ready');
+    expect(fonts.length).toBeGreaterThan(0);
+    for (const f of fonts) {
+      expect(f.url.startsWith(origin), f.url).toBe(true);
+      expect(f.status, f.url).toBe(200);
+    }
+    const external = reqs.filter((u) => /^https?:/.test(u) && !/^https?:\/\/(127\.0\.0\.1|localhost)(:|\/|$)/.test(u));
+    expect(external).toEqual([]);
+    const weights = (await page.evaluate(
+      `[...document.querySelectorAll('h1,h2,h3,h4,h5,h6,th,strong,b')].map((e) => getComputedStyle(e).fontWeight)`,
+    )) as string[];
+    expect(weights.length).toBeGreaterThan(0);
+    expect(weights.filter((w) => w !== '400')).toEqual([]);
+  });
+
+  test('side cards are flat; center cards show edge and updated meta (03 A7)', async ({ page }) => {
+    await page.goto(h!.server.url);
+    const side = page.locator('[data-column="left"] [data-card-id="side-note"]');
+    await expect(side).toBeVisible();
+    await expect(side).toHaveClass(/card--side/);
+    await expect(side.getByRole('button', { name: 'Done' })).toBeHidden();
+    await expect(side.getByRole('button', { name: 'Hide' })).toBeHidden();
+    await expect(side.locator('.card-meta')).toBeHidden();
+    await expect(side.locator('.unseen-dot')).toBeHidden();
+    await expect(side.locator('.card-body')).toHaveCSS('border-left-width', '1px');
+    const center = page.locator('[data-column="center"] [data-card-id="markdown"]');
+    await expect(center).toHaveClass(/card--center/);
+    await expect(center.locator('.card-meta')).toBeVisible();
+    await expect(center.locator('.card-body')).toHaveCSS('border-left-width', '3px');
+    await center.hover();
+    await expect(center.getByRole('button', { name: 'Done' })).toBeVisible();
+  });
+
   test('360px: no horizontal scroll, columns stack center/left/right (R9)', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.goto(h!.server.url);

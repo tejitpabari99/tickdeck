@@ -1,5 +1,5 @@
 ---
-status: draft
+status: done
 summary: Seven tasks to rename the repo to Tickdeck (scripted pass, scheduler rewording, schema/lockfile regen, changeset + ADR 0006, verification, remote) plus the final folder move after sub-project 05.
 date: 2026-10-14
 ---
@@ -14,7 +14,7 @@ Source of truth: [PRD.md](PRD.md). Mechanical rename of every tracked occurrence
 | 4 | Changeset + ADR 0006 | 3 | done |
 | 5 | Validate, smoke, verification greps | 4 | done |
 | 6 | Set git remote URL | none | done |
-| 7 | Move repo folder, repair worktrees, update projects README (run after sub-project 05 completes) | 5, sub-project 05 | todo |
+| 7 | Move repo folder, repair worktrees, update projects README (run after sub-project 05 completes) | 5, sub-project 05 | done |
 
 ## Task 1 — Scripted rename pass + test updates
 What it is: Apply the PRD rename map to every unambiguous token across tracked files (D1, D2, D4, D10). Covers env vars to `TICKDECK_*`, header to `X-Tickdeck`, AUMID, package/bin/skill/data dir/`APP_NAME`, product name, localStorage keys, internal tokens, skill marker. Historical docs and ADRs included.

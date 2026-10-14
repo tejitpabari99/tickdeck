@@ -1,5 +1,5 @@
 ---
-status: draft
+status: done
 summary: 9 tasks to hand-build the Tickdeck mockup.html, verify it against the PRD, publish it as a private Artifact, and gate SP03 on owner approval.
 date: 2026-10-14
 ---
@@ -16,7 +16,7 @@ Source of truth: `02-mockup/PRD.md` (approved, no open items). One self-containe
 | 6 | Narrow layout and small touches | 3, 4, 5 | done |
 | 7 | Self-check against acceptance criteria | 6 | done |
 | 8 | Publish private Artifact | 7 | done |
-| 9 | Owner review and approval | 8 | todo |
+| 9 | Owner review and approval | 8 | done |
 
 ## Task 1 — Tokens, base CSS, page shell, header, alert strip
 What it is: the foundation of the single file, per Decisions 1-3, 9 and the Architecture file layout.

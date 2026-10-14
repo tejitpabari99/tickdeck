@@ -1,0 +1,21 @@
+/* types/media.css: restyled media. Tokens only: no colour literals. */
+.media-root { container-type: inline-size; min-width: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.media-grid { display: grid; gap: 1.05rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.media-root--single .media-grid { grid-template-columns: 1fr; }
+.media-root--full .media-grid { gap: 1.6rem; }
+@container (max-width: 240px) { .media-root--grid .media-grid { grid-template-columns: 1fr; } }
+.media-figure { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+.media-figure > .media-caption + .media-meta { margin-top: -0.4rem; }
+.media-box { display: block; aspect-ratio: 16 / 8.9; overflow: hidden; border: 1px solid var(--color-separator); border-radius: var(--border-radius); background: var(--color-widget-background-highlight); filter: grayscale(0.2) contrast(0.9); opacity: 0.8; transition: opacity 0.2s, filter 0.2s; }
+.media-figure:hover .media-box { opacity: 1; filter: none; }
+.media-box img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.media-root--single .media-box img { object-fit: contain; }
+.media-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 0.8rem; box-sizing: border-box; text-align: center; font-size: var(--font-size-h5); color: var(--color-text-subdue); overflow: hidden; }
+.media-caption { color: var(--color-text-paragraph); overflow-wrap: anywhere; }
+.media-empty { color: var(--color-text-subdue); margin: 0; }
+
+/* row layout: horizontal scroll-snap, fixed card width; focusable region so arrow keys scroll */
+.media-row { display: flex; gap: 1.05rem; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 0.4rem; }
+.media-row:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.media-row .media-figure { flex: 0 0 18rem; max-width: 80%; scroll-snap-align: start; gap: 0.7rem; }
+.media-meta { color: var(--color-text-subdue); font-size: var(--font-size-h6); }

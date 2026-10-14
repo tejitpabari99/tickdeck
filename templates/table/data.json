@@ -11,12 +11,14 @@
       {
         "key": "subject",
         "label": "Subject",
-        "sort": "text"
+        "sort": "text",
+        "width": "fill"
       },
       {
         "key": "received",
         "label": "Received",
-        "sort": "date"
+        "sort": "date",
+        "width": "s"
       }
     ],
     "rows": [

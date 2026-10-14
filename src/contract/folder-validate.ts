@@ -12,7 +12,7 @@ import { errorMessage } from '../utils/errors.js';
 import { alertSchema, type Alert } from './alert.js';
 import { cardDefSchema, hasStrayId, type CardDef } from './card-def.js';
 import { dataFileSchema } from './data-file.js';
-import { isRegisteredType, registry, sidesAllowed } from './registry.js';
+import { isRegisteredType, registry, sidesAllowed, type TypeEntry } from './registry.js';
 
 export interface FolderIssue {
   path: string;
@@ -360,6 +360,8 @@ function validateFolder(i: ValidateCardFolderInput): FolderResult {
       return broken(id, def, 'schema-invalid', summarize(issues, dataFile), issues);
     }
     payload = p.data as Obj;
+    const typeWarnings: ((d: unknown) => string[]) | undefined = (entry as TypeEntry).warnings;
+    if (typeWarnings) warnings.push(...typeWarnings(p.data).map((w) => `${dataFile}${w}`));
   }
 
   const source: UpdatedAtSource = content.updatedAt !== undefined ? 'data' : 'mtime';

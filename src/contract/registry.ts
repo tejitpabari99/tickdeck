@@ -13,7 +13,7 @@ import { kpiDataSchema, kpiSummary } from './types/kpi.js';
 import { listDataSchema, listSummary } from './types/list.js';
 import { markdownDataSchema, markdownSummary } from './types/markdown.js';
 import { mediaDataSchema, mediaSummary } from './types/media.js';
-import { tableDataSchema, tableSummary } from './types/table.js';
+import { tableDataSchema, tableSummary, tableWarnings } from './types/table.js';
 
 /** Embedded example card folder: card.json + data.json contents. */
 export interface Example {
@@ -30,12 +30,14 @@ export interface TypeEntry {
   template: Example;
   /** Where this type may render. 'deny' = center column only (sides are permanent reference). Mandatory so new types must decide. */
   sides: 'allow' | 'deny';
+  /** Optional non-fatal payload warnings (paths relative to data.json root). */
+  warnings?: (data: unknown) => string[];
 }
 
 /** The single place card types are registered (D7). */
 export const registry = {
   markdown: { schema: markdownDataSchema, summary: markdownSummary, template: { card: markdownCard, data: markdownData }, sides: 'allow' },
-  table: { schema: tableDataSchema, summary: tableSummary, template: { card: tableCard, data: tableData }, sides: 'deny' },
+  table: { schema: tableDataSchema, summary: tableSummary, template: { card: tableCard, data: tableData }, sides: 'deny', warnings: tableWarnings },
   list: { schema: listDataSchema, summary: listSummary, template: { card: listCard, data: listData }, sides: 'deny' },
   kpi: { schema: kpiDataSchema, summary: kpiSummary, template: { card: kpiCard, data: kpiData }, sides: 'allow' },
   media: { schema: mediaDataSchema, summary: mediaSummary, template: { card: mediaCard, data: mediaData }, sides: 'allow' },

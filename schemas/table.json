@@ -29,6 +29,16 @@
                   "number",
                   "date"
                 ]
+              },
+              "width": {
+                "type": "string",
+                "enum": [
+                  "xs",
+                  "s",
+                  "m",
+                  "l",
+                  "fill"
+                ]
               }
             },
             "required": [

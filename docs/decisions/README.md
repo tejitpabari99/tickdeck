@@ -33,3 +33,4 @@ A change to a rule in [design principles](../tech/design-principles.md) that ref
 | [0004](0004-os-notifications-via-node-notifier.md) | OS notifications via node-notifier | Proposed | 2026-10-05 |
 | [0005](0005-card-folder-ingest-and-completed.md) | Card-folder ingest, Completed list and write-back rules | Accepted | 2026-10-08 |
 | [0006](0006-rename-to-tickdeck.md) | Rename the project to Tickdeck | Accepted | 2026-10-14 |
+| [0007](0007-single-theme-glance-derived-css.md) | Single theme, Glance-derived CSS, NOTICE | Accepted | 2026-10-14 |

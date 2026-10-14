@@ -37,3 +37,7 @@ To teach Claude agents to write cards: `tickdeck skill install`. `tickdeck templ
 - Reference: CLI, configuration, card schema, HTTP API, errors in [docs/reference/](docs/reference/); problems in [docs/troubleshooting.md](docs/troubleshooting.md)
 - [AGENTS.md](AGENTS.md): repository guide for coding agents
 - [CONTRIBUTING.md](CONTRIBUTING.md): how to contribute
+
+## License
+
+MIT, see [LICENSE](LICENSE). Third-party credits (Glance design, Catppuccin, JetBrains Mono) in [NOTICE](NOTICE).

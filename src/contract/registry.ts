@@ -28,15 +28,17 @@ export interface TypeEntry {
   summary: (data: unknown) => string;
   /** Example folder, embedded at build time from templates/<type>/ (bundler-safe, no fs). */
   template: Example;
+  /** Where this type may render. 'deny' = center column only (sides are permanent reference). Mandatory so new types must decide. */
+  sides: 'allow' | 'deny';
 }
 
 /** The single place card types are registered (D7). */
 export const registry = {
-  markdown: { schema: markdownDataSchema, summary: markdownSummary, template: { card: markdownCard, data: markdownData } },
-  table: { schema: tableDataSchema, summary: tableSummary, template: { card: tableCard, data: tableData } },
-  list: { schema: listDataSchema, summary: listSummary, template: { card: listCard, data: listData } },
-  kpi: { schema: kpiDataSchema, summary: kpiSummary, template: { card: kpiCard, data: kpiData } },
-  media: { schema: mediaDataSchema, summary: mediaSummary, template: { card: mediaCard, data: mediaData } },
+  markdown: { schema: markdownDataSchema, summary: markdownSummary, template: { card: markdownCard, data: markdownData }, sides: 'allow' },
+  table: { schema: tableDataSchema, summary: tableSummary, template: { card: tableCard, data: tableData }, sides: 'deny' },
+  list: { schema: listDataSchema, summary: listSummary, template: { card: listCard, data: listData }, sides: 'deny' },
+  kpi: { schema: kpiDataSchema, summary: kpiSummary, template: { card: kpiCard, data: kpiData }, sides: 'allow' },
+  media: { schema: mediaDataSchema, summary: mediaSummary, template: { card: mediaCard, data: mediaData }, sides: 'allow' },
 } as const satisfies Record<string, TypeEntry>;
 
 export type RegisteredType = keyof typeof registry;
@@ -49,6 +51,11 @@ export function isRegisteredType(t: string): t is RegisteredType {
 
 export function listTypes(): RegisteredType[] {
   return Object.keys(registry) as RegisteredType[];
+}
+
+/** Whether a card of this type may render in the left/right columns. */
+export function sidesAllowed(type: string): boolean {
+  return isRegisteredType(type) && registry[type].sides === 'allow';
 }
 
 /** Example folder ({ card, data }) for a type; undefined if unknown type. */

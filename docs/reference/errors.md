@@ -46,7 +46,7 @@ The reasons `validate` prints (`BROKEN <reason>` / `SKIPPED <reason>`) are the B
 
 ## Broken reasons
 
-A card folder whose `card.json` parsed but whose content cannot be shown renders as a Broken card with one of these reasons. Cards are never partially shown. `validate` and the snapshot use the same reasons (alert files use the same set except `unknown-type`).
+A card folder whose `card.json` parsed but whose content cannot be shown renders as a Broken card with one of these reasons. Cards are never partially shown. `validate` and the snapshot use the same reasons (alert files use the same set except `unknown-type` and `side-not-allowed`).
 
 | Reason | Meaning |
 |--------|---------|
@@ -56,6 +56,7 @@ A card folder whose `card.json` parsed but whose content cannot be shown renders
 | `too-large` | Over the size cap (1 MiB for a data file) |
 | `schema-invalid` | Data file envelope or `data` violates the contract, or the payload does not fit the type; issues list JSON pointers |
 | `unknown-type` | `type` in `card.json` is not registered ("Unsupported type" in the UI) |
+| `side-not-allowed` | type is `deny` in the registry (`table`, `list`) but `layout.column` is `left`/`right`; use `center` |
 | `error` | Added by the snapshot, not `validate`: the data file declares a non-empty `error` |
 | `stale` | Added by the snapshot, not `validate`: no update for longer than `staleAfter` (for no-data cards, counted from the `card.json` mtime) |
 

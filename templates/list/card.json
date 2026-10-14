@@ -4,7 +4,7 @@
   "title": "Today's tasks",
   "data": "data.json",
   "layout": {
-    "column": "left",
+    "column": "center",
     "order": 0,
     "height": "auto"
   },

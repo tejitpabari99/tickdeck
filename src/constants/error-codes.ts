@@ -45,6 +45,7 @@ export const BROKEN_REASONS = [
   'too-large',
   'schema-invalid',
   'unknown-type',
+  'side-not-allowed',
 ] as const;
 export type BrokenReason = (typeof BROKEN_REASONS)[number];
 

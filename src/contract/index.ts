@@ -1,4 +1,4 @@
-export { listTypes, getExample, dataRequired, registry } from './registry.js';
+export { listTypes, getExample, dataRequired, registry, sidesAllowed } from './registry.js';
 export type { RegisteredType, KnownType, Example } from './registry.js';
 export { parseDuration, windowActive } from './formats.js';
 export { cellText } from './types/table.js';

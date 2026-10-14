@@ -12,7 +12,7 @@ import { errorMessage } from '../utils/errors.js';
 import { alertSchema, type Alert } from './alert.js';
 import { cardDefSchema, hasStrayId, type CardDef } from './card-def.js';
 import { dataFileSchema } from './data-file.js';
-import { isRegisteredType, registry } from './registry.js';
+import { isRegisteredType, registry, sidesAllowed } from './registry.js';
 
 export interface FolderIssue {
   path: string;
@@ -104,7 +104,7 @@ export type AlertResult =
   | { status: 'ok'; alert: ValidAlert; warnings: string[] }
   | {
       status: 'broken';
-      reason: Exclude<BrokenReason, 'unknown-type'>;
+      reason: Exclude<BrokenReason, 'unknown-type' | 'side-not-allowed'>;
       message: string;
       issues: FolderIssue[];
       id: string;
@@ -173,7 +173,7 @@ function hasLoneSurrogate(s: string): boolean {
   return false;
 }
 
-type TextFail = { reason: Exclude<BrokenReason, 'schema-invalid' | 'unknown-type'>; message: string };
+type TextFail = { reason: Exclude<BrokenReason, 'schema-invalid' | 'unknown-type' | 'side-not-allowed'>; message: string };
 
 function formatBytes(n: number): string {
   return n >= 1024 * 1024 ? `${n / (1024 * 1024)} MB` : `${n / 1024} KB`;
@@ -226,6 +226,8 @@ function skewWarning(updatedAt: string, source: UpdatedAtSource, nowMs: number, 
 function strayIdWarning(obj: object, file: string, id: string): string[] {
   return hasStrayId(obj) ? [`${file}: "id" key is ignored; the name "${id}" is the id`] : [];
 }
+
+const PRIORITY_SIDE_WARNING = 'priority is ignored in left/right columns';
 
 function skip(reason: SkipReason, message: string, issues: FolderIssue[] = [], id?: string): SkippedResult {
   return { status: 'skipped', reason, message, issues, ...(id !== undefined ? { id } : {}) };
@@ -304,6 +306,18 @@ function validateFolder(i: ValidateCardFolderInput): FolderResult {
   }
   const entry = registry[def.type];
 
+  const column = def.layout.column;
+  if (column !== 'center' && !sidesAllowed(def.type)) {
+    return broken(
+      id,
+      def,
+      'side-not-allowed',
+      `type "${def.type}" is not allowed in the ${column} column: sides are permanent reference; use column "center" (or a kpi/markdown/media card)`,
+      [{ path: '/layout/column', message: 'type not allowed in a side column' }],
+    );
+  }
+  if (column !== 'center' && def.priority !== undefined) warnings.push(PRIORITY_SIDE_WARNING);
+
   const base = {
     id,
     type: def.type,
@@ -334,6 +348,9 @@ function validateFolder(i: ValidateCardFolderInput): FolderResult {
   }
   const content = df.data;
   warnings.push(...strayIdWarning(parsed.obj, dataFile, id));
+  if (column !== 'center' && content.priority !== undefined && def.priority === undefined) {
+    warnings.push(PRIORITY_SIDE_WARNING);
+  }
 
   let payload: Obj | undefined;
   if (content.error === null) {
@@ -378,7 +395,7 @@ export function validateAlertFile(i: ValidateAlertFileInput): AlertResult {
 
 function validateAlert(i: ValidateAlertFileInput, id: string): AlertResult {
   const fail = (
-    reason: Exclude<BrokenReason, 'unknown-type'>,
+    reason: Exclude<BrokenReason, 'unknown-type' | 'side-not-allowed'>,
     message: string,
     issues: FolderIssue[] = [],
   ): AlertResult => ({ status: 'broken', reason, message, issues, id });

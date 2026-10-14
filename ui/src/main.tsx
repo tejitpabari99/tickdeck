@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App.tsx';
-import { initTheme } from './lib/theme.ts';
 import './types/index.ts'; // registers all card types
 import './theme/themes.css';
 import './theme/tokens.css';
@@ -15,8 +14,6 @@ import './styles/types/list.css';
 import './styles/types/markdown.css';
 import './styles/types/media.css';
 import './styles/types/table.css';
-
-initTheme();
 
 const el = document.getElementById('root');
 if (el) {

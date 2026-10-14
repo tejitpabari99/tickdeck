@@ -111,12 +111,11 @@ describe('server down', () => {
     expect(document.title).toBe('Server down');
     expect(t.store.getSnapshot().snapshot).toBeNull();
 
-    // header reduced to theme toggle + red dot
+    // header reduced to the red dot only
     expect(screen.queryByRole('searchbox')).toBeNull();
     expect(screen.queryByRole('button', { name: /hidden/i })).toBeNull();
-    expect(screen.getByRole('button', { name: /theme/i })).toBeTruthy();
     expect(screen.getByRole('img', { name: 'Connection problem' }).className).toContain('header__dot--bad');
-    expect(document.querySelectorAll('header button').length).toBe(1);
+    expect(document.querySelectorAll('header button').length).toBe(0);
 
     // backoff 5 -> 10 -> 30 -> 30
     expect(await t.fire()).toBe(DOWN_BACKOFF_MS[1]);

@@ -1,16 +1,13 @@
-import { useState } from 'react';
 import type { ViewCard } from '../api/types.ts';
 import { FILTERS, type Filter } from '../lib/filter.ts';
-import { cycleTheme, readChoice } from '../lib/theme.ts';
 import { HiddenPopover } from './HiddenPopover.tsx';
 import { SearchBox, type SearchBoxProps } from './SearchBox.tsx';
-import './header.css';
 
 export interface HeaderProps {
   alertCount: number;
   hidden: readonly ViewCard[];
   connectionOk: boolean;
-  /** Server down: only the theme toggle and the connection dot. */
+  /** Server down: only the connection dot. */
   minimal?: boolean;
   filter: Filter;
   onFilter(f: Filter): void;
@@ -19,7 +16,6 @@ export interface HeaderProps {
 }
 
 export function Header(p: HeaderProps) {
-  const [choice, setChoice] = useState(readChoice);
   const date = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
   const scrollToNow = (): void => {
     document
@@ -77,14 +73,6 @@ export function Header(p: HeaderProps) {
           <HiddenPopover cards={p.hidden} onUnhide={p.onUnhide} />
         </>
       )}
-      <button
-        type="button"
-        className="header__btn"
-        aria-label={`Theme: ${choice}`}
-        onClick={() => setChoice(cycleTheme())}
-      >
-        {choice === 'dark' ? '☾' : choice === 'light' ? '☀' : '◐'}
-      </button>
       <span
         role="img"
         aria-label={p.connectionOk ? 'Connected' : 'Connection problem'}

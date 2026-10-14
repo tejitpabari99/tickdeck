@@ -115,6 +115,9 @@ test.describe('populated feed', () => {
     const errors = watchErrors(page);
     await page.goto(h!.server.url);
 
+    // Header: no theme toggle; connection dot is visibly coloured.
+    await expect(page.getByRole('button', { name: /theme/i })).toHaveCount(0);
+    await expect(page.getByRole('img', { name: 'Connected' })).toHaveCSS('background-color', /^rgb\((?!0, 0, 0\))/);
     // One rendered card element per fixture type (folder name = type).
     for (const type of TYPES) await expect(page.locator(`[data-card-id="${type}"]`).first(), type).toBeVisible();
     // Three columns: left | center | right placement comes from each template's card.json layout.

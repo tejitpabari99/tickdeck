@@ -89,6 +89,9 @@ test.describe('populated feed', () => {
   let h: Harness | undefined;
   test.beforeAll(async () => {
     const cards: FixtureCard[] = TYPES.map(template);
+    // Side tables are invalid (side-not-allowed); a markdown card keeps the left column populated.
+    const side = template('markdown');
+    cards.push({ ...side, id: 'side-note', card: { ...side.card, layout: { ...(side.card['layout'] as object), column: 'left' } } });
     cards.push({
       id: 'smoke-broken',
       card: { type: 'markdown', title: 'Smoke broken' },
@@ -121,7 +124,7 @@ test.describe('populated feed', () => {
     // One rendered card element per fixture type (folder name = type).
     for (const type of TYPES) await expect(page.locator(`[data-card-id="${type}"]`).first(), type).toBeVisible();
     // Three columns: left | center | right placement comes from each template's card.json layout.
-    await expect(page.locator('[data-column="left"] [data-card-id="table"]')).toBeVisible();
+    await expect(page.locator('[data-column="center"] [data-card-id="table"]')).toBeVisible();
     await expect(page.locator('[data-column="center"] [data-card-id="markdown"]')).toBeVisible();
     await expect(page.locator('[data-column="right"] [data-card-id="kpi"]')).toBeVisible();
     // Collapsed panels render as chips; expand them all so the real bodies mount.

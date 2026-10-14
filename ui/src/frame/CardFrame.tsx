@@ -80,7 +80,8 @@ export function CardFrame(p: CardFrameProps) {
 
   const updatedAt = card.updatedAt;
   const noData = card.status === 'no-data';
-  const highlighted = card.notify && updatedAt !== undefined && seenAt !== updatedAt && isUnseen({ id: card.id, updatedAt });
+  const permanent = card.permanent;
+  const highlighted = !permanent && card.notify && updatedAt !== undefined && seenAt !== updatedAt && isUnseen({ id: card.id, updatedAt });
 
   const see = () => {
     if (!highlighted || updatedAt === undefined) return;
@@ -127,7 +128,7 @@ export function CardFrame(p: CardFrameProps) {
   }, [highlighted, card.id, card.updatedAt]);
 
   const broken = card.status === 'broken';
-  const isPriority = card.priority >= p.nowPriorityThreshold;
+  const isPriority = !permanent && card.priority >= p.nowPriorityThreshold;
 
   const toggle = () => {
     setExpanded(card.id, !expanded.has(card.id));
@@ -166,7 +167,7 @@ export function CardFrame(p: CardFrameProps) {
     <section
       ref={rootRef}
       className={cls}
-      data-permanent={String(card.column !== 'center')}
+      data-permanent={String(permanent)}
       data-card-id={card.id} aria-label={card.title}
       onClick={see}
       onFocus={see}
@@ -183,7 +184,7 @@ export function CardFrame(p: CardFrameProps) {
           </span>
         ) : null}
         <span className="card-actions">
-          {card.collapsed && mode === 'column' ? (
+          {!permanent && card.collapsed && mode === 'column' ? (
             <button type="button" className="card-btn card-btn--collapse" aria-label="Collapse" aria-expanded="true" onClick={toggle}>
               ▴
             </button>
@@ -193,14 +194,16 @@ export function CardFrame(p: CardFrameProps) {
               ⤢
             </button>
           )}
-          {noData ? null : (
+          {noData || permanent ? null : (
             <button type="button" className="card-btn" aria-label="Done" onClick={() => p.onDone(card.id)}>
               ✓
             </button>
           )}
-          <button type="button" className="card-btn" aria-label="Hide" onClick={() => p.onHide(card.id)}>
-            ✕
-          </button>
+          {permanent ? null : (
+            <button type="button" className="card-btn" aria-label="Hide" onClick={() => p.onHide(card.id)}>
+              ✕
+            </button>
+          )}
         </span>
       </header>
       {broken ? (

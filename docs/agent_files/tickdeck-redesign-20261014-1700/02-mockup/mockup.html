@@ -354,8 +354,31 @@ button, input { font: inherit; color: inherit; }
 .thumb-c { background: linear-gradient(45deg, color-mix(in srgb, var(--color-negative) 60%, var(--color-background)), color-mix(in srgb, var(--color-positive) 35%, var(--color-background))); }
 .thumb-d { background: linear-gradient(200deg, color-mix(in srgb, var(--color-primary) 35%, var(--color-background)), color-mix(in srgb, var(--color-positive) 70%, var(--color-background))); }
 
-/* === types/markdown | bookmarks === */
-/* (Task 5) */
+/* === types/markdown === */
+.md-body > * + * { margin-top: 0.9rem; }
+.md-body h3 { font-size: var(--font-size-h3); line-height: 1.4; color: var(--color-text-highlight); }
+.md-body p { color: var(--color-text-paragraph); }
+.md-body ul { list-style: none; border-top: 1px solid var(--color-separator); padding-top: var(--list-half-gap); }
+.md-body li { position: relative; padding: 0.2rem 0 0.2rem 1.6rem; color: var(--color-text-base); }
+.md-body li::before { content: "\2022"; position: absolute; left: 0.4rem; color: var(--color-text-subdue); }
+.md-body code {
+  font-family: inherit; font-size: var(--font-size-h5); color: var(--color-text-highlight);
+  background: var(--color-widget-background-highlight); border-radius: 0.3rem; padding: 0 0.5rem;
+}
+.md-link { color: var(--color-primary); }
+.md-link:visited { color: var(--color-text-base); }
+.md-link:hover { color: var(--color-text-highlight); text-decoration: underline; }
+
+/* === types/bookmarks === */
+.bm-group + .bm-group { border-top: 1px solid var(--color-separator); margin-top: 1rem; padding-top: 1rem; }
+.bm-title { font-size: var(--font-size-h5); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.4rem; }
+.bm-title.c-primary { color: var(--color-primary); }
+.bm-title.c-positive { color: var(--color-positive); }
+.bm-list { list-style: none; }
+.bm-item { padding: 0.3rem 0; min-width: 0; }
+.bm-item a { display: inline-block; max-width: 100%; }
+.bm-icon { display: inline-block; width: 2.2rem; }
+.bm-desc { display: block; padding-left: 2.2rem; color: var(--color-text-subdue); font-size: var(--font-size-h5); }
 
 /* === widgets: completed === */
 .completed { margin-top: var(--widget-gap); }
@@ -474,8 +497,39 @@ button, input { font: inherit; color: inherit; }
       </article>
     </section>
     <aside class="col col-right">
-      <!-- TASK 5 PLACEHOLDER: Bookmarks + Markdown -->
-      <div class="placeholder">Right column: bookmarks + markdown (Task 5)</div>
+      <article class="card card--side bookmarks">
+        <header class="card-header"><span class="card-title">Bookmarks</span><div class="card-actions"><button class="card-btn card-btn--icon" type="button" aria-label="Fullscreen"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 1.5h3v3M4.5 10.5h-3v-3M10.5 1.5 7 5M1.5 10.5 5 7"/></svg><span class="card-btn-label">fullscreen</span></button></div></header>
+        <div class="card-body">
+          <div class="bm-group"><div class="bm-title c-primary">Work</div><ul class="bm-list">
+            <li class="bm-item"><a class="ext-link" href="#"><span class="bm-icon">🔧</span>Build dashboard</a><span class="bm-desc">Pipelines and recent runs</span></li>
+            <li class="bm-item"><a class="ext-link" href="#"><span class="bm-icon">📋</span>Sprint board</a></li>
+            <li class="bm-item"><a class="ext-link" href="#">Runbooks</a><span class="bm-desc">On-call procedures</span></li>
+          </ul></div>
+          <div class="bm-group"><div class="bm-title c-positive">Reading</div><ul class="bm-list">
+            <li class="bm-item"><a class="ext-link" href="#"><span class="bm-icon">📰</span>Daily digest</a></li>
+            <li class="bm-item"><a class="ext-link" href="#">Release notes</a><span class="bm-desc">What shipped this week</span></li>
+            <li class="bm-item"><a class="ext-link" href="#">Systems blog</a></li>
+          </ul></div>
+          <div class="bm-group"><ul class="bm-list">
+            <li class="bm-item"><a class="ext-link" href="#"><span class="bm-icon">🎧</span>Focus playlist</a></li>
+            <li class="bm-item"><a class="ext-link" href="#">Team handbook</a></li>
+          </ul></div>
+        </div>
+      </article>
+      <article class="card card--side markdown">
+        <header class="card-header"><span class="card-title">Notes</span><div class="card-actions"><button class="card-btn card-btn--icon" type="button" aria-label="Fullscreen"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 1.5h3v3M4.5 10.5h-3v-3M10.5 1.5 7 5M1.5 10.5 5 7"/></svg><span class="card-btn-label">fullscreen</span></button></div></header>
+        <div class="card-body md-body">
+          <h3>Release week</h3>
+          <p>Freeze starts today. Cut the branch after the review, then follow the <a class="md-link" href="#">release checklist</a> before tagging.</p>
+          <ul>
+            <li>Run <code>make verify</code> locally</li>
+            <li>Bump the version in <code>VERSION</code></li>
+            <li>Post the changelog in the team channel</li>
+            <li>Ping Dana for sign-off</li>
+          </ul>
+          <p>Questions go in the thread, not DMs.</p>
+        </div>
+      </article>
     </aside>
   </main>
 

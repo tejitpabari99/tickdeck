@@ -6,6 +6,7 @@ import './types/index.ts'; // registers all card types
 import './theme/themes.css';
 import './theme/tokens.css';
 import './theme/base.css';
+import './styles/main.css';
 
 initTheme();
 

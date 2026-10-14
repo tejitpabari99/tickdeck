@@ -14,7 +14,7 @@ export function hostGuard(getPort: () => number): MiddlewareHandler {
   };
 }
 
-/** Non-GET/HEAD requests need `Content-Type: application/json` and `X-Crontick-Dashboard: 1`. */
+/** Non-GET/HEAD requests need `Content-Type: application/json` and `X-Tickdeck: 1`. */
 export const mutationGuard: MiddlewareHandler = async (c, next) => {
   const m = c.req.method;
   if (m !== 'GET' && m !== 'HEAD') {

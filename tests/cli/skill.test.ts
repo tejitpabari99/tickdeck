@@ -39,14 +39,14 @@ describe('skill install', () => {
   it('first install creates parent dirs, equals packaged file, regular file, prints path+version', async () => {
     const s = setup('home with spaces');
     const c = await exec(['skill', 'install'], s.deps);
-    const dest = join(s.home, '.claude', 'skills', 'crontick-dashboard', 'SKILL.md');
+    const dest = join(s.home, '.claude', 'skills', 'tickdeck', 'SKILL.md');
     expect(c.code).toBe(0);
     expect(readFileSync(dest, 'utf8')).toBe('# skill v1\n');
     expect(lstatSync(dest).isFile()).toBe(true);
     expect(lstatSync(dest).isSymbolicLink()).toBe(false);
     expect(c.out).toContain(dest);
     expect(c.out).toContain('1.2.3');
-    expect(readdirSync(join(s.home, '.claude', 'skills', 'crontick-dashboard'))).toEqual(['SKILL.md']);
+    expect(readdirSync(join(s.home, '.claude', 'skills', 'tickdeck'))).toEqual(['SKILL.md']);
   });
 
   it('second install is a no-op exit 0', async () => {
@@ -61,7 +61,7 @@ describe('skill install', () => {
     const s = setup();
     const dir = join(s.root, 'skills dir');
     await exec(['skill', 'install', '--dir', dir], s.deps);
-    const dest = join(dir, 'crontick-dashboard', 'SKILL.md');
+    const dest = join(dir, 'tickdeck', 'SKILL.md');
     writeFileSync(dest, 'local edit');
     const c = await exec(['skill', 'install', '--dir', dir], s.deps);
     expect(c.code).toBe(1);
@@ -70,7 +70,7 @@ describe('skill install', () => {
     const f = await exec(['skill', 'install', '--dir', dir, '--force'], s.deps);
     expect(f.code).toBe(0);
     expect(readFileSync(dest, 'utf8')).toBe('# skill v1\n');
-    expect(readdirSync(join(dir, 'crontick-dashboard'))).toEqual(['SKILL.md']);
+    expect(readdirSync(join(dir, 'tickdeck'))).toEqual(['SKILL.md']);
   });
 
   it('Windows-style --dir and homedir strings are used verbatim-joined', async () => {

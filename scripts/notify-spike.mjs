@@ -54,12 +54,12 @@ for (const ev of ['click', 'timeout', 'close', 'dismissed', 'fail']) {
   });
 }
 
-log('notify-call', { appID: 'Crontick.Dashboard', wait: true, url });
+log('notify-call', { appID: 'Tickdeck', wait: true, url });
 n.notify(
   {
-    title: 'Crontick spike',
+    title: 'Tickdeck spike',
     message: 'Click me: should open ' + url,
-    appID: 'Crontick.Dashboard', // Windows AUMID
+    appID: 'Tickdeck', // Windows AUMID
     wait: true,
     sound: false,
   },

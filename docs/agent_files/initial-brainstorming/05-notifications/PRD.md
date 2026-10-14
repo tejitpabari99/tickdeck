@@ -4,7 +4,7 @@ summary: OS notifications for notify:true cards (Win/mac/Linux adapter, headless
 date: 2026-10-05
 ---
 # PRD: Notifications (05)
-Repo/branch: crontick-dashboard / `initial-brainstorming` · Depends on: 02-server-core (events, warnings registry) · Owns: `src/integrations/notify/**`, `tests/integrations/**`
+Repo/branch: tickdeck / `initial-brainstorming` · Depends on: 02-server-core (events, warnings registry) · Owns: `src/integrations/notify/**`, `tests/integrations/**`
 
 ## TL;DR
 One plug-in on 02's event hook: a notifier subscribes to `card:new|changed` and fires a native toast for `notify:true` cards (batched, click opens the dashboard), no-op on headless. This PRD used to also cover TickTick completion via an MCP client with OAuth, tokens, an intent-file fallback and `ticktick` CLI commands. The owner superseded D18 on 2026-10-05: no MCP client, no app registration; ticking a list item writes `checked`/`checkedAt` back into the card file (02) and the owning agent completes the task in TickTick on its next run (06 skill). Nothing TickTick-related lives in the dashboard any more.
@@ -29,7 +29,7 @@ Non-Goals: anything TickTick (no MCP client, OAuth, tokens/secrets, `ticktick` C
 02 events (card:new|changed) ─► Notifier ─► NotifyAdapter ─► OS      (config.notifications.os gate; batching)
 02 server.warnings.set/clear ◄── Notifier (notifications off / delivery problems)
 ```
-**Notification adapter.** `interface NotifyAdapter { notify({title,body,openUrl}): Promise<void> }`; default `node-notifier` (bundles terminal-notifier on macOS, SnoreToast on Windows, notify-send on Linux; supports click callbacks). It is largely unmaintained (no release for ~4 years), so it sits behind the interface with a documented swap: thin shell-outs (`osascript display notification`, PowerShell WinRT toast with explicit AppUserModelID, `notify-send`) lose click-through on macOS but have zero dependencies. Windows: a toast needs an AppUserModelID; use fixed id `Crontick.Dashboard` (SnoreToast registers a Start-menu shortcut with it on first use) so toasts are attributed and can be allow-listed in Focus Assist. macOS: toasts appear under the notifying binary's identity (terminal-notifier / Terminal) and require owner permission in System Settings. Choice final after the spike. [RESOLVED: node-notifier behind NotifyAdapter; first task is a Win/mac spike; shell-out adapter is the fallback if spike fails]
+**Notification adapter.** `interface NotifyAdapter { notify({title,body,openUrl}): Promise<void> }`; default `node-notifier` (bundles terminal-notifier on macOS, SnoreToast on Windows, notify-send on Linux; supports click callbacks). It is largely unmaintained (no release for ~4 years), so it sits behind the interface with a documented swap: thin shell-outs (`osascript display notification`, PowerShell WinRT toast with explicit AppUserModelID, `notify-send`) lose click-through on macOS but have zero dependencies. Windows: a toast needs an AppUserModelID; use fixed id `Tickdeck` (SnoreToast registers a Start-menu shortcut with it on first use) so toasts are attributed and can be allow-listed in Focus Assist. macOS: toasts appear under the notifying binary's identity (terminal-notifier / Terminal) and require owner permission in System Settings. Choice final after the spike. [RESOLVED: node-notifier behind NotifyAdapter; first task is a Win/mac spike; shell-out adapter is the fallback if spike fails]
 
 **Interface used from 02:** `server.events.on('card:new'|'card:changed', ...)` (only for non-Broken, in-window cards whose `updatedAt` changed; stamps `notified` after emit) and `server.warnings.set(key,msg)/.clear(key)`. No action handlers, no state, no secrets, no extra data dirs.
 
@@ -42,7 +42,7 @@ Non-Goals: anything TickTick (no MCP client, OAuth, tokens/secrets, `ticktick` C
 | 4 | Batching | 3 per 10 s then one summary | Fire all; debounce | Bulk rewrites must not spam; nothing silently dropped |
 
 ## Manual steps
-- Grant notification permission: macOS System Settings > Notifications (terminal-notifier / host app); Windows Settings > Notifications, allow "Crontick.Dashboard", check Focus Assist.
+- Grant notification permission: macOS System Settings > Notifications (terminal-notifier / host app); Windows Settings > Notifications, allow "Tickdeck", check Focus Assist.
 - Windows + macOS manual notification test (below); Linux desktop optional.
 
 ## Risks / Open Questions

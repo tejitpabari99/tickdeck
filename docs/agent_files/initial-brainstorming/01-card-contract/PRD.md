@@ -4,7 +4,7 @@ summary: Card file contract — envelope + 5 per-type data schemas (Zod source, 
 date: 2026-10-05
 ---
 # PRD: Card contract & type registry schemas (01)
-Repo/branch: crontick-dashboard / `initial-brainstorming` · Depends on: none · Owns: `src/contract/**` (schemas, types, validator, formats), `templates/**` (examples), `scripts/gen-schemas.ts`, generated `schemas/*.json`
+Repo/branch: tickdeck / `initial-brainstorming` · Depends on: none · Owns: `src/contract/**` (schemas, types, validator, formats), `templates/**` (examples), `scripts/gen-schemas.ts`, generated `schemas/*.json`
 
 ## TL;DR
 One TypeScript package module defines what a valid card file is. Zod 4 schemas are the single source; JSON Schema (for agents/skill) is generated from them; types are inferred. `validateCardFile(text)` returns `ok` or `broken` and is the only validation entry point for server (02), CLI `validate` (06) and tests. Contract-level validity = parse + schema + format checks; anything depending on "now" or on state is runtime (02).

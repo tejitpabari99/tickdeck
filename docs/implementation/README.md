@@ -1,6 +1,6 @@
 # Implementation
 
-Audience: maintainers and coding agents changing crontick-dashboard internals.
+Audience: maintainers and coding agents changing tickdeck internals.
 Non-duplication: this folder explains how the code works. Mental models live in [concepts](../concepts/), the component map in [architecture](../architecture.md), exact lookups (flags, routes, fields, codes, config keys) in `docs/reference/`, rationale in [decisions](../decisions/). Everything here is internal and may change without a major version bump; the only public API is `src/index.ts`.
 
 ## Reading order

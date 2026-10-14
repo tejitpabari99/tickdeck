@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-ADRs capture a single significant, lasting technical decision for crontick-dashboard: the context, the choice, the alternatives evaluated, and the consequences. The design history that produced them lives in `docs/agent_files/initial-brainstorming/` (the brainstorm's 32-row decision log and the six PRDs).
+ADRs capture a single significant, lasting technical decision for tickdeck: the context, the choice, the alternatives evaluated, and the consequences. The design history that produced them lives in `docs/agent_files/initial-brainstorming/` (the brainstorm's 32-row decision log and the six PRDs).
 
 ## When to write a new ADR
 

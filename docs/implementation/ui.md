@@ -55,4 +55,4 @@ Item checks shown = snapshot `checked` ids, plus item `checked` in data, plus op
 
 ## Theme
 
-`ui/src/theme/`: `tokens.css` derives every surface, border, and text color from a few HSL inputs in `themes.css` (dark and light presets, `--dir` flips surface direction). `lib/theme.ts` stores the choice (`system | light | dark`) under `crontick-dashboard.theme` and sets `data-theme` on `<html>`; `system` follows `prefers-color-scheme` live. An inline script in `ui/index.html` applies the stored choice before first paint; `THEME_KEY` must match it, which `ui/tests/theme.test.ts` asserts along with palette contrast.
+`ui/src/theme/`: `tokens.css` derives every surface, border, and text color from a few HSL inputs in `themes.css` (dark and light presets, `--dir` flips surface direction). `lib/theme.ts` stores the choice (`system | light | dark`) under `tickdeck.theme` and sets `data-theme` on `<html>`; `system` follows `prefers-color-scheme` live. An inline script in `ui/index.html` applies the stored choice before first paint; `THEME_KEY` must match it, which `ui/tests/theme.test.ts` asserts along with palette contrast.

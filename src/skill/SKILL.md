@@ -1,20 +1,20 @@
 ---
-name: crontick-dashboard
-description: Write cards to the local crontick-dashboard feed so they show on the user's dashboard. Use when asked to "show on my dashboard", "write a dashboard card", "raise an alert", "notify me", or to publish a table, list, KPI, markdown or media panel (e.g. unread email, today's tasks, service health) for the user to see.
+name: tickdeck
+description: Write cards to the local tickdeck feed so they show on the user's dashboard. Use when asked to "show on my dashboard", "write a dashboard card", "raise an alert", "notify me", or to publish a table, list, KPI, markdown or media panel (e.g. unread email, today's tasks, service health) for the user to see.
 allowed-tools: shell
 ---
-<!-- crontick-dashboard@0.1.0 -->
+<!-- tickdeck@0.1.0 -->
 
-# crontick-dashboard — write cards the dashboard shows
+# tickdeck — write cards the dashboard shows
 
 ## 1. Purpose / when to use
 
-crontick-dashboard is a local dashboard that renders **cards**: folders of JSON files that agents drop into a feed directory. You write files; the dashboard watches the dir and shows them. No daemon call is needed to write.
+tickdeck is a local dashboard that renders **cards**: folders of JSON files that agents drop into a feed directory. You write files; the dashboard watches the dir and shows them. No daemon call is needed to write.
 
-**Never guess the feed path.** Run `crontick-dashboard info --json` and use its `feedDir`:
+**Never guess the feed path.** Run `tickdeck info --json` and use its `feedDir`:
 
 ```sh
-crontick-dashboard info --json   # -> { "feedDir": "...", "url": ..., "skillPath": ..., ... }
+tickdeck info --json   # -> { "feedDir": "...", "url": ..., "skillPath": ..., ... }
 ```
 
 ## 2. Folder model
@@ -40,23 +40,23 @@ crontick-dashboard info --json   # -> { "feedDir": "...", "url": ..., "skillPath
 | data.json | `data` | type-specific payload |
 | data.json | `error` | reason string when you failed (section 8) |
 
-Exact shapes: `crontick-dashboard templates <type>` prints a runnable card.json and data.json (`templates` alone lists all types). Do not copy schemas from memory.
+Exact shapes: `tickdeck templates <type>` prints a runnable card.json and data.json (`templates` alone lists all types). Do not copy schemas from memory.
 
 ## 3. First time: create the card
 
 ```sh
-crontick-dashboard new <id> --type <type> --title "<title>" --column center --height M
-crontick-dashboard templates <type> --file data    # the shape to write into data.json
+tickdeck new <id> --type <type> --title "<title>" --column center --height M
+tickdeck templates <type> --file data    # the shape to write into data.json
 ```
 
 `new` writes `card.json` only. Layout flags are optional: `--column left|center|right`, `--order <n>`, `--height S|M|L|auto`, `--priority 0-5`. It fails if the card exists (use `--force` to rewrite card.json only; data.json is never touched). Do this once; later runs only rewrite data.json.
 
 ## 4. Each run: write data.json
 
-1. Build the new `data.json` content (shape from `crontick-dashboard templates <type> --file data`).
-2. **Pre-validate** before writing: pipe it to `crontick-dashboard validate - --as data --type <type>` (exit 0 = OK; fix and retry).
+1. Build the new `data.json` content (shape from `tickdeck templates <type> --file data`).
+2. **Pre-validate** before writing: pipe it to `tickdeck validate - --as data --type <type>` (exit 0 = OK; fix and retry).
 3. **Write atomically**: write `<feedDir>/<id>/data.json.tmp`, then rename to `<feedDir>/<id>/data.json`. Ingest ignores `*.tmp`, so readers never see a half-written file.
-4. **Check the result**: `crontick-dashboard validate <feedDir>/<id>` must exit 0 with no warnings.
+4. **Check the result**: `tickdeck validate <feedDir>/<id>` must exit 0 with no warnings.
 5. Never delete other agents' files.
 
 ## 5. updatedAt
@@ -87,7 +87,7 @@ If your job failed, write `error: "<reason>"` in data.json instead of stale data
 
 ## 9. Alerts
 
-An alert is one file, `<feedDir>/alerts/<id>.json` (id = file name stem, same slug rules). Write it atomically like data.json (tmp, then rename); validate with `crontick-dashboard validate - --as alert`.
+An alert is one file, `<feedDir>/alerts/<id>.json` (id = file name stem, same slug rules). Write it atomically like data.json (tmp, then rename); validate with `tickdeck validate - --as alert`.
 
 - `title`: required.
 - `text`: optional, one line, at most 200 chars.
@@ -116,7 +116,7 @@ A ticked alert moves to Completed in the UI. Alert with a title only:
 Worked example, an email-summary `table` card. Create it with:
 
 ```sh
-crontick-dashboard new email-summary --type table --title 'Email summary' --column center --height M
+tickdeck new email-summary --type table --title 'Email summary' --column center --height M
 ```
 
 That writes this card.json:
@@ -165,5 +165,5 @@ Gotchas:
 - Types are generic: extra keys are preserved untouched; `x-` keys are yours. Table cells are string, number, boolean, null or `{text, link?}`; list items can carry `links: [{text, link}]`; `kpi` cards list several metrics in `data.items`.
 - Link schemes: http|https|mailto|ms-outlook only.
 - No input widgets in the UI; cards never trigger jobs.
-- Never guess the feed dir; always `crontick-dashboard info --json`.
-- After upgrading the package, re-run `crontick-dashboard skill install --force` to refresh this file (the owner does this).
+- Never guess the feed dir; always `tickdeck info --json`.
+- After upgrading the package, re-run `tickdeck skill install --force` to refresh this file (the owner does this).

@@ -1,4 +1,4 @@
-# Contributing to crontick-dashboard
+# Contributing to tickdeck
 
 Thank you for your interest in contributing!
 

@@ -60,10 +60,10 @@ export function createStartRegister(overrides: Partial<StartDeps> = {}) {
           onShutdown: () => stop(),
         });
         if (!result.started) {
-          throw new CliError(`already running at ${result.url} (pid ${result.pid}); stop it with: crontick-dashboard daemon stop`, 1, ERROR_CODES.ALREADY_RUNNING);
+          throw new CliError(`already running at ${result.url} (pid ${result.pid}); stop it with: tickdeck daemon stop`, 1, ERROR_CODES.ALREADY_RUNNING);
         }
         const dispose = deps.onSignal(() => stop());
-        ctx.io.stdout(`crontick-dashboard running at ${result.server.url}\n`);
+        ctx.io.stdout(`tickdeck running at ${result.server.url}\n`);
         ctx.io.stdout(`Feed dir: ${feedDir(env)}\n`);
         ctx.io.stdout('Press Ctrl+C to stop\n');
         await stopped;

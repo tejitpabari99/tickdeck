@@ -39,7 +39,7 @@ dist/ui/            static UI served by the server
 |--------|--------|
 | `scripts/check-dist-built.mjs` | Build output complete, Node guard not bundled away |
 | `scripts/verify-tarball.mjs` | `npm pack --dry-run --json` contains the required files, `schemas/*.json`, `templates/**/*.json`, and no stray `src/` (except `SKILL.md`), tests, docs, scripts, or `.worktrees/` |
-| `scripts/verify-package-install.mjs` | Behavior of the **real** tarball: pack, install into a scratch project, run the installed bin by path with isolated `CRONTICK_DASHBOARD_HOME` and a non-default port. Checks `--version`, all templates validate, a broken fixture exits 1, `info --json` paths exist, `daemon start`, `/api/health`, `GET /` returns HTML, `new` then `validate` exits 0 with no warnings, the scaffolded card appears in `/api/snapshot`, then stops the daemon and cleans up (including a kill by pid file) |
+| `scripts/verify-package-install.mjs` | Behavior of the **real** tarball: pack, install into a scratch project, run the installed bin by path with isolated `TICKDECK_HOME` and a non-default port. Checks `--version`, all templates validate, a broken fixture exits 1, `info --json` paths exist, `daemon start`, `/api/health`, `GET /` returns HTML, `new` then `validate` exits 0 with no warnings, the scaffolded card appears in `/api/snapshot`, then stops the daemon and cleans up (including a kill by pid file) |
 | `scripts/verify-no-lockfile-tampering.mjs` | Every `package.json` dependency is present in `package-lock.json` |
 | `scripts/check-changeset-bumps.mjs` | No pending `major` changeset (ceiling `minor`; `ALLOW_MAJOR=true` or `MAX_BUMP` overrides) |
 
@@ -51,4 +51,4 @@ Versioning and changelog belong to changesets (`.changeset/`, `commit: false`, b
 
 ## Dev workflow notes
 
-`ui/vite.config.ts` proxies `/api` to the daemon port, resolved from env `CRONTICK_DASHBOARD_PORT`, then the `daemon.port` file, then the default, so `vite dev` works against a running `daemon start`. The Vite config also hosts the `ui` vitest project (jsdom).
+`ui/vite.config.ts` proxies `/api` to the daemon port, resolved from env `TICKDECK_PORT`, then the `daemon.port` file, then the default, so `vite dev` works against a running `daemon start`. The Vite config also hosts the `ui` vitest project (jsdom).

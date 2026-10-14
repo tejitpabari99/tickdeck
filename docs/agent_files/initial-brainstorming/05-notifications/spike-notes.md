@@ -6,7 +6,7 @@ date: 2026-10-05
 # Spike notes: Win/mac notification adapter (05 Task 1)
 
 ## Provisional decision
-node-notifier stands as Task 2's adapter (provisional), behind `NotifyAdapter`. The shell-out adapter (`osascript`, PowerShell WinRT toast with AUMID `Crontick.Dashboard`, `notify-send`) is the fallback. Final go/no-go needs the owner run below.
+node-notifier stands as Task 2's adapter (provisional), behind `NotifyAdapter`. The shell-out adapter (`osascript`, PowerShell WinRT toast with AUMID `Tickdeck`, `notify-send`) is the fallback. Final go/no-go needs the owner run below.
 
 ## Verified here (Linux x64, Node v22.23.3, headless, SSH session)
 Script: `scripts/notify-spike.mjs` (throwaway, ESLint-ignored, not imported by `src`).
@@ -38,9 +38,9 @@ node scripts/notify-spike.mjs
 node scripts/notify-spike.mjs http://127.0.0.1:7777/#card=abc
 ```
 The script prints JSON lines (`env`, `loaded`, `notify-call`, `event:*`, `callback`, `open-*`) and exits within 60 s. Observe and record:
-1. Toast shown? (Windows: attributed to "Crontick.Dashboard"? Start-menu shortcut created? macOS: shown as terminal-notifier or Terminal?)
+1. Toast shown? (Windows: attributed to "Tickdeck"? Start-menu shortcut created? macOS: shown as terminal-notifier or Terminal?)
 2. Click-through: click the toast. Does the default browser open the URL? Which `event:`/`callback.response` printed (`activate`/`clicked`)? Try also: ignore it (timeout) and dismiss it, note events.
-3. Permission denied: Windows Settings > Notifications turn off "Crontick.Dashboard"; macOS System Settings > Notifications turn off terminal-notifier. Rerun: does the script error, hang until 60 s, or silently succeed?
+3. Permission denied: Windows Settings > Notifications turn off "Tickdeck"; macOS System Settings > Notifications turn off terminal-notifier. Rerun: does the script error, hang until 60 s, or silently succeed?
 4. Focus Assist (Windows) / Focus (macOS) on: does the toast still appear in Action Center? Note.
 5. Node 22 compat: any warning or exception on load or call. Windows: any SnoreToast/antivirus prompt; macOS: Rosetta/Gatekeeper prompt for terminal-notifier.app.
 Record results: fill the table above (replace PENDING), paste the JSON output under a "Raw output" heading below, then set `status: done`. Verdict per platform: GO if toast shown AND (click works OR failure is silent/non-throwing); NO-GO (switch to shell-out adapter for that platform) if toast not shown or the process hangs/crashes.
@@ -55,7 +55,7 @@ Run on Windows and macOS (Linux desktop optional) with `npm run build` output an
 1. Drop a sample card with `"notify": true` into the feed dir; a toast shows the title and a one-line body.
 2. Click the toast: the browser opens `http://127.0.0.1:<port>/#card=<id>` and highlights the card.
 3. Rewrite the card with a newer `updatedAt`: a second toast. Rewrite with same `updatedAt` / restart server: none.
-4. Deny notification permission (macOS System Settings > Notifications; Windows Settings > Notifications, "Crontick.Dashboard", check Focus Assist): no toast, no server error, in-page highlight still works.
+4. Deny notification permission (macOS System Settings > Notifications; Windows Settings > Notifications, "Tickdeck", check Focus Assist): no toast, no server error, in-page highlight still works.
 5. Drop 5 `notify:true` cards within 10 s: 3 toasts + 1 summary toast.
 6. Set `notifications.os` to `off`: no toasts, snapshot warning shows the reason.
 

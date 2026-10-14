@@ -2,7 +2,7 @@
 /**
  * Release guard: fail if any pending changeset declares a `major` bump.
  *
- * While crontick-dashboard is on a 0.x version, a `major` changeset would jump straight
+ * While tickdeck is on a 0.x version, a `major` changeset would jump straight
  * to 1.0.0 -- almost never what's intended by accident. This script scans
  * `.changeset/*.md` (ignoring `README.md` and `config.json`), parses each
  * file's YAML-ish frontmatter (`"pkg": patch|minor|major|none` lines between
@@ -113,7 +113,7 @@ function main() {
       console.error(`  - ${file} declares "${bump}"`);
     }
     console.error(
-      '\nWhile crontick-dashboard is on a 0.x version, a "major" changeset jumps straight to 1.0.0.\n' +
+      '\nWhile tickdeck is on a 0.x version, a "major" changeset jumps straight to 1.0.0.\n' +
         'If this is intentional, re-run with ALLOW_MAJOR=true (the manual release workflow\n' +
         'exposes this as the "allow_major" input), or edit the changeset\'s frontmatter to a\n' +
         'lower bump if it was a mistake.',

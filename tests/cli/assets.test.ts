@@ -23,9 +23,9 @@ const pkg = (dir: string, name: string): void => {
 };
 
 describe('packageAssets', () => {
-  it('walks up to the crontick-dashboard package.json, skipping other packages', () => {
+  it('walks up to the tickdeck package.json, skipping other packages', () => {
     const root = tmp();
-    pkg(root, 'crontick-dashboard');
+    pkg(root, 'tickdeck');
     pkg(join(root, 'node_modules', 'other'), 'other');
     const start = join(root, 'dist', 'cli');
     mkdirSync(start, { recursive: true });
@@ -38,15 +38,15 @@ describe('packageAssets', () => {
 
   it('accepts a file URL as start', () => {
     const root = tmp();
-    pkg(root, 'crontick-dashboard');
+    pkg(root, 'tickdeck');
     mkdirSync(join(root, 'dist'), { recursive: true });
     expect(packageAssets(new URL(`file://${join(root, 'dist', 'x.js')}`)).root).toBe(root);
   });
 
-  it('throws when no crontick-dashboard package is found', () => {
+  it('throws when no tickdeck package is found', () => {
     const root = tmp();
     pkg(root, 'something-else');
-    expect(() => packageAssets(root)).toThrow(/crontick-dashboard/);
+    expect(() => packageAssets(root)).toThrow(/tickdeck/);
   });
 });
 

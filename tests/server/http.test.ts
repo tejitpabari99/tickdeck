@@ -74,7 +74,7 @@ describe('http server', () => {
 
   it('health reports app, pid, dataDir', async () => {
     const s = await boot();
-    expect(await (await get(s, '/api/health')).json()).toEqual({ app: 'crontick-dashboard', pid: process.pid, dataDir: data });
+    expect(await (await get(s, '/api/health')).json()).toEqual({ app: 'tickdeck', pid: process.pid, dataDir: data });
   });
 
   it('listens on 127.0.0.1 only and writes/removes the port file', async () => {
@@ -97,7 +97,7 @@ describe('http server', () => {
     expect((await raw(s.port, 'GET', '/', { Host: 'evil.com' })).status).toBe(403);
   });
 
-  it('mutation guard needs JSON content-type and X-Crontick-Dashboard', async () => {
+  it('mutation guard needs JSON content-type and X-Tickdeck', async () => {
     const s = await boot();
     const url = `${loopbackUrl(s.port)}/api/shutdown`;
     expect((await fetch(url, { method: 'POST' })).status).toBe(403);
@@ -161,7 +161,7 @@ describe('bindPort', () => {
       bindPort(80, { listen: () => Promise.reject(err), probe: () => Promise.resolve({ kind: 'foreign' }), notify: () => {} }),
     ).rejects.toBe(err);
   });
-  it('identifies a crontick-dashboard occupant in the notice', async () => {
+  it('identifies a tickdeck occupant in the notice', async () => {
     const msgs: string[] = [];
     let first = true;
     const r = await bindPort(5000, {
@@ -172,7 +172,7 @@ describe('bindPort', () => {
         }
         return Promise.resolve(p === 0 ? 6000 : p);
       },
-      probe: () => Promise.resolve({ kind: 'crontick-dashboard', pid: 42, dataDir: '/d' }),
+      probe: () => Promise.resolve({ kind: 'tickdeck', pid: 42, dataDir: '/d' }),
       notify: (m) => void msgs.push(m),
     });
     expect(r).toMatchObject({ port: 6000, fellBack: true });

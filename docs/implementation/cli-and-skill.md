@@ -5,7 +5,7 @@ Non-duplication: commands, flags, exit codes, and output formats are in `docs/re
 
 ## Two-stage entry
 
-`src/cli/index.ts` is the `bin`. It does one thing: `guardedMain` from `src/cli/guard.ts`. The guard imports only `constants` leaf files (no dependencies), compares `process.versions.node` with `MIN_NODE` (22.5), and on failure prints `error: crontick-dashboard requires Node >=22.5 (found X). Please upgrade Node.` and sets exit code 1. Only after that does it `import('./main.js')`, which pulls in commander, zod, and the rest. Without this split, a static import of a dependency that needs a newer Node would crash with an unreadable stack before the check ran.
+`src/cli/index.ts` is the `bin`. It does one thing: `guardedMain` from `src/cli/guard.ts`. The guard imports only `constants` leaf files (no dependencies), compares `process.versions.node` with `MIN_NODE` (22.5), and on failure prints `error: tickdeck requires Node >=22.5 (found X). Please upgrade Node.` and sets exit code 1. Only after that does it `import('./main.js')`, which pulls in commander, zod, and the rest. Without this split, a static import of a dependency that needs a newer Node would crash with an unreadable stack before the check ran.
 
 The build enforces the split: `tsup.config.ts` builds `cli/index` as its own entry with `./main.js` external, and `scripts/check-dist-built.mjs` fails if the built bin statically imports a heavy dependency or lacks the dynamic `import('./main.js')`. `tests/cli/dist-guard.test.ts` asserts the same on the built bin (skipped when `dist/` is absent).
 
@@ -18,7 +18,7 @@ Commands live in `src/cli/commands/<name>.ts`, each exporting `registerX(program
 Error handling in `run`:
 
 - commander errors (`exitOverride` is on): help and version exit 0; usage errors print one line and exit 2;
-- `CliError(message, exitCode, code?)`: print the message, exit with its code; `--verbose` (or env `CRONTICK_DASHBOARD_VERBOSE`) also prints the `ERROR_CODES` value;
+- `CliError(message, exitCode, code?)`: print the message, exit with its code; `--verbose` (or env `TICKDECK_VERBOSE`) also prints the `ERROR_CODES` value;
 - anything else: `error: <message>`, exit 1, stack with `--verbose`.
 
 Core `AppError`s (codes in `src/constants/error-codes.ts`) are converted to `CliError` at the command boundary, keeping their code. Red output only when stderr is a TTY and `NO_COLOR` is unset.
@@ -51,11 +51,11 @@ A directory is a card folder; `card.json` or `data.json` validates their contain
 
 ## Locating packaged assets
 
-`src/cli/assets.ts` walks up from the running module to the nearest `package.json` whose `name` is `crontick-dashboard`, then derives `schemas/`, `templates/`, and `src/skill/SKILL.md` from that root (`PACKAGE_ROOT_NOT_FOUND` otherwise). This works identically from `src/` under tsx and from `dist/cli/` in an installed package. `resolveUiDir` expects `<entryDir>/../ui` and throws `NOT_BUILT` if `index.html` is absent; `start` passes `<root>/dist/cli` so the lookup lands on `dist/ui`.
+`src/cli/assets.ts` walks up from the running module to the nearest `package.json` whose `name` is `tickdeck`, then derives `schemas/`, `templates/`, and `src/skill/SKILL.md` from that root (`PACKAGE_ROOT_NOT_FOUND` otherwise). This works identically from `src/` under tsx and from `dist/cli/` in an installed package. `resolveUiDir` expects `<entryDir>/../ui` and throws `NOT_BUILT` if `index.html` is absent; `start` passes `<root>/dist/cli` so the lookup lands on `dist/ui`.
 
 ## Skill install
 
-`src/skill/install.ts`: copy `src/skill/SKILL.md` to `<skillsDir>/crontick-dashboard/SKILL.md`, default skills dir `~/.claude/skills`. Identical content returns `up-to-date`; differing content throws `SKILL_DIFFERS` unless `--force`. The write is a tmp file in the destination dir plus rename, always a regular file (never a symlink), so an interrupted install cannot leave a truncated skill. The tarball ships `SKILL.md` from `src/skill/` (the only `src/` file allowed by `verify-tarball`). `tests/skill/skill-md.test.ts` guards the skill against the CLI it describes (commands exist in `--help`, `templates <x>` names are types, marked JSON blocks validate through the contract validators, removed concepts are absent). Update it together with CLI changes.
+`src/skill/install.ts`: copy `src/skill/SKILL.md` to `<skillsDir>/tickdeck/SKILL.md`, default skills dir `~/.claude/skills`. Identical content returns `up-to-date`; differing content throws `SKILL_DIFFERS` unless `--force`. The write is a tmp file in the destination dir plus rename, always a regular file (never a symlink), so an interrupted install cannot leave a truncated skill. The tarball ships `SKILL.md` from `src/skill/` (the only `src/` file allowed by `verify-tarball`). `tests/skill/skill-md.test.ts` guards the skill against the CLI it describes (commands exist in `--help`, `templates <x>` names are types, marked JSON blocks validate through the contract validators, removed concepts are absent). Update it together with CLI changes.
 
 ## Adding a command
 

@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark light" />
-    <title>Crontick</title>
+    <title>Tickdeck</title>
     <script>
       /* Pre-paint theme: must match ui/src/lib/theme.ts (key + resolution). */
       (function () {
         var choice = 'system';
         try {
-          var v = localStorage.getItem('crontick-dashboard.theme');
+          var v = localStorage.getItem('tickdeck.theme');
           if (v === 'light' || v === 'dark' || v === 'system') choice = v;
         } catch (e) {}
         var dark = true;

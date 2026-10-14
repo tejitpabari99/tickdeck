@@ -9,7 +9,7 @@ function setup() {
   const skillPath = join(root, 'SKILL.md');
   writeFileSync(skillPath, '# v1\n');
   const skillsDir = join(root, 'skills');
-  const dest = join(skillsDir, 'crontick-dashboard', 'SKILL.md');
+  const dest = join(skillsDir, 'tickdeck', 'SKILL.md');
   return { skillPath, skillsDir, dest, version: '1.0.0' };
 }
 
@@ -29,7 +29,7 @@ describe('installSkill', () => {
     expect(readFileSync(s.dest, 'utf8')).toBe('edited');
     expect(installSkill({ ...s, force: true }).status).toBe('installed');
     expect(readFileSync(s.dest, 'utf8')).toBe('# v1\n');
-    expect(readdirSync(join(s.skillsDir, 'crontick-dashboard'))).toEqual(['SKILL.md']);
+    expect(readdirSync(join(s.skillsDir, 'tickdeck'))).toEqual(['SKILL.md']);
   });
   it('missing packaged skill throws not-found', () => {
     const s = setup();

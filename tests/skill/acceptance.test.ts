@@ -72,7 +72,7 @@ describe('SKILL.md acceptance: an agent following the skill literally gets a car
     server = await startServer({ env: { [ENV_HOME]: home }, uiDir: ui, port: 0, notifyAdapter: new FakeNotifyAdapter() });
 
     // 2. First time: create the card (command exactly as written in SKILL.md section 11).
-    expect(skill).toContain("crontick-dashboard new email-summary --type table --title 'Email summary' --column center --height M");
+    expect(skill).toContain("tickdeck new email-summary --type table --title 'Email summary' --column center --height M");
     const created = await cli(['new', 'email-summary', '--type', 'table', '--title', 'Email summary', '--column', 'center', '--height', 'M']);
     expect(created.code, created.err).toBe(0);
     const folder = join(feedDir, 'email-summary');

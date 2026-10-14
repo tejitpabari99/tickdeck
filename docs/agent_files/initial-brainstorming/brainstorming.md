@@ -4,7 +4,7 @@ summary: Brainstorm brief v2 — custom-built local dashboard fed by agent-writt
 date: 2026-10-05
 ---
 
-# crontick-dashboard — Brainstorm Brief (v2)
+# tickdeck — Brainstorm Brief (v2)
 
 ## 1. TL;DR
 
@@ -60,8 +60,8 @@ Kill criteria (owner abandons if):
 | 24 | Global search across all cards (plus per-table search) | Per-table search only | Find anything fast |
 | 25 | Light + dark themes. Calm, Linear/Raycast-like, one accent color, good typography, subtle motion on data change; slim header (date, alert count, weather later). Glance-inspired: HSL theme tokens + default narrow–wide–narrow column arrangement on the grid. Owner tried Glance and likes its look | Themes beyond light/dark in v1; using Glance itself | Tokens make swapping cheap; Glance overkill + no local support; borrow look only |
 | 26 | Keep drag/resize/fullscreen grid (react-grid-layout); layout persisted in `state.json` | Fixed layout | Core feel; owner wants it |
-| 27 | Run model: started manually via CLI, crontick-style (`crontick-dashboard start`, `daemon start|stop|status`, `info` prints feed path + URL, `validate <file>`, `templates`). No autostart/service install in v1 | Autostart at login; agent-triggered demand-start | Autostart needs more thought; keep v1 simple |
-| 28 | Packaging: npm global package `crontick-dashboard`, Node ≥22.5, Windows/macOS/Linux. Data dir via `env-paths` with `CRONTICK_DASHBOARD_HOME` override (mirrors crontick `src/paths.ts`). Fixed default port on 127.0.0.1, free-port fallback + port file (like crontick) | Docker; per-OS installers | Matches crontick conventions; no Docker on VPS |
+| 27 | Run model: started manually via CLI, crontick-style (`tickdeck start`, `daemon start|stop|status`, `info` prints feed path + URL, `validate <file>`, `templates`). No autostart/service install in v1 | Autostart at login; agent-triggered demand-start | Autostart needs more thought; keep v1 simple |
+| 28 | Packaging: npm global package `tickdeck`, Node ≥22.5, Windows/macOS/Linux. Data dir via `env-paths` with `TICKDECK_HOME` override (mirrors crontick `src/paths.ts`). Fixed default port on 127.0.0.1, free-port fallback + port file (like crontick) | Docker; per-OS installers | Matches crontick conventions; no Docker on VPS |
 | 29 | Stack: React + Vite + TS + react-grid-layout frontend; small Node server (file watch, validate, compute visibility/broken/Now, serve, ticks, archive, OS notify, TickTick MCP client). Page polls 30-60s (SSE if too slow) | Heavier framework/backend | Small, fits requirements |
 | 30 | Build choice: custom build decided. Homarr rejected after owner reviewed repo + demo: too crowded, app-management feel, no way to add local personal output, overkill features (stocks etc.). Node-RED Dashboard 2 not pursued. Glance tried by owner: look liked and borrowed, but overkill (too many features) and no local file support. Dashy display-only (research) | Homarr; Node-RED Dashboard 2; Glance; Dashy | See research doc; owner's own review of Homarr |
 | 31 | v1 cuts: multi-page, mobile layout, embed, inline video, history viewer, autostart, UI inputs, push to phone, weather | Ship all | YAGNI; weather = good 2nd-week widget |
@@ -118,7 +118,7 @@ Custom build. File-based contract: agents write cards, server validates + comput
 <data>/config.json      port, defaults (retention, Now threshold, poll interval)
 ```
 
-Location via `env-paths`: Win `%LOCALAPPDATA%\crontick-dashboard`; mac `~/Library/Application Support/crontick-dashboard`; Linux `~/.local/share/crontick-dashboard`; override `CRONTICK_DASHBOARD_HOME`.
+Location via `env-paths`: Win `%LOCALAPPDATA%\tickdeck`; mac `~/Library/Application Support/tickdeck`; Linux `~/.local/share/tickdeck`; override `TICKDECK_HOME`.
 
 ### Parts
 
@@ -156,7 +156,7 @@ Calm, Linear/Raycast-like; one accent; good typography; subtle motion on data ch
 
 ### CLI
 
-`crontick-dashboard start` (foreground), `daemon start|stop|status`, `info` (feed path + URL), `validate <file>`, `templates` (list types/examples). No autostart.
+`tickdeck start` (foreground), `daemon start|stop|status`, `info` (feed path + URL), `validate <file>`, `templates` (list types/examples). No autostart.
 
 ### Verification
 

@@ -149,11 +149,11 @@ describe('App Completed integration', () => {
     await t.store.refetch();
     render(<App mutations={t.m} toasts={t.toasts} />);
     expect(screen.getByRole('button', { name: /Completed \(3\)/ })).toBeTruthy();
-    localStorage.setItem('crontick-dashboard.filter', 'alerts');
+    localStorage.setItem('tickdeck.filter', 'alerts');
     cleanup();
     render(<App mutations={t.m} toasts={t.toasts} />);
     expect(screen.getByRole('button', { name: /Completed \(1\)/ })).toBeTruthy();
-    localStorage.setItem('crontick-dashboard.filter', 'cards');
+    localStorage.setItem('tickdeck.filter', 'cards');
     cleanup();
     render(<App mutations={t.m} toasts={t.toasts} />);
     expect(screen.getByRole('button', { name: /Completed \(2\)/ })).toBeTruthy();

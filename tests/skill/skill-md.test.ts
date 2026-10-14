@@ -21,14 +21,14 @@ describe('SKILL.md', () => {
     const m = /^---\n([\s\S]*?)\n---\n/.exec(md);
     expect(m).not.toBeNull();
     const fm = m![1]!;
-    expect(fm).toMatch(/^name: crontick-dashboard$/m);
+    expect(fm).toMatch(/^name: tickdeck$/m);
     expect(fm).toMatch(/^allowed-tools: shell$/m);
     const desc = /^description: (.+)$/m.exec(fm)?.[1] ?? '';
     for (const p of ['show on my dashboard', 'write a dashboard card', 'raise an alert', 'notify me']) expect(desc).toContain(p);
   });
 
   it('header comment version matches package.json', () => {
-    expect(md).toContain(`<!-- crontick-dashboard@${pkg.version} -->`);
+    expect(md).toContain(`<!-- tickdeck@${pkg.version} -->`);
   });
 
   it('names every registered type, and only registered types or alert after `templates`', () => {
@@ -40,12 +40,12 @@ describe('SKILL.md', () => {
     }
   });
 
-  it('every backticked `crontick-dashboard <cmd>` is a real command', async () => {
+  it('every backticked `tickdeck <cmd>` is a real command', async () => {
     const cmds = await commandNames();
     expect(cmds).toEqual(expect.arrayContaining(['validate', 'templates', 'info', 'new', 'start', 'daemon', 'skill']));
     const shBlocks = [...md.matchAll(/```sh\n([\s\S]*?)```/g)].map((m) => m[1]!).join('\n');
     const code = `${[...md.matchAll(/`([^`\n]+)`/g)].map((m) => m[1]!).join('\n')}\n${shBlocks}`;
-    const used = [...code.matchAll(/crontick-dashboard ([a-z][\w-]*)/g)].map((m) => m[1]!);
+    const used = [...code.matchAll(/tickdeck ([a-z][\w-]*)/g)].map((m) => m[1]!);
     expect(used).toEqual(expect.arrayContaining(['info', 'validate', 'templates', 'new']));
     for (const u of used) expect(cmds).toContain(u);
   });

@@ -17,7 +17,7 @@ export function ServerDown(p: ServerDownProps) {
       </h2>
       <p className="server-down__retry" role="status">{`Retrying every ${secs} s…`}</p>
       <p className="server-down__hint">
-        Start it with <code>crontick-dashboard daemon start</code>
+        Start it with <code>tickdeck daemon start</code>
       </p>
     </section>
   );

@@ -278,7 +278,7 @@ describe('cross-cutting', () => {
     expect(nc.err).not.toContain('\x1b[');
   });
 
-  it('unexpected error: stack only with CRONTICK_DASHBOARD_VERBOSE', async () => {
+  it('unexpected error: stack only with TICKDECK_VERBOSE', async () => {
     const throwing = cap('', {});
     throwing.io.readStdin = async () => {
       throw new Error('boom');

@@ -25,7 +25,7 @@ const io = (): CliIo => ({
   stdout: (s) => void (out += s),
   stderr: (s) => void (err += s),
   readStdin: async () => '',
-  env: { CRONTICK_DASHBOARD_HOME: home },
+  env: { TICKDECK_HOME: home },
   isTTY: false,
 });
 const r = (...a: string[]): Promise<number> => run(a, io());
@@ -45,7 +45,7 @@ describe('new', () => {
     const dir = join(feed(), 'email-summary');
     expect(readdirSync(dir)).toEqual(['card.json']);
     expect(card('email-summary')).toEqual({ $schema: '../../schemas/card-def.json', type: 'table', title: 'Email summary' });
-    expect(out).toBe(`created ${dir}\nnext: write ${join(dir, 'data.json')} (example: crontick-dashboard templates table)\n`);
+    expect(out).toBe(`created ${dir}\nnext: write ${join(dir, 'data.json')} (example: tickdeck templates table)\n`);
   });
 
   it('flags map to layout, title and priority', async () => {

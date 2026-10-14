@@ -1,4 +1,4 @@
-# Releasing crontick-dashboard
+# Releasing tickdeck
 
 ## Preflight
 

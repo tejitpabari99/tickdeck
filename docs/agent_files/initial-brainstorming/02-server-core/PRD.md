@@ -5,7 +5,7 @@ date: 2026-10-05
 ---
 # PRD: Server core
 
-Repo/branch: crontick-dashboard · `initial-brainstorming`
+Repo/branch: tickdeck · `initial-brainstorming`
 Depends on: 01-card-contract (validator, duration/cron parsers)
 Owns: `src/paths.ts`, `src/config.ts`, `src/state/*`, `src/feed/*` (watcher, ingest, archive), `src/compute/*`, `src/actions/*` (registry + `dismiss`), `src/http/*`, `src/lifecycle.ts`, `src/shared/api-types.ts` (type-only DTOs: `Snapshot`, `ViewCard`, `LayoutItem`; imported by 03/04/05/06 with `import type`), `tests/server/**`
 
@@ -41,9 +41,9 @@ config.json ─► Config                   └──► computeSnapshot(cards,s
 ```
 **Consumes from 01** (01 owns; verified against 01 PRD): `validateCardFile(text,{filename}) → {ok:true,card,warnings} | {broken:true,reason,message,issues,id?}` with `BrokenReason = unreadable|malformed-json|not-object|too-large|schema-invalid|unknown-type|id-mismatch`; `parseDuration(str)→ms`; `windowActive(show,now,{timezone})`; `updatedAt` required ISO with offset; `error` may coexist with missing `data`; list items carry `id` whenever `action` is present; `priority` integer 0-5. Ingest always passes `filename`.
 
-**Paths** (mirror crontick `paths.ts`, `env-paths` suffix `''`, `CRONTICK_DASHBOARD_HOME` override): `feed/`, `feed/done/`, `archive/<id>/`, `state.json`, `config.json`, `daemon.pid`, `daemon.port`, `daemon.log`, `daemon.lock`; no other dirs (no intents, no secrets). All take `env` for tests.
+**Paths** (mirror crontick `paths.ts`, `env-paths` suffix `''`, `TICKDECK_HOME` override): `feed/`, `feed/done/`, `archive/<id>/`, `state.json`, `config.json`, `daemon.pid`, `daemon.port`, `daemon.log`, `daemon.lock`; no other dirs (no intents, no secrets). All take `env` for tests.
 
-**Config** `config.json` (all optional, per-field fallback to default + `warnings[]` in snapshot): `port` (default const `DEFAULT_PORT = 47616` exported from `config.ts`; crontick uses 47615; env `CRONTICK_DASHBOARD_PORT` > config > default), `retentionDefault` ("7d"), `nowPriorityThreshold` (default 3, [RESOLVED] owner 2026-10-05), `pollIntervalMs` (30000), `timezone` (IANA; default system local), `notifications.os` (`auto|on|off`, semantics 05). Re-read when its mtime changes.
+**Config** `config.json` (all optional, per-field fallback to default + `warnings[]` in snapshot): `port` (default const `DEFAULT_PORT = 47616` exported from `config.ts`; crontick uses 47615; env `TICKDECK_PORT` > config > default), `retentionDefault` ("7d"), `nowPriorityThreshold` (default 3, [RESOLVED] owner 2026-10-05), `pollIntervalMs` (30000), `timezone` (IANA; default system local), `notifications.os` (`auto|on|off`, semantics 05). Re-read when its mtime changes.
 
 **Watcher/ingest.** `fs.watch` on `feed/` (flat, non-recursive; no chokidar dep) + full rescan every 10 s as safety net and at startup (Windows/network FS drop events; macOS/Windows emit duplicates). Per-filename 200 ms debounce, then stat+read. Ignore: non-`.json`, dotfiles, `*.tmp`, subdirs. Read retries on EBUSY/EPERM/ENOENT-race. Size cap 1 MB → Broken. 
 - *Partial writes:* 01 `reason:'malformed-json'` (or `unreadable`) ⇒ "settling": keep previous card, retry at 250 ms/1 s/3 s (and while mtime is changing); only then Broken(malformed). Any other 01 `broken` reason = Broken immediately. Skill (06) tells agents to write `.tmp` then rename.
@@ -74,9 +74,9 @@ config.json ─► Config                   └──► computeSnapshot(cards,s
 New-id placement is **UI's** job (03 puts cards lacking a layout entry at the first free slot, then PUTs layout).
 
 **Mutations** (JSON; each returns new `rev`): `POST /api/alerts/:id/tick` · `POST/DELETE /api/cards/:id/done` · `PUT/DELETE /api/cards/:id/hidden` · `PUT /api/layout` · `POST /api/cards/:id/actions {itemId, updatedAt, checked?: boolean}` (`checked` default true; `false` = untick, allowed for `complete` only, `dismiss` is one-way → 400). Server looks up the item's `action` in the current validated card (client never names the action); `updatedAt` mismatch → 409. Unknown ids 404. Write failure → 500 `{error}`; write-back conflict → 409 (see below).
-Also `GET /api/health` → `{app:'crontick-dashboard', pid, dataDir}` (port probe), `POST /api/shutdown` (loopback, for `daemon stop`).
+Also `GET /api/health` → `{app:'tickdeck', pid, dataDir}` (port probe), `POST /api/shutdown` (loopback, for `daemon stop`).
 
-**Security.** Bind `127.0.0.1` only. Reject requests whose `Host` isn't `127.0.0.1:<port>`/`localhost:<port>` (DNS rebinding). Mutations require `Content-Type: application/json` + header `X-Crontick-Dashboard: 1`; no CORS headers (forces failing preflight for foreign pages).
+**Security.** Bind `127.0.0.1` only. Reject requests whose `Host` isn't `127.0.0.1:<port>`/`localhost:<port>` (DNS rebinding). Mutations require `Content-Type: application/json` + header `X-Tickdeck: 1`; no CORS headers (forces failing preflight for foreign pages).
 
 **Persistence (state.json).** `{version:1, acks:{id:updatedAt}, hidden:{id:true}, layout:[], checks:{id:{updatedAt,items:[]}}, notified:{id:updatedAt}, lastSeen:{id:iso}}` (`checks` = `dismiss` ticks only). One in-process writer: mutations queue, write `state.json.tmp` + rename (atomic; retry EPERM on Windows). Single server per data dir enforced by pid file. Corrupt file → rename `state.json.corrupt-<ts>`, start defaults, add warning. Entries for ids absent from feed are kept 30 days since `lastSeen` (agent delete+recreate must not lose acks/layout), then pruned.
 
@@ -100,7 +100,7 @@ Agents are told (06 skill): before overwriting a card, read the existing file an
 **Warnings (for 05):** `server.warnings.set(key,msg)` / `.clear(key)`; merged into snapshot `warnings[]` (e.g. notifications off).
 **Events (for 05):** `server.events.on('card:new'|'card:changed'|'card:removed', {card, prev?, file})`. Fired after validation, only for non-Broken cards inside window and only when `updatedAt` changed (server write-backs never fire); startup scan fires for cards whose `updatedAt` ≠ `notified[id]` (restart doesn't lose or repeat); server stamps `notified` after emit.
 
-**Static + lifecycle.** No CSP header in v1. Serves built UI from an injected `uiDir` (SPA fallback, `/api/*` excluded). `startServer({env,clock,uiDir,logger}) → {url,port,dataDir,stop()}`; `lifecycle.ts` (mirrors crontick `daemon/lifecycle.ts`+`ensure.ts`; 06 only calls it): foreground run, `daemon` spawn-detached/stop/status via pid+port files, stale-pid detection. Daemon spawn per 06: `spawn(process.execPath,[serverEntry],{detached:true,stdio:['ignore',logFd,logFd],shell:false,windowsHide:true})` + `unref()`, log `<data>/daemon.log`, startup waits on `/api/health` (`app==='crontick-dashboard'`) under an exclusive `daemon.lock`, stop = `POST /api/shutdown` first (Windows has no graceful SIGTERM), then kill after timeout; server entry = `dist/server/index.js`. Port: `bindPort` pattern (fixed default → on EADDRINUSE probe `/api/health`, notice, listen(0)); port file written after listen, removed on stop. Stack: Hono + `@hono/node-server`, `croner`, `env-paths` (as crontick).
+**Static + lifecycle.** No CSP header in v1. Serves built UI from an injected `uiDir` (SPA fallback, `/api/*` excluded). `startServer({env,clock,uiDir,logger}) → {url,port,dataDir,stop()}`; `lifecycle.ts` (mirrors crontick `daemon/lifecycle.ts`+`ensure.ts`; 06 only calls it): foreground run, `daemon` spawn-detached/stop/status via pid+port files, stale-pid detection. Daemon spawn per 06: `spawn(process.execPath,[serverEntry],{detached:true,stdio:['ignore',logFd,logFd],shell:false,windowsHide:true})` + `unref()`, log `<data>/daemon.log`, startup waits on `/api/health` (`app==='tickdeck'`) under an exclusive `daemon.lock`, stop = `POST /api/shutdown` first (Windows has no graceful SIGTERM), then kill after timeout; server entry = `dist/server/index.js`. Port: `bindPort` pattern (fixed default → on EADDRINUSE probe `/api/health`, notice, listen(0)); port file written after listen, removed on stop. Stack: Hono + `@hono/node-server`, `croner`, `env-paths` (as crontick).
 
 ## Decisions
 | # | Decision | Choice | Alternatives | Why |

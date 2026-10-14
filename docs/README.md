@@ -1,6 +1,6 @@
 # Documentation
 
-All crontick-dashboard documentation, organized by audience and purpose. Use the table to find
+All tickdeck documentation, organized by audience and purpose. Use the table to find
 what you need or to decide where new content belongs.
 
 ---

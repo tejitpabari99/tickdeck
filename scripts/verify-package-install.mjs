@@ -2,7 +2,7 @@
 /**
  * Proves the REAL tarball works: pack -> install into a scratch project -> run the installed bin
  * (resolved from its package.json `bin`, invoked with `node`, no npx/shims) with an isolated
- * CRONTICK_DASHBOARD_HOME and a non-default port. Run after `npm run build`.
+ * TICKDECK_HOME and a non-default port. Run after `npm run build`.
  */
 import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
@@ -111,13 +111,13 @@ async function main() {
   log('npm install tarball into scratch project...');
   execFileSync(npmCmd, ['install', tarball, '--no-audit', '--no-fund', '--no-save'], { cwd: scratch, stdio: 'inherit', shell: isWindows });
 
-  const pkgDir = join(scratch, 'node_modules', 'crontick-dashboard');
+  const pkgDir = join(scratch, 'node_modules', 'tickdeck');
   const pkg = JSON.parse(readFileSync(join(pkgDir, 'package.json'), 'utf8'));
-  assert(pkg.bin?.['crontick-dashboard'], 'installed package.json has no bin entry');
-  bin = join(pkgDir, pkg.bin['crontick-dashboard']);
+  assert(pkg.bin?.['tickdeck'], 'installed package.json has no bin entry');
+  bin = join(pkgDir, pkg.bin['tickdeck']);
   port = await freePort();
-  childEnv = { ...process.env, CRONTICK_DASHBOARD_HOME: home, CRONTICK_DASHBOARD_PORT: String(port) };
-  delete childEnv.CRONTICK_DASHBOARD_VERBOSE;
+  childEnv = { ...process.env, TICKDECK_HOME: home, TICKDECK_PORT: String(port) };
+  delete childEnv.TICKDECK_VERBOSE;
 
   // --version
   let r = cli(['--version']);
@@ -173,7 +173,7 @@ async function main() {
   assert(r.code === 0, `daemon start exit ${r.code}: ${r.stdout}${r.stderr}`);
   log(r.stdout.split('\n')[0]);
   const health = await get('/api/health');
-  assert(health.status === 200 && JSON.parse(health.body).app === 'crontick-dashboard', `bad /api/health: ${health.status} ${health.body}`);
+  assert(health.status === 200 && JSON.parse(health.body).app === 'tickdeck', `bad /api/health: ${health.status} ${health.body}`);
   const index = await get('/');
   assert(index.status === 200 && /<html/i.test(index.body), `GET / not HTML: ${index.status}`);
   log('GET /api/health ok, GET / returns HTML');

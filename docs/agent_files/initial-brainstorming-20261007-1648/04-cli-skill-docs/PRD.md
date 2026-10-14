@@ -4,7 +4,7 @@ summary: CLI (`new`, folder/alert `validate`, folder `templates`), rewritten Cla
 date: 2026-10-08
 ---
 # PRD: CLI, skill and docs (SP04)
-Repo/branch: crontick-dashboard / `initial-brainstorming` · Depends on: SP01 (validators, data-path check, result shapes, registry, schemas/templates), SP02 (shared `readCardFolder`, feed layout, snapshot) · Owns: `src/cli/**`, `src/skill/SKILL.md`, `src/schemas-sync.ts` (new), `tests/cli/**`, `tests/skill/**`, acceptance test, `docs/**` (except SP01's errors.md reason tables), `README.md`, `docs/agent_files/futures.md`, `.changeset/*`
+Repo/branch: tickdeck / `initial-brainstorming` · Depends on: SP01 (validators, data-path check, result shapes, registry, schemas/templates), SP02 (shared `readCardFolder`, feed layout, snapshot) · Owns: `src/cli/**`, `src/skill/SKILL.md`, `src/schemas-sync.ts` (new), `tests/cli/**`, `tests/skill/**`, acceptance test, `docs/**` (except SP01's errors.md reason tables), `README.md`, `docs/agent_files/futures.md`, `.changeset/*`
 
 ## TL;DR
 Make the folder model usable: `new` scaffolds a card folder (card.json only, so the card shows "No data yet" until the agent's single data.json write); `validate` takes a folder, an alert file, or stdin with `--as`; `templates` prints folder examples. SKILL.md teaches: `new` once, then only rewrite data.json. Docs drop archive/retention/size/drag and describe folders, columns, the collapsed chip, lines, and the Completed section with its All/Alerts/Cards filter. Done = a scripted acceptance test that follows SKILL.md to build the email-summary `table` card and checks it validates and lands in the snapshot, plus an owner-run real-Claude check.
@@ -25,7 +25,7 @@ Non-goals: server/ingest/snapshot (SP02), contract (SP01), UI (SP03), `new-alert
 - Exists: exit 1 (`CARD_EXISTS`). `--force` rewrites card.json only (tmp + rename), never touches data.json or other files.
 - Atomic create: build in `<feed>/.new-<id>-<rand>/` (dot-prefixed, ignored by ingest), then `rename` to `<feed>/<id>/`, so the watcher never sees an empty folder (`card-def-missing` flicker).
 - Works with the server stopped: uses `ensureDirs` (creates `feed/` and `feed/alerts/` only; `new` never creates `archive/`), then `syncSchemas(env)`.
-- Output: `created <dir>`, then `next: write <dir>/data.json (example: crontick-dashboard templates <type>)`. `--json` prints `{ id, dir, cardPath, dataPath, schemasSynced }`.
+- Output: `created <dir>`, then `next: write <dir>/data.json (example: tickdeck templates <type>)`. `--json` prints `{ id, dir, cardPath, dataPath, schemasSynced }`.
 
 `validate [--json] [--as card|data|alert] [--type <t>] <path...>` (`-` = stdin)
 - Directory: card folder. Same `readCardFolder(dir)` as the server (SP02, `src/feed/`; includes the SP01 data-path check and realpath containment), then `validateCardFolder`. `<path>/card.json` or `data.json`: validates the containing folder. Any other `.json` file: alert file (`validateAlertFile`; id = file stem).
@@ -105,7 +105,7 @@ CLI stays a thin adapter: pure SP01 validators, SP02 reader, `paths.ts`, injecte
 | 14 | Alert docs/skill | `title` req, `text` optional, `link` clickable; Completed lists ticks 7 d / 50 | Both required | Owner 2026-10-08 |
 
 ## Manual steps
-Owner, once SP01-SP03 merged: (1) `crontick-dashboard skill install --force` into a scratch skills dir; (2) with `CRONTICK_DASHBOARD_HOME=<tmp>` start the dashboard; (3) in a fresh Claude session with only that skill ask: "Summarise my unread email onto my dashboard as a table (invent 5 messages)"; (4) pass if: it ran `new` then wrote one data.json, `validate <folder>` exits 0, and the card renders as a table in the center column. Record result and transcript path in the run record. Failure = brief's fallback (merge files or improve skill).
+Owner, once SP01-SP03 merged: (1) `tickdeck skill install --force` into a scratch skills dir; (2) with `TICKDECK_HOME=<tmp>` start the dashboard; (3) in a fresh Claude session with only that skill ask: "Summarise my unread email onto my dashboard as a table (invent 5 messages)"; (4) pass if: it ran `new` then wrote one data.json, `validate <folder>` exits 0, and the card renders as a table in the center column. Record result and transcript path in the run record. Failure = brief's fallback (merge files or improve skill).
 
 ## Risks / Open Questions
 - [RESOLVED: owner 2026-10-08 — one shared `readCardFolder(dir)` lives in SP02 (`src/feed/`); the CLI reuses it] Shared folder reader.
@@ -119,7 +119,7 @@ Owner, once SP01-SP03 merged: (1) `crontick-dashboard skill install --force` int
 
 ## Acceptance Criteria
 - `npm run validate` green; new/rewritten CLI, skill and acceptance tests pass; `npm run verify-package-install` exercises `new` then `validate` from the packed tarball.
-- `crontick-dashboard new email-summary --type table` then one data.json write yields `validate` exit 0 and a rendered table card; manual Claude run recorded.
+- `tickdeck new email-summary --type table` then one data.json write yields `validate` exit 0 and a rendered table card; manual Claude run recorded.
 - Docs describe the Completed section, All/Alerts/Cards filter, Done cards moving to Completed, alert tick time, 7-day/50 cap; skill and docs state `data` is a plain file name in the card folder and alert `text` is optional; ADR 0002 has no "Done chip in own slot" left.
 - `grep` sweep (above) clean outside history; every doc keeps its Non-duplication header and no concept restates reference tables.
 - futures.md has the seven items plus "un-tick alerts from Completed"; changeset present; no `validateCardFile`, `kind` column, or `KINDS` left in `src/cli`, `src/skill`.

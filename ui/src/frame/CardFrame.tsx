@@ -6,7 +6,6 @@ import { getCardType, type Mode } from '../registry/registry.ts';
 import { UnknownBody } from '../registry/unknown.tsx';
 import { BrokenBody } from './BrokenBody.tsx';
 import { ErrorBoundary } from './ErrorBoundary.tsx';
-import './card-frame.css';
 
 export interface CardFrameProps {
   card: ViewCard;
@@ -135,11 +134,17 @@ export function CardFrame(p: CardFrameProps) {
     bump((n) => n + 1);
   };
 
+  // Look comes from the column; Now/fullscreen always render the full (center) look so Done/hide stay reachable.
+  const look = mode === 'column' && card.column !== 'center' ? 'side' : 'center';
+  const prio = isPriority ? 'high' : card.priority <= 1 ? 'low' : 'normal';
+
   const cls = [
-    'card-frame',
-    broken && 'card-frame--broken',
+    'card',
+    `card--${look}`,
+    `prio-${prio}`,
+    broken && 'card--broken',
     `card-frame--h-${card.height}`,
-    noData && 'card-frame--nodata',
+    noData && 'card--empty',
     highlighted && 'card-frame--notify',
     !reduced && 'card-frame--enter',
     flash && 'card-frame--updated',
@@ -150,55 +155,64 @@ export function CardFrame(p: CardFrameProps) {
     .join(' ');
 
   const marker = isPriority ? (
-    <span className="card-frame__priority" data-testid="priority-marker" title={`Priority ${card.priority}`} aria-label="High priority" />
+    <span className="card-prio-marker" data-testid="priority-marker" title={`Priority ${card.priority}`} aria-label="High priority" />
   ) : null;
-  const dot = highlighted ? <span className="card-frame__dot" data-testid="notify-dot" aria-label="New" /> : null;
+  const dot = highlighted ? <span className="unseen-dot" data-testid="notify-dot" aria-label="New" /> : null;
 
   const def = broken || noData ? undefined : getCardType(card.type);
   const Body = def?.Component;
 
   return (
-    <section ref={rootRef} className={cls} data-card-id={card.id} aria-label={card.title} onClick={see} onFocus={see}>
-      <header className="card-frame__bar">
+    <section
+      ref={rootRef}
+      className={cls}
+      data-permanent={String(card.column !== 'center')}
+      data-card-id={card.id} aria-label={card.title}
+      onClick={see}
+      onFocus={see}
+    >
+      <header className="card-header">
         {dot}
         {marker}
-        <h3 className="card-frame__title" title={card.title}>
+        <h3 className="card-title" title={card.title}>
           {card.title}
         </h3>
         {!noData && updatedAt !== undefined ? (
-          <span className="card-frame__meta" title={new Date(updatedAt).toLocaleString()}>
+          <span className="card-meta" title={new Date(updatedAt).toLocaleString()}>
             {formatRelative(updatedAt, now)}
           </span>
         ) : null}
-        <span className="card-frame__actions">
+        <span className="card-actions">
           {card.collapsed && mode === 'column' ? (
-            <button type="button" className="card-frame__btn" aria-label="Collapse" aria-expanded="true" onClick={toggle}>
+            <button type="button" className="card-btn card-btn--collapse" aria-label="Collapse" aria-expanded="true" onClick={toggle}>
               ▴
             </button>
           ) : null}
           {noData ? null : (
-            <button type="button" className="card-frame__btn" aria-label="Fullscreen" onClick={() => p.onFullscreen(card.id)}>
+            <button type="button" className="card-btn card-btn--fullscreen" aria-label="Fullscreen" onClick={() => p.onFullscreen(card.id)}>
               ⤢
             </button>
           )}
           {noData ? null : (
-            <button type="button" className="card-frame__btn" aria-label="Done" onClick={() => p.onDone(card.id)}>
+            <button type="button" className="card-btn" aria-label="Done" onClick={() => p.onDone(card.id)}>
               ✓
             </button>
           )}
-          <button type="button" className="card-frame__btn" aria-label="Hide" onClick={() => p.onHide(card.id)}>
+          <button type="button" className="card-btn" aria-label="Hide" onClick={() => p.onHide(card.id)}>
             ✕
           </button>
         </span>
       </header>
       {broken ? (
-        <BrokenBody card={card} />
+        <div className="card-body">
+          <BrokenBody card={card} />
+        </div>
       ) : noData ? (
-        <div className="card-frame__body">
+        <div className="card-body">
           <p className="meta">No data yet</p>
         </div>
       ) : (
-        <div className="card-frame__body">
+        <div className="card-body">
           <ErrorBoundary>
             {Body ? (
               <Body

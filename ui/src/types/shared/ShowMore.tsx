@@ -1,5 +1,4 @@
 import { buildCardHash, replaceHash } from '../../lib/hash.ts';
-import './shared.css';
 
 /** Compact "+N more": a button (not a link) that opens the card's fullscreen. */
 export function ShowMore({ cardId, count }: { cardId: string; count: number }) {

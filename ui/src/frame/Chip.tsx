@@ -1,6 +1,5 @@
 import { isUnseen } from '../lib/seen.ts';
 import type { ViewCard } from '../api/types.ts';
-import './chip.css';
 
 export interface ChipProps {
   card: ViewCard;
@@ -27,7 +26,7 @@ export function Chip({ card, dim, match, onExpand }: ChipProps) {
       <span className="chip__title" title={card.title}>
         {card.title}
       </span>
-      {unseen ? <span className="card-frame__dot" data-testid="notify-dot" aria-label="New" /> : null}
+      {unseen ? <span className="unseen-dot" data-testid="notify-dot" aria-label="New" /> : null}
       <span className="chip__chevron" aria-hidden="true">
         ▾
       </span>

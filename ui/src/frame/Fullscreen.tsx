@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { ViewCard } from '../api/types.ts';
 import { CardFrame } from './CardFrame.tsx';
-import './fullscreen.css';
 
 export interface FullscreenProps {
   card: ViewCard;
@@ -50,7 +49,7 @@ export function Fullscreen(p: FullscreenProps) {
         if (!unmounting.current) closeRef.current();
       }}
     >
-      <button type="button" className="fullscreen__close card-frame__btn" aria-label="Close fullscreen" onClick={p.onClose}>
+      <button type="button" className="fullscreen__close card-btn" aria-label="Close fullscreen" onClick={p.onClose}>
         ✕
       </button>
       <CardFrame

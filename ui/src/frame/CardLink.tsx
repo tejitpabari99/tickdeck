@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { LINK_SCHEMES, WEB_LINK_SCHEMES } from '../../../src/constants/contract.js';
-import './card-link.css';
 
 const WEB = new Set<string>(WEB_LINK_SCHEMES);
 const ALLOWED = new Set<string>(LINK_SCHEMES);

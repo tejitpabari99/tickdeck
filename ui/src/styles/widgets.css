@@ -1,0 +1,151 @@
+/* widgets.css: card frame (Glance-style: outside title, raised box), side/center looks, states, chip, fullscreen, server-down, toasts.
+   Tokens only: no colour literals. Hook names are a stable contract (see 03 PRD "CSS hooks contract"). */
+
+.card { --prio: var(--prio-normal); position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.card.prio-high { --prio: var(--prio-high); }
+.card.prio-normal { --prio: var(--prio-normal); }
+.card.prio-low { --prio: var(--prio-low); }
+
+/* title sits outside the box, aligned with the box content */
+.card-header {
+  position: relative; flex: none;
+  display: flex; align-items: center; gap: 0.8rem;
+  padding: 0 1.8rem; margin-bottom: 0.9rem; min-height: 2.2rem;
+  font-size: var(--font-size-h4); line-height: 1.6;
+  color: var(--color-text-base-muted);
+}
+.card-title { margin: 0; font: inherit; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.card-meta { color: var(--color-text-subdue); font-size: var(--font-size-h5); white-space: nowrap; }
+.card-meta::before { content: '\2022\00a0\00a0updated'; margin-right: 0.8rem; margin-left: 0.2rem; }
+.card-prio-marker { display: none; }
+
+.card-body {
+  flex: 1; min-height: 0; overflow: auto; box-sizing: border-box;
+  max-height: var(--h-L);
+  background: var(--color-widget-background);
+  border: 1px solid var(--color-widget-content-border);
+  border-radius: var(--border-radius);
+  box-shadow: 0 3px 0 var(--color-widget-shadow);
+  padding: var(--widget-content-padding);
+  color: var(--color-text-base);
+}
+.card-body > * + * { margin-top: 1rem; }
+.card-frame--h-S .card-body { height: var(--h-S); }
+.card-frame--h-M .card-body { height: var(--h-M); }
+.card-frame--h-L .card-body { height: var(--h-L); }
+.card-frame--h-auto .card-body { height: auto; }
+
+/* actions: hidden until hover or focus */
+.card-actions { margin-left: auto; display: flex; align-items: center; gap: 0.4rem; opacity: 0; transition: opacity 0.15s; }
+.card:hover .card-actions, .card:focus-within .card-actions { opacity: 1; }
+.card-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: transparent; border: 0; border-radius: var(--border-radius);
+  padding: 0.1rem 0.7rem; cursor: pointer; font: inherit;
+  font-size: var(--font-size-h5); text-transform: none; letter-spacing: 0;
+  color: var(--color-text-base-muted);
+}
+.card-btn:hover { background: var(--color-widget-background-highlight); color: var(--color-text-highlight); }
+.card-btn:focus-visible { outline: 1px solid var(--color-primary); }
+
+.unseen-dot { flex: none; width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--unseen); }
+
+/* side: flat, title only; fullscreen and collapse stay reachable, everything else hidden */
+.card--side .card-meta,
+.card--side .unseen-dot,
+.card--side .card-btn:not(.card-btn--fullscreen):not(.card-btn--collapse) { display: none; }
+
+/* center: priority left edge */
+.card--center .card-body { border-left: 3px solid var(--prio); }
+
+/* stale: muted body + tag */
+.stale-tag {
+  flex: none; font-size: var(--font-size-h6); text-transform: none; letter-spacing: 0;
+  color: var(--stale); border: 1px solid var(--color-separator); border-radius: var(--border-radius);
+  padding: 0 0.6rem; line-height: 1.5;
+}
+.card--stale .card-body, .card--stale .card-body * { color: var(--color-text-subdue); }
+.card--stale .card-title { color: var(--color-text-subdue); }
+
+/* empty (no data yet) */
+.card--empty .card-body { border-style: dashed; color: var(--color-text-subdue); }
+.card--empty .card-title { color: var(--color-text-subdue); }
+
+/* broken: error-header tint, dashed negative border, reason */
+.card--broken .card-header { color: var(--color-negative); }
+.card--broken .card-header::before {
+  content: ''; position: absolute; inset: -0.2rem 0; z-index: -1;
+  background: color-mix(in srgb, var(--color-negative) 5%, transparent);
+  border-radius: var(--border-radius);
+}
+.card--broken .card-body { border: 1px dashed var(--color-negative); }
+.card--broken.card--center .card-body { border-left: 3px dashed var(--color-negative); }
+.card-broken { display: flex; gap: 0.8rem; color: var(--color-negative); }
+.card-broken__message { margin: 0; color: var(--color-text-paragraph); overflow-wrap: anywhere; }
+.card-broken__reason { font-size: var(--font-size-h5); text-transform: uppercase; }
+
+/* unseen highlight, search states, motion */
+.card-frame--notify .card-body { box-shadow: 0 0 0 2px var(--unseen), 0 3px 0 var(--color-widget-shadow); }
+.card-frame--dim, .alert-strip__row.card-frame--dim { opacity: 0.3; }
+.card-frame--match .card-body, .alert-strip__row.card-frame--match { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+@keyframes card-frame-in { from { opacity: 0; transform: scale(0.97); } }
+@keyframes card-frame-updated { from { background: color-mix(in srgb, var(--color-primary) 18%, var(--color-widget-background)); } }
+.card-frame--enter { animation: card-frame-in 120ms ease-out; }
+.card-frame--updated .card-body { animation: card-frame-updated 600ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .card-frame--enter, .card-frame--updated .card-body, .card-actions { animation: none; transition: none; }
+}
+
+/* chip (collapsed card) */
+.chip {
+  display: flex; align-items: center; gap: 0.8rem; width: 100%; height: var(--chip-h); box-sizing: border-box;
+  padding: 0 1.8rem; font: inherit; font-size: var(--font-size-base); text-align: left; cursor: pointer;
+  background: var(--color-widget-background); color: var(--color-text-base);
+  border: 1px solid var(--color-widget-content-border); border-radius: var(--border-radius);
+  box-shadow: 0 3px 0 var(--color-widget-shadow);
+}
+.chip:hover { background: var(--color-widget-background-highlight); color: var(--color-text-highlight); }
+.chip:focus-visible { outline: 1px solid var(--color-primary); }
+.chip__dot { flex: none; width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--color-text-subdue); }
+.chip__title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; letter-spacing: 0.04em; }
+.chip__chevron { flex: none; color: var(--color-text-subdue); }
+.chip.card-frame--match { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+
+/* fullscreen dialog */
+.fullscreen {
+  width: min(96vw, 1400px); height: 92vh; padding: 1.5rem; box-sizing: border-box;
+  border: 1px solid var(--color-popover-border); border-radius: var(--border-radius);
+  background: var(--color-background); color: var(--color-text-base);
+  box-shadow: 0 1.2rem 4rem var(--color-widget-shadow);
+}
+.fullscreen::backdrop { background: color-mix(in srgb, var(--color-widget-shadow) 70%, transparent); }
+.fullscreen[open] { display: flex; flex-direction: column; }
+.fullscreen .card { flex: 1; }
+.fullscreen .card-body { max-height: none; height: auto; }
+.fullscreen__close { align-self: flex-end; margin-bottom: 0.4rem; }
+
+/* server-down + empty states */
+.server-down { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; padding: 9.6rem 1.6rem; text-align: center; }
+.server-down__icon { font-size: 4rem; color: var(--color-negative); }
+.server-down__title { margin: 0; font-size: var(--font-size-h2); color: var(--color-text-highlight); text-transform: uppercase; letter-spacing: 0.04em; }
+.server-down__retry, .server-down__hint { margin: 0; color: var(--color-text-base-muted); }
+.empty-state { padding: 6.4rem 1.6rem; text-align: center; color: var(--color-text-base-muted); }
+.empty-state p { margin: 0.4rem 0; }
+.server-down code, .empty-state code {
+  background: var(--color-widget-background); border: 1px solid var(--color-widget-content-border);
+  border-radius: var(--border-radius); padding: 0.2rem 0.6rem; color: var(--color-text-highlight);
+}
+
+/* toasts */
+.toast-host { position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 50; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+.toast {
+  display: flex; gap: 1rem; align-items: center; padding: 0.8rem 1.4rem;
+  background: var(--color-popover-background); color: var(--color-text-highlight);
+  border: 1px solid var(--color-popover-border); border-radius: var(--border-radius);
+  box-shadow: 0 3px 0 var(--color-widget-shadow);
+}
+.toast button { font: inherit; color: var(--color-text-base-muted); background: none; border: 0; cursor: pointer; }
+.toast button:hover { color: var(--color-text-highlight); }
+
+/* jump-to-card highlight */
+.card-highlight { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--border-radius); }

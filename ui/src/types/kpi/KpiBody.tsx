@@ -5,7 +5,6 @@ import type { KpiData, KpiMetric } from '../../../../src/index.js';
 import { clampProps } from '../shared/clamp.ts';
 import { ShowMore } from '../shared/ShowMore.tsx';
 import { metrics, STATE_ICON, stateWord, trendView, valueText, type KpiState } from './logic.ts';
-import './kpi.css';
 
 const COMPACT_CAP = 4;
 

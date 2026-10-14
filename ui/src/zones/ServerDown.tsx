@@ -1,5 +1,3 @@
-import './server-down.css';
-
 export interface ServerDownProps {
   retryMs: number;
 }

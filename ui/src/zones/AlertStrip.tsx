@@ -1,7 +1,6 @@
 import type { ViewAlert } from '../api/types.ts';
 import { CardLink } from '../frame/CardLink.tsx';
 import { clampProps } from '../types/shared/clamp.ts';
-import './alert-strip.css';
 
 export interface AlertStripProps {
   /** `snapshot.alerts` resolved against `alertItems`, snapshot order. */
@@ -66,7 +65,7 @@ export function AlertStrip(p: AlertStripProps) {
                   </span>
                 </>
               ) : null}
-              <button type="button" className="card-frame__btn alert-strip__tick" onClick={() => p.onTick(a.id)}>
+              <button type="button" className="card-btn alert-strip__tick" onClick={() => p.onTick(a.id)}>
                 ✓ Tick
               </button>
             </li>

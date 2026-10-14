@@ -1,0 +1,24 @@
+/* types/markdown.css: restyled markdown body. Tokens only: no colour literals. */
+.md-body { overflow-wrap: anywhere; }
+.md-body > * + * { margin-top: 0.9rem; }
+.md-body > :first-child { margin-top: 0; }
+.md-body h3, .md-body h4, .md-body h5, .md-body h6 { line-height: 1.4; color: var(--color-text-highlight); font-weight: 400; }
+.md-h3 { font-size: var(--font-size-h3); }
+.md-h4 { font-size: var(--font-size-h4); }
+.md-h5, .md-h6 { font-size: var(--font-size-base); }
+.md-body p { color: var(--color-text-paragraph); }
+.md-body ul, .md-body ol { margin: 0; padding: 0; }
+.md-body ul { list-style: none; border-top: 1px solid var(--color-separator); padding-top: var(--list-half-gap); }
+.md-body li { position: relative; padding: 0.2rem 0 0.2rem 1.6rem; color: var(--color-text-base); }
+.md-body ul > li::before { content: "\2022"; position: absolute; left: 0.4rem; color: var(--color-text-subdue); }
+.md-body pre { overflow: auto; font-family: inherit; padding: 0.8rem; border-radius: var(--border-radius); background: var(--color-widget-background-highlight); }
+.md-body code { font-family: inherit; font-size: var(--font-size-h5); color: var(--color-text-highlight); background: var(--color-widget-background-highlight); border-radius: 0.3rem; padding: 0 0.5rem; }
+.md-body pre code { padding: 0; background: none; }
+.md-link { color: var(--color-primary); }
+.md-link:visited { color: var(--color-text-base); }
+.md-link:hover { color: var(--color-text-highlight); text-decoration: underline; }
+.md-table-wrap { overflow-x: auto; max-width: 100%; }
+.md-body table { border-collapse: collapse; }
+.md-body th, .md-body td { border: 1px solid var(--color-separator); padding: 0.4rem 0.8rem; }
+.md-img { max-width: 100%; height: auto; }
+.md-empty { color: var(--color-text-subdue); margin: 0; }

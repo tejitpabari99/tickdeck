@@ -115,6 +115,9 @@ test.describe('populated feed', () => {
     const errors = watchErrors(page);
     await page.goto(h!.server.url);
 
+    // Header: no theme toggle; connection dot is visibly coloured.
+    await expect(page.getByRole('button', { name: /theme/i })).toHaveCount(0);
+    await expect(page.getByRole('img', { name: 'Connected' })).toHaveCSS('background-color', /^rgb\((?!0, 0, 0\))/);
     // One rendered card element per fixture type (folder name = type).
     for (const type of TYPES) await expect(page.locator(`[data-card-id="${type}"]`).first(), type).toBeVisible();
     // Three columns: left | center | right placement comes from each template's card.json layout.
@@ -154,6 +157,26 @@ test.describe('populated feed', () => {
     await expect(page.locator(`section[data-card-id="${id}"]`)).toBeVisible();
 
     expect(errors).toEqual([]);
+  });
+
+  test('360px: no horizontal scroll, columns stack center/left/right (R9)', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto(h!.server.url);
+    await expect(page.locator('[data-column="center"]')).toBeVisible();
+    const expanders = page.getByRole('button', { name: /^Expand/ });
+    while (await expanders.count()) await expanders.first().click();
+    const overflow = await page.evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth') as number;
+    expect(overflow).toBeLessThanOrEqual(0);
+    const top = async (c: string): Promise<number> => (await page.locator(`[data-column="${c}"]`).boundingBox())!.y;
+    const [center, left, right] = [await top('center'), await top('left'), await top('right')];
+    expect(center).toBeLessThan(left);
+    expect(left).toBeLessThan(right);
+  });
+
+  test('reduced motion disables animation (R12)', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(h!.server.url);
+    await expect(page.locator('body')).toHaveCSS('animation-name', 'none');
   });
 });
 

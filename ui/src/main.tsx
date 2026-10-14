@@ -1,13 +1,17 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App.tsx';
-import { initTheme } from './lib/theme.ts';
 import './types/index.ts'; // registers all card types
-import './theme/themes.css';
-import './theme/tokens.css';
-import './theme/base.css';
-
-initTheme();
+import './styles/main.css';
+import './styles/site.css';
+import './styles/utils.css';
+import './styles/widgets.css';
+import './styles/types/kpi.css';
+import './styles/types/list.css';
+import './styles/types/markdown.css';
+import './styles/types/media.css';
+import './styles/types/table.css';
+import './styles/mobile.css';
 
 const el = document.getElementById('root');
 if (el) {

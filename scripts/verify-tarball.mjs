@@ -27,11 +27,13 @@ const required = [
   'dist/index.js',
   'dist/index.d.ts',
   'dist/ui/index.html',
+  'dist/ui/fonts/OFL.txt',
   'src/skill/SKILL.md',
   'README.md',
   'LICENSE',
 ];
 for (const r of required) if (!files.includes(r)) errors.push(`missing: ${r}`);
+if (!files.some((f) => /^dist\/ui\/assets\/JetBrainsMono-Regular-[^/]+\.woff2$/.test(f))) errors.push('missing: dist/ui/assets/JetBrainsMono-Regular-*.woff2');
 if (!files.some((f) => f.startsWith('schemas/') && f.endsWith('.json'))) errors.push('missing: schemas/*.json');
 if (!files.some((f) => f.startsWith('templates/') && f.endsWith('.json'))) errors.push('missing: templates/*.json');
 for (const f of files) {
@@ -43,4 +45,5 @@ if (errors.length > 0) {
   console.error(`Tarball verification FAILED:\n  ${errors.join('\n  ')}`);
   process.exit(1);
 }
+console.log(`Font + licence present: ${files.filter((f) => /JetBrainsMono-Regular-.*\.woff2$|fonts\/OFL\.txt$/.test(f)).join(', ')}`);
 console.log('Tarball verification OK');

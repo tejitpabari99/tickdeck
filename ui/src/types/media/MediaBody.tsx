@@ -5,7 +5,6 @@ import type { MediaData, MediaItem } from '../../../../src/index.js';
 import { safeImageSrc } from '../shared/safeImageSrc.ts';
 import { ShowMore } from '../shared/ShowMore.tsx';
 import { mediaAlt, mediaItems } from './logic.ts';
-import './media.css';
 
 const COMPACT_CAP = 6;
 

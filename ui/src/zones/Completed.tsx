@@ -2,7 +2,6 @@ import type { Snapshot, ViewCompletedAlert } from '../api/types.ts';
 import { CardLink } from '../frame/CardLink.tsx';
 import type { Filter } from '../lib/filter.ts';
 import { useRelative } from '../lib/relative-time.ts';
-import './completed.css';
 
 export type CompletedRow =
   | { kind: 'card'; id: string; title: string; doneAt?: string }
@@ -85,7 +84,7 @@ export function Completed(p: CompletedProps) {
                 <>
                   <strong className="completed__title" title={r.title}>{r.title}</strong>
                   <Age prefix="done" iso={r.doneAt} />
-                  <button type="button" className="card-frame__btn completed__reopen" onClick={() => p.onReopen(r.id)}>
+                  <button type="button" className="card-btn completed__reopen" onClick={() => p.onReopen(r.id)}>
                     Reopen
                   </button>
                 </>

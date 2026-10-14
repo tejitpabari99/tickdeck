@@ -6,7 +6,6 @@ import { CardLink, isAllowedLink } from '../../frame/CardLink.tsx';
 import type { CardTypeProps } from '../../registry/registry.ts';
 import type { MarkdownData } from '../../../../src/index.js';
 import { safeImageSrc } from '../shared/safeImageSrc.ts';
-import './markdown.css';
 
 /** Gate every URL: images via safeImageSrc, links via CardLink's allow-list. Empty string = dropped. */
 function urlTransform(url: string, key: string): string {

@@ -1,0 +1,60 @@
+/* types/table.css: restyled table plus the width/truncation classes 04 applies (retunable). Tokens only: no colour literals. */
+:root { --tbl-auto-max: 24rem; }
+
+.tbl-root { display: flex; flex-direction: column; gap: 0.6rem; min-width: 0; }
+.tbl-toolbar { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+.tbl-search {
+  flex: 1 1 14rem; min-width: 0; font: inherit; font-size: var(--font-size-h5);
+  padding: 0.4rem 0.8rem; color: var(--color-text-base); background: var(--color-widget-background);
+  border: 1px solid var(--color-widget-content-border); border-radius: var(--border-radius);
+}
+.tbl-search:focus-visible { outline: 1px solid var(--color-primary); }
+.tbl-count { font-size: var(--font-size-h5); color: var(--color-text-subdue); white-space: nowrap; }
+
+/* in-card horizontal scroll container */
+.tbl-wrap { overflow-x: auto; max-width: 100%; }
+.tbl { width: 100%; table-layout: auto; border-collapse: collapse; font-size: var(--font-size-h5); }
+.tbl--compact { table-layout: auto; }
+.tbl th, .tbl td { padding: 0.5rem 0.8rem 0.5rem 0; text-align: left; vertical-align: top; border-top: 1px solid var(--color-separator); max-width: var(--tbl-auto-max); }
+.tbl thead th { position: sticky; top: 0; z-index: 2; background: var(--color-widget-background); color: var(--color-text-subdue); border-top: 0; border-bottom: 1px solid var(--color-separator); font-weight: 400; }
+.tbl thead th[aria-sort] { color: var(--color-primary); }
+.tbl td { color: var(--color-text-base); }
+.tbl:not(.tbl--compact) td { overflow-wrap: anywhere; }
+.tbl .tbl-num { text-align: right; font-variant-numeric: tabular-nums; }
+.tbl-sort { background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: inherit; }
+.tbl-sort:focus-visible { outline: 1px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }
+.tbl-row { position: relative; }
+.tbl-row--link { cursor: pointer; }
+.tbl-row--link:hover td, .tbl tbody tr:hover td { background: var(--color-widget-background-highlight); color: var(--color-text-highlight); }
+.tbl-rowlink a.card-link::after { content: ''; position: absolute; inset: 0; z-index: 0; }
+.tbl-rowlink a.card-link:focus-visible { outline: none; }
+.tbl-row--link:has(.tbl-rowlink a:focus-visible) { outline: 1px solid var(--color-primary); outline-offset: -1px; }
+.tbl-rowlink .card-link__glyph { opacity: 0; }
+.tbl-row--link:hover .tbl-rowlink .card-link__glyph,
+.tbl-row--link:focus-within .tbl-rowlink .card-link__glyph { opacity: 0.6; }
+.tbl-cell-link { position: relative; z-index: 1; }
+.tbl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; margin: -1px; padding: 0; border: 0; }
+.tbl-empty { margin: 0; color: var(--color-text-subdue); }
+.tbl-filter { background: none; border: 0; padding: 0 0.4rem; margin-left: 0.2rem; font: inherit; color: var(--color-text-subdue); cursor: pointer; }
+.tbl-filter:focus-visible, .tbl-chip:focus-visible { outline: 1px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }
+.tbl-pop {
+  position: absolute; top: 100%; left: 0; z-index: 3; min-width: 16rem; max-height: 24rem; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 0.2rem; padding: 0.6rem 0.8rem; font-weight: 400;
+  background: var(--color-popover-background); border: 1px solid var(--color-popover-border); border-radius: var(--border-radius);
+}
+.tbl-pop__opt { display: flex; align-items: center; gap: 0.6rem; white-space: nowrap; }
+.tbl-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
+.tbl-chip {
+  font: inherit; font-size: var(--font-size-h5); padding: 0.2rem 0.8rem; color: var(--color-text-base); cursor: pointer;
+  background: var(--color-widget-background-highlight); border: 1px solid var(--color-widget-content-border); border-radius: 999px;
+}
+
+/* column width classes (on th and td): width = min-width = max-width. Starting values from 04 PRD; rem is a 10px root. */
+.col-w-xs { width: 4rem; min-width: 4rem; max-width: 4rem; }
+.col-w-s { width: 7rem; min-width: 7rem; max-width: 7rem; }
+.col-w-m { width: 11rem; min-width: 11rem; max-width: 11rem; }
+.col-w-l { width: 18rem; min-width: 18rem; max-width: 18rem; }
+.col-w-fill { width: 100%; min-width: 10rem; max-width: 0; }
+
+/* truncating cell body: functional clipping properties must be kept */
+.cell-truncate { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

@@ -10,7 +10,6 @@ import { highlight } from '../shared/highlight.tsx';
 import { PageMore, ShowMore } from '../shared/ShowMore.tsx';
 import { useQueryFilter } from '../shared/useQueryFilter.ts';
 import { dueTimeZone, itemText } from './logic.ts';
-import './list.css';
 
 const COMPACT_CAP = 100;
 const FAILED_MS = 8000;

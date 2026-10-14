@@ -10,6 +10,11 @@ import './styles/main.css';
 import './styles/site.css';
 import './styles/utils.css';
 import './styles/widgets.css';
+import './styles/types/kpi.css';
+import './styles/types/list.css';
+import './styles/types/markdown.css';
+import './styles/types/media.css';
+import './styles/types/table.css';
 
 initTheme();
 

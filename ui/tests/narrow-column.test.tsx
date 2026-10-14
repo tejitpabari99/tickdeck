@@ -8,8 +8,8 @@ import '../src/types/media/index.ts';
 import type { CardTypeProps } from '../src/registry/registry.ts';
 
 const SIDE = 300; // --col-side
-const types = join(import.meta.dirname, '../src/types');
-const css = (n: string) => readFileSync(join(types, n, `${n}.css`), 'utf8');
+const styles = join(import.meta.dirname, '../src/styles/types');
+const css = (n: string) => readFileSync(join(styles, `${n}.css`), 'utf8');
 
 function mount(type: string, data: unknown) {
   const C = getCardType(type)!.Component as React.ComponentType<CardTypeProps<never>>;
@@ -25,7 +25,8 @@ describe('kpi and media at the 300px side-column width', () => {
   it('kpi tiles render inside a 300px column; tile minimum fits two across', () => {
     const { container } = mount('kpi', { items: [{ label: 'a', value: 1 }, { label: 'b', value: 2 }, { label: 'c', value: 3 }] });
     expect(container.querySelectorAll('.kpi-tile')).toHaveLength(3);
-    const min = Number(/\.kpi-grid\s*\{[^}]*minmax\((\d+)px/.exec(css('kpi'))![1]);
+    const m = /\.kpi-grid\s*\{[^}]*minmax\((\d+)(px|rem)/.exec(css('kpi'))!;
+    const min = Number(m[1]) * (m[2] === 'rem' ? 10 : 1); // 10px root
     expect(min * 2 + 8).toBeLessThanOrEqual(SIDE);
   });
 

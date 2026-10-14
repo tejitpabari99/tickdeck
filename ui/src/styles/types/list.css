@@ -1,0 +1,25 @@
+/* types/list.css: restyled list. Tokens only: no colour literals. */
+.lst-root { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
+.lst-head { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; font-size: var(--font-size-h5); color: var(--color-text-subdue); }
+.lst-hide { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
+.lst { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.lst-item { min-width: 0; padding: var(--list-half-gap) 0; color: var(--color-text-paragraph); }
+.lst-item + .lst-item { border-top: 1px solid var(--color-separator); }
+.lst-item:has(.lst-box) { display: flex; gap: 0.8rem; align-items: flex-start; }
+.lst-main { min-width: 0; flex: 1; }
+.lst-line { display: flex; align-items: baseline; gap: 0.8rem; min-width: 0; flex-wrap: wrap; }
+.lst-chip { font-size: var(--font-size-h5); white-space: nowrap; color: var(--color-text-base-muted); }
+.lst-due { font-size: var(--font-size-h5); color: var(--color-text-subdue); white-space: nowrap; }
+.lst-due--negative { color: var(--color-negative); }
+.lst-sub { font-size: var(--font-size-h5); color: var(--color-text-subdue); }
+.lst-item--done .lst-main { color: var(--color-text-subdue); text-decoration: line-through; }
+.lst-item--done .lst-due, .lst-item--done .lst-chip { text-decoration: none; }
+.lst-more, .lst-empty { font-size: var(--font-size-h5); color: var(--color-text-subdue); margin: 0; }
+.lst-spin { width: 1.2rem; height: 1.2rem; border: 2px solid var(--color-text-subdue); border-right-color: transparent; border-radius: 50%; animation: lst-spin 700ms linear infinite; flex: none; margin-top: 0.2rem; }
+@keyframes lst-spin { to { transform: rotate(360deg); } }
+.lst-failed { font-size: var(--font-size-h5); color: var(--color-negative); white-space: nowrap; order: 3; }
+
+/* placeholders for 05 (variants and shared meta line); 05 only fills these */
+.list--rows { }
+.list--detailed { }
+.meta-line { color: var(--color-text-subdue); font-size: var(--font-size-h5); }

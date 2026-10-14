@@ -3,7 +3,6 @@ import type { Column, ViewCard } from '../api/types.ts';
 import { CardFrame, getExpandedVersion, isExpanded, setExpanded, subscribeExpanded } from '../frame/CardFrame.tsx';
 import { Chip } from '../frame/Chip.tsx';
 import { NowZone } from './NowZone.tsx';
-import './columns.css';
 
 export interface ColumnsProps {
   columns: Record<Column, readonly ViewCard[]>;

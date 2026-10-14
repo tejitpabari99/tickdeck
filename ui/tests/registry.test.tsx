@@ -101,9 +101,9 @@ describe('CardLink', () => {
     expect(a.className).toContain('card-link');
   });
   it('CSS has :visited rules', () => {
-    const css = readFileSync(join(import.meta.dirname, '../src/frame/card-link.css'), 'utf8');
-    expect(css).toMatch(/a\.card-link:not\(:visited\)[^{]*\{[^}]*var\(--primary\)/);
-    expect(css).toMatch(/a\.card-link:visited[^{]*\{[^}]*var\(--text-muted\)/);
+    const css = readFileSync(join(import.meta.dirname, '../src/styles/utils.css'), 'utf8');
+    expect(css).toMatch(/a\.card-link:not\(:visited\)[^{]*\{[^}]*var\(--color-primary\)/);
+    expect(css).toMatch(/a\.card-link:visited[^{]*\{[^}]*var\(--color-text-base-muted\)/);
     expect(css).toMatch(/:visited[^{]*\.card-link__glyph/);
     expect(css).toMatch(/-webkit-line-clamp:\s*2/);
   });

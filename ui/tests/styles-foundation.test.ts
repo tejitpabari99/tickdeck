@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -62,4 +62,26 @@ describe('foundation styles', () => {
       expect(css).not.toMatch(/\b(hsla?|rgba?|oklch|lab|lch)\(/);
     });
   }
+
+  it('no colour literals anywhere in ui/src/styles except the main.css input block', () => {
+    const walk = (d: string): string[] =>
+      readdirSync(d, { withFileTypes: true }).flatMap((e) =>
+        e.isDirectory() ? walk(join(d, e.name)) : e.name.endsWith('.css') ? [join(d, e.name)] : []
+      );
+    const strip = (c: string) => c.replace(/\/\*[\s\S]*?\*\//g, '');
+    const files = walk(join(src, 'styles'));
+    expect(files.length).toBeGreaterThan(5);
+    for (const f of files) {
+      let css = strip(readFileSync(f, 'utf8'));
+      if (f.endsWith('/main.css')) {
+        // allowed: exactly the three `--color-{primary,positive,negative}: hsl(h, s%, l%)` inputs
+        css = css.replace(/--color-(primary|positive|negative):\s*hsl\(\d+,\s*\d+%,\s*\d+%\);/g, '');
+      }
+      expect(css, f).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+      expect(css, f).not.toMatch(/\b(rgba?|oklch|lab|lch)\(/);
+      // hsl() may only wrap var()/calc()/min() derivations, never bare numbers
+      expect(css, f).not.toMatch(/\bhsla?\(\s*[\d.]/);
+      expect(css, f).not.toMatch(/\b(red|blue|green|white|black|gray|grey)\b\s*[;}]/);
+    }
+  });
 });

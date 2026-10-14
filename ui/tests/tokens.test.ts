@@ -3,14 +3,11 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { COLUMNS_BREAKPOINT_PX } from './helpers/breakpoint.ts';
 
-const themeDir = join(import.meta.dirname, '../src/theme');
-const tokensCss = readFileSync(join(themeDir, 'tokens.css'), 'utf8');
+const tokensCss = readFileSync(join(import.meta.dirname, '../src/styles/main.css'), 'utf8');
 const mobilePath = join(import.meta.dirname, '../src/styles/mobile.css');
 
 const LAYOUT_TOKENS: Record<string, string> = {
   '--col-side': '300px',
-  '--col-gap': '16px',
-  '--page-pad': '16px',
   '--h-S': '180px',
   '--h-M': '360px',
   '--h-L': '600px',

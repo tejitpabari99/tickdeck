@@ -1,7 +1,6 @@
 import type { ViewAlert } from '../api/types.ts';
 import { CardLink } from '../frame/CardLink.tsx';
 import { clampProps } from '../types/shared/clamp.ts';
-import './alert-strip.css';
 
 export interface AlertStripProps {
   /** `snapshot.alerts` resolved against `alertItems`, snapshot order. */

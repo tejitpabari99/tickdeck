@@ -2,7 +2,6 @@ import type { Snapshot, ViewCompletedAlert } from '../api/types.ts';
 import { CardLink } from '../frame/CardLink.tsx';
 import type { Filter } from '../lib/filter.ts';
 import { useRelative } from '../lib/relative-time.ts';
-import './completed.css';
 
 export type CompletedRow =
   | { kind: 'card'; id: string; title: string; doneAt?: string }

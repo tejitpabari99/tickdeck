@@ -2,9 +2,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App.tsx';
 import './types/index.ts'; // registers all card types
-import './theme/themes.css';
-import './theme/tokens.css';
-import './theme/base.css';
 import './styles/main.css';
 import './styles/site.css';
 import './styles/utils.css';

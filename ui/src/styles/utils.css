@@ -50,3 +50,36 @@
 .color-positive { color: var(--color-positive); }
 .color-negative { color: var(--color-negative); }
 .text-upper { text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* screen-reader-only text */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.meta { font-size: var(--font-size-h5); color: var(--color-text-base-muted); }
+
+/* clamped text keeps long words from overflowing */
+.clamp-2, .card-link__text, .card-link-text { overflow-wrap: anywhere; }
+.card-link__text, .card-link-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+
+/* CardLink: visited state is CSS-only (:visited exposes colour only) */
+a.card-link { display: inline-flex; align-items: baseline; max-width: 100%; text-decoration: none; }
+a.card-link:not(:visited), a.card-link:not(:visited) .card-link__glyph { color: var(--color-primary); }
+a.card-link:visited, a.card-link:visited .card-link__glyph { color: var(--color-text-base-muted); }
+.card-link__glyph { opacity: 0.6; white-space: nowrap; }
+a.card-link:hover { text-decoration: underline; }
+a.card-link:hover .card-link__glyph { opacity: 1; }
+a.card-link:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }
+
+.show-more {
+  background: none; border: 0; padding: 0.4rem 0; font: inherit; font-size: var(--font-size-h5);
+  color: var(--color-primary); cursor: pointer;
+}
+.show-more:hover { text-decoration: underline; }
+mark { background: color-mix(in srgb, var(--color-primary) 30%, transparent); color: inherit; border-radius: 2px; }
+
+/* type-level motion (kpi cross-fade, list check-off) is opt-in and off when reduced */
+.type-motion { transition: opacity 200ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  .type-motion, .type-motion * { transition: none !important; animation: none !important; }
+}

@@ -19,7 +19,6 @@ import {
   type ColumnType,
   type SortState,
 } from './logic.ts';
-import './table.css';
 
 const COMPACT_CAP = 50;
 const SEARCH_MIN_ROWS = 5;

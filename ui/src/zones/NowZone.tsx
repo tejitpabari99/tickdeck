@@ -1,6 +1,5 @@
 import type { ViewCard } from '../api/types.ts';
 import { CardFrame } from '../frame/CardFrame.tsx';
-import './now-zone.css';
 
 export interface NowZoneProps {
   /** `snapshot.now` cards, snapshot order. */

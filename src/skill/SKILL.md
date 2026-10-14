@@ -1,6 +1,6 @@
 ---
 name: tickdeck
-description: Write cards to the local tickdeck feed so they show on the user's dashboard. Use when asked to "show on my dashboard", "write a dashboard card", "raise an alert", "notify me", or to publish a table, list, KPI, markdown or media panel (e.g. unread email, today's tasks, service health) for the user to see.
+description: Write cards to the local tickdeck feed so they show on the user's dashboard. Use when asked to "show on my dashboard", "write a dashboard card", "raise an alert", "notify me", or to publish a table, list, KPI, markdown, media, calendar or bookmarks panel (e.g. unread email, today's tasks, service health) for the user to see.
 allowed-tools: shell
 ---
 <!-- tickdeck@0.1.0 -->
@@ -67,7 +67,7 @@ Set `updatedAt` (ISO timestamp) in data.json only when the content truly changed
 
 In card.json `layout`:
 
-- `column`: `left`, `center` or `right` (narrow screens stack them). Put wide tables in `center`. `table` and `list` are center-only: in `left`/`right` they are Broken (`side-not-allowed`). Side cards are permanent: no Done/Hide, never in Now, `priority` ignored.
+- `column`: `left`, `center` or `right` (narrow screens stack them). Put wide tables in `center`. `table` and `list` are center-only: in `left`/`right` they are Broken (`side-not-allowed`). Side-allowed types: `calendar`, `bookmarks`, `kpi`, `markdown`, `media`. Side cards are permanent: no Done/Hide, never in Now, `priority` ignored.
 - `order`: integer; lower comes first within the column.
 - `height`: `S`, `M`, `L` or `auto`.
 
@@ -110,6 +110,20 @@ A ticked alert moves to Completed in the UI. Alert with a title only:
 ## 10. List-item ticks
 
 `list` items with `action: "complete"` (or `{"type": "complete"}`) get a checkbox; ticking writes `checked: true` and `checkedAt` into data.json. **Read data.json first** on every run: act on every item with `checked: true` (e.g. complete the matching task in TickTick with your own access, using the item's private extras such as `ticktick: {taskId, projectId}`), then rewrite without the handled items. The dashboard only sets `checked`/`checkedAt` and keeps your extras. List only the important or due tasks; the dashboard never queries TickTick. Items with an action need an `id`; `due` is an ISO date or datetime.
+
+List `style` (card.json, optional): `"rows"` (default) or `"detailed"`; anything else is Broken. A list item's `meta` (at most 200 chars, e.g. `github · 2h ago`) shows only in `detailed`; in `rows` it is ignored, not an error.
+
+## 10a. Calendar and bookmarks
+
+`calendar` shows a month grid with event dots and an agenda for the selected day. Tickdeck fetches nothing, so **write events for at least the visible month**; a day with no written events shows an empty agenda. `data.events` holds at most 500 events: `title` (required), `start` (required, RFC 3339 with offset or `Z`), optional `end` (not before `start`), `allDay`, `location`, `link`, `color`. With `allDay: true`, `start`/`end` may be `YYYY-MM-DD`; all-day dates are read literally (an all-day event on Oct 16 is Oct 16 in any time zone) and `end` is inclusive (the last day shown). Without `allDay`, date-only values are invalid.
+
+`bookmarks` shows link groups: `data.groups` (1-50), each `{ title?, color?, links }` with 1-100 links of `{ title, url, description?, icon? }`. `icon` is an emoji or short text (at most 8 chars), never a URL or path.
+
+`color` (events, groups) is `primary`, `positive`, `negative` or `"H S L"` (e.g. `"220 80 50"`); no hex, no `hsl()`.
+
+`media` items may carry `meta` (muted line under the caption, at most 200 chars); the caption is the title. `data.layout` is `grid`, `single` or `row` (horizontal scroller).
+
+Where fields live: card.json = where/how the frame shows the card (`layout`, `priority`, `show`, `style`); data.json = what the content is, including content-coupled layout. So list `style` is in card.json but media `layout` stays in data.json. This inconsistency is accepted; do not move either.
 
 ## 11. Extending and gotchas
 

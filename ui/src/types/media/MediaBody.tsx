@@ -33,14 +33,23 @@ export function MediaBody({ card, data, mode }: CardTypeProps<MediaData>) {
   const full = mode === 'fullscreen';
   const shown = full ? items : items.slice(0, COMPACT_CAP);
   const rest = items.length - shown.length;
-  const layout = (data as { layout?: string }).layout === 'single' ? 'single' : 'grid';
+  const rawLayout = (data as { layout?: string }).layout;
+  const layout = rawLayout === 'single' || rawLayout === 'row' ? rawLayout : 'grid';
   return (
     <div className={`media-root media-root--${layout}${full ? ' media-root--full' : ''}`}>
-      <div className="media-grid">
+      <div
+        className={layout === 'row' ? 'media-row' : 'media-grid'}
+        {...(layout === 'row' ? { tabIndex: 0, role: 'region', 'aria-label': `${card.title} images` } : {})}
+      >
         {shown.map((item, i) => (
           <figure key={`${i}:${item.src}`} className="media-figure">
             <Picture item={item} />
-            {item.caption && <figcaption className="media-caption">{item.caption}</figcaption>}
+            {item.caption && (
+              <figcaption className="media-caption clamp-2" title={item.caption}>
+                {item.caption}
+              </figcaption>
+            )}
+            {item.meta && <span className="media-meta">{item.meta}</span>}
           </figure>
         ))}
       </div>

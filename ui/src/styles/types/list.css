@@ -20,6 +20,9 @@
 .lst-failed { font-size: var(--font-size-h5); color: var(--color-negative); white-space: nowrap; order: 3; }
 
 /* placeholders for 05 (variants and shared meta line); 05 only fills these */
-.list--rows { }
-.list--detailed { }
+.list--rows .lst-item { padding: var(--list-half-gap) 0; }
+.list--detailed .lst-item { padding: var(--list-half-gap) 0; }
+.list--detailed .lst-line { flex-wrap: nowrap; }
+.list--detailed .lst-line .clamp-2 { flex: 1 1 auto; min-width: 0; color: var(--color-text-paragraph); }
+.list--detailed .lst-sub { color: var(--color-text-subdue); }
 .meta-line { color: var(--color-text-subdue); font-size: var(--font-size-h5); }

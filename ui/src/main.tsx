@@ -11,6 +11,8 @@ import './styles/types/list.css';
 import './styles/types/markdown.css';
 import './styles/types/media.css';
 import './styles/types/table.css';
+import './styles/types/calendar.css';
+import './styles/types/bookmarks.css';
 import './styles/mobile.css';
 
 const el = document.getElementById('root');

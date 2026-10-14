@@ -15,7 +15,7 @@ import { ENV_HOME } from '../../src/constants/env.js';
 
 const ROOT = resolve(import.meta.dirname, '../..');
 const UI_DIR = join(ROOT, 'ui/dist');
-const TYPES = ['markdown', 'table', 'list', 'kpi', 'media'] as const;
+const TYPES = ['markdown', 'table', 'list', 'kpi', 'media', 'calendar', 'bookmarks'] as const;
 
 interface Harness {
   server: RunningServer;
@@ -280,6 +280,25 @@ test.describe('populated feed', () => {
         await page.screenshot({ path: join(process.env['TICKDECK_SHOTS'], `app-${width}.png`), fullPage: true });
       }
     }
+  });
+
+  test('media row is a labelled focusable region; calendar and bookmarks render in side columns (05 A6/A1/A3)', async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.goto(h!.server.url);
+    for (const id of ['media', 'calendar', 'bookmarks']) await expect(page.locator(`[data-card-id="${id}"]`).first()).toBeVisible();
+    const expanders = page.getByRole('button', { name: /^Expand/ });
+    while (await expanders.count()) await expanders.first().click();
+    const row = page.locator('[data-column="center"] [data-card-id="media"] [role="region"][tabindex="0"]');
+    await expect(row).toHaveCount(1);
+    await expect(row).toHaveAttribute('aria-label', /Camera snapshots/);
+    const cal = page.locator('[data-column="right"] [data-card-id="calendar"]');
+    await expect(cal.locator('.cal-grid')).toBeVisible();
+    await expect(cal.locator('.agenda-wrap')).toBeVisible();
+    const bm = page.locator('[data-column="left"] [data-card-id="bookmarks"]');
+    await expect(bm.locator('.bm-item a').first()).toBeVisible();
+    expect(await bm.locator('.bm-item a').count()).toBeGreaterThan(0);
+    await expect(page.getByText(/Unsupported type/i)).toHaveCount(0);
+    expect(errors).toEqual([]);
   });
 
   test('reduced motion disables animation (R12)', async ({ page }) => {

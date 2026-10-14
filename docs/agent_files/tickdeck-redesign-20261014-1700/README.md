@@ -68,7 +68,7 @@ None.
 - 04: per-card alignment of numeric columns; user column resize.
 
 ## Owner manual steps
-1. Open private mockup Artifact (02), check desktop + phone width, record "approved <date>" — gates 03.
+1. Open private mockup Artifact (02), check desktop + phone width, record "approved <date>" — gates 03. Mockup: https://claude.ai/artifact/Sfh39zJUSLtyYefdyPKSbM (published 2026-10-14, private).
 2. Create/rename GitHub repo `tejitpabari99/tickdeck` (01).
 3. (done) `tickdeck` npm name verified free (01).
 4. Old data dir: none found locally; delete by hand if one exists elsewhere (01).

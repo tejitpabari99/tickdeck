@@ -8,14 +8,14 @@ Source of truth: `02-mockup/PRD.md` (approved, no open items). One self-containe
 
 | # | Task | Depends on | Status |
 |---|---|---|---|
-| 1 | Tokens, base CSS, page shell, header, alert strip | none | todo |
-| 2 | Card frame and states | 1 | todo |
-| 3 | Left column: calendar and KPI | 2 | todo |
-| 4 | Center column cards and Completed | 2 | todo |
-| 5 | Right column: bookmarks and markdown | 2 | todo |
-| 6 | Narrow layout and small touches | 3, 4, 5 | todo |
-| 7 | Self-check against acceptance criteria | 6 | todo |
-| 8 | Publish private Artifact | 7 | todo |
+| 1 | Tokens, base CSS, page shell, header, alert strip | none | done |
+| 2 | Card frame and states | 1 | done |
+| 3 | Left column: calendar and KPI | 2 | done |
+| 4 | Center column cards and Completed | 2 | done |
+| 5 | Right column: bookmarks and markdown | 2 | done |
+| 6 | Narrow layout and small touches | 3, 4, 5 | done |
+| 7 | Self-check against acceptance criteria | 6 | done |
+| 8 | Publish private Artifact | 7 | done |
 | 9 | Owner review and approval | 8 | todo |
 
 ## Task 1 — Tokens, base CSS, page shell, header, alert strip

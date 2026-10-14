@@ -8,12 +8,12 @@ Source of truth: [PRD.md](PRD.md). Mechanical rename of every tracked occurrence
 
 | # | Task | Depends on | Status |
 |---|---|---|---|
-| 1 | Scripted rename pass + test updates | none | todo |
-| 2 | Reword scheduler references | 1 | todo |
-| 3 | Schema titles, regen schemas, regen lockfile | 2 | todo |
-| 4 | Changeset + ADR 0006 | 3 | todo |
-| 5 | Validate, smoke, verification greps | 4 | todo |
-| 6 | Set git remote URL | none | todo |
+| 1 | Scripted rename pass + test updates | none | done |
+| 2 | Reword scheduler references | 1 | done |
+| 3 | Schema titles, regen schemas, regen lockfile | 2 | done |
+| 4 | Changeset + ADR 0006 | 3 | done |
+| 5 | Validate, smoke, verification greps | 4 | done |
+| 6 | Set git remote URL | none | done |
 | 7 | Move repo folder, repair worktrees, update projects README (run after sub-project 05 completes) | 5, sub-project 05 | todo |
 
 ## Task 1 — Scripted rename pass + test updates

@@ -94,7 +94,7 @@ describe('title bar', () => {
     const rel = screen.getByText('2h ago');
     expect(rel.getAttribute('title')).toBe(new Date(p.card.updatedAt!).toLocaleString());
     expect(screen.getByTestId('body').textContent).toBe('SECRET-DATA|column');
-    expect(document.querySelector('.card-frame__body')).not.toBeNull();
+    expect(document.querySelector('.card-body')).not.toBeNull();
   });
 
   it('relative time ticks', () => {
@@ -137,6 +137,49 @@ describe('title bar', () => {
   });
 });
 
+describe('hooks contract', () => {
+  it('renders .card with the look from card.column and data-permanent from column', () => {
+    const { container, rerender } = render(<CardFrame {...props({ card: card({ column: 'center' }) })} />);
+    let el = container.querySelector('.card')!;
+    expect(el.classList.contains('card--center')).toBe(true);
+    expect(el.classList.contains('card--side')).toBe(false);
+    expect(el.getAttribute('data-permanent')).toBe('false');
+    rerender(<CardFrame {...props({ card: card({ column: 'left' }) })} />);
+    el = container.querySelector('.card')!;
+    expect(el.classList.contains('card--side')).toBe(true);
+    expect(el.getAttribute('data-permanent')).toBe('true');
+  });
+
+  it('now/fullscreen modes always use the center look', () => {
+    const { container } = render(<CardFrame {...props({ card: card({ column: 'right' }), mode: 'now' })} />);
+    expect(container.querySelector('.card')!.classList.contains('card--center')).toBe(true);
+  });
+
+  it('priority classes', () => {
+    const cls = (priority: number) => {
+      const { container, unmount } = render(<CardFrame {...props({ card: card({ priority }) })} />);
+      const c = container.querySelector('.card')!.className;
+      unmount();
+      return c;
+    };
+    expect(cls(8)).toContain('prio-high');
+    expect(cls(2)).toContain('prio-normal');
+    expect(cls(1)).toContain('prio-low');
+  });
+
+  it('frame parts exist with contract names', () => {
+    const { container } = render(<CardFrame {...props({ card: card({ notify: true }) })} />);
+    for (const s of ['.card-header', '.card-title', '.card-meta', '.card-actions', '.unseen-dot', '.card-body']) {
+      expect(container.querySelector(s), s).not.toBeNull();
+    }
+  });
+
+  it('side cards keep all buttons in the DOM (CSS hides them)', () => {
+    render(<CardFrame {...props({ card: card({ column: 'left' }) })} />);
+    for (const n of ['Fullscreen', 'Done', 'Hide']) expect(screen.getByRole('button', { name: n })).toBeTruthy();
+  });
+});
+
 describe('Broken', () => {
   it('never shows data even if supplied', () => {
     const p = props({
@@ -146,8 +189,8 @@ describe('Broken', () => {
     expect(screen.getByText('bad feed')).toBeTruthy();
     expect(screen.queryByTestId('body')).toBeNull();
     expect(container.textContent).not.toContain('SECRET-DATA');
-    expect(container.querySelector('.card-frame__body')).toBeNull();
-    expect(container.querySelector('.card-frame--broken')).not.toBeNull();
+    expect(container.querySelector('.card-body .card-broken')).not.toBeNull();
+    expect(container.querySelector('.card--broken')).not.toBeNull();
     expect(screen.getByRole('button', { name: 'Hide' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Done' })).toBeTruthy();
   });
@@ -174,7 +217,7 @@ describe('notify highlight', () => {
   it('clears on click and records seen', () => {
     const c = n();
     const { container } = render(<CardFrame {...props({ card: c })} />);
-    fireEvent.click(container.querySelector('.card-frame')!);
+    fireEvent.click(container.querySelector('.card')!);
     expect(container.querySelector('.card-frame--notify')).toBeNull();
     expect(JSON.parse(localStorage.getItem(SEEN_KEY)!)).toEqual({ c1: c.updatedAt });
   });
@@ -233,7 +276,7 @@ describe('motion', () => {
   it('mount-in and updated fade apply, fade ends after 600 ms', () => {
     const c = card();
     const { container, rerender } = render(<CardFrame {...props({ card: c })} />);
-    const el = () => container.querySelector('.card-frame')!;
+    const el = () => container.querySelector('.card')!;
     expect(el().classList.contains('card-frame--enter')).toBe(true);
     expect(el().classList.contains('card-frame--updated')).toBe(false);
     rerender(<CardFrame {...props({ card: { ...c, updatedAt: ago(0) } })} />);
@@ -248,7 +291,7 @@ describe('motion', () => {
     mockMatchMedia(true);
     const c = card();
     const { container, rerender } = render(<CardFrame {...props({ card: c })} />);
-    const el = () => container.querySelector('.card-frame')!;
+    const el = () => container.querySelector('.card')!;
     expect(el().classList.contains('card-frame--enter')).toBe(false);
     rerender(<CardFrame {...props({ card: { ...c, updatedAt: ago(0) } })} />);
     expect(el().classList.contains('card-frame--updated')).toBe(false);
@@ -258,7 +301,7 @@ describe('motion', () => {
 describe('heights', () => {
   it.each(['S', 'M', 'L', 'auto'] as const)('height %s -> card-frame--h-%s', (h) => {
     const { container } = render(<CardFrame {...props({ card: card({ height: h }) })} />);
-    expect(container.querySelector('.card-frame')!.classList.contains(`card-frame--h-${h}`)).toBe(true);
+    expect(container.querySelector('.card')!.classList.contains(`card-frame--h-${h}`)).toBe(true);
     expect(container.querySelector('.drag-handle')).toBeNull();
   });
 });
@@ -268,12 +311,12 @@ describe('no-data', () => {
   it('muted frame with placeholder, no body, no Done/Fullscreen, Hide kept', () => {
     const p = props({ card: nd() });
     const { container } = render(<CardFrame {...p} />);
-    expect(container.querySelector('.card-frame--nodata')).not.toBeNull();
+    expect(container.querySelector('.card--empty')).not.toBeNull();
     expect(container.querySelector('.card-frame--h-S')).not.toBeNull();
     expect(screen.getByText('No data yet').className).toContain('meta');
     expect(screen.getByText('My card')).toBeTruthy();
     expect(screen.queryByTestId('body')).toBeNull();
-    expect(container.querySelector('.card-frame__meta')).toBeNull();
+    expect(container.querySelector('.card-meta')).toBeNull();
     expect(screen.queryByRole('button', { name: 'Done' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Fullscreen' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Hide' }));

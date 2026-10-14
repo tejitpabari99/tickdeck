@@ -6,9 +6,9 @@ const src = join(import.meta.dirname, '../src');
 const read = (p: string) => readFileSync(join(src, p), 'utf8');
 
 describe('foundation styles', () => {
-  it('main.tsx imports main -> site -> utils in order', () => {
+  it('main.tsx imports main -> site -> utils -> widgets in order', () => {
     const tsx = read('main.tsx');
-    const idx = ['main', 'site', 'utils'].map((n) => tsx.indexOf(`./styles/${n}.css`));
+    const idx = ['main', 'site', 'utils', 'widgets'].map((n) => tsx.indexOf(`./styles/${n}.css`));
     expect(idx.every((i) => i >= 0)).toBe(true);
     expect([...idx].sort((a, b) => a - b)).toEqual(idx);
   });
@@ -20,7 +20,7 @@ describe('foundation styles', () => {
     }
   });
 
-  for (const f of ['styles/site.css', 'styles/utils.css']) {
+  for (const f of ['styles/site.css', 'styles/utils.css', 'styles/widgets.css']) {
     it(`${f} has no colour literals`, () => {
       const css = read(f).replace(/\/\*[\s\S]*?\*\//g, '');
       expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);

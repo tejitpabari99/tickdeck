@@ -66,7 +66,7 @@ export function AlertStrip(p: AlertStripProps) {
                   </span>
                 </>
               ) : null}
-              <button type="button" className="card-frame__btn alert-strip__tick" onClick={() => p.onTick(a.id)}>
+              <button type="button" className="card-btn alert-strip__tick" onClick={() => p.onTick(a.id)}>
                 ✓ Tick
               </button>
             </li>

@@ -85,7 +85,7 @@ export function Completed(p: CompletedProps) {
                 <>
                   <strong className="completed__title" title={r.title}>{r.title}</strong>
                   <Age prefix="done" iso={r.doneAt} />
-                  <button type="button" className="card-frame__btn completed__reopen" onClick={() => p.onReopen(r.id)}>
+                  <button type="button" className="card-btn completed__reopen" onClick={() => p.onReopen(r.id)}>
                     Reopen
                   </button>
                 </>

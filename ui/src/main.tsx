@@ -9,6 +9,7 @@ import './theme/base.css';
 import './styles/main.css';
 import './styles/site.css';
 import './styles/utils.css';
+import './styles/widgets.css';
 
 initTheme();
 

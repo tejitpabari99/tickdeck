@@ -1,0 +1,40 @@
+/* mobile.css: narrow layout + motion polish. Imported LAST so it wins the cascade.
+   Breakpoint literal (CSS cannot use vars in @media): the ONLY 1200px here; keep equal to
+   COLUMNS_BREAKPOINT_PX in ui/tests/helpers/breakpoint.ts. No colour literals. */
+
+/* staggered reveal of cards inside each column (the .reveal utility's rules, applied to column children) */
+.column > * { animation: page-in 0.3s ease both; }
+.column > *:nth-child(2) { animation-delay: 30ms; }
+.column > *:nth-child(3) { animation-delay: 60ms; }
+.column > *:nth-child(4) { animation-delay: 90ms; }
+.column > *:nth-child(5) { animation-delay: 120ms; }
+.column > *:nth-child(6) { animation-delay: 150ms; }
+.column > *:nth-child(7) { animation-delay: 180ms; }
+.column > *:nth-child(8) { animation-delay: 210ms; }
+
+@media (max-width: 1200px) {
+  :root { --content-bounds-padding: 1.6rem; }
+  html, body { overflow-x: hidden; }
+  .columns { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'center' 'left' 'right'; }
+  .column--empty { display: none; }
+  .header { flex-wrap: wrap; gap: 1rem 1.5rem; padding-bottom: 1rem; }
+  .header__brand { order: 1; }
+  .header__status { order: 2; }
+  .header__date { order: 3; flex: 1 1 100%; }
+  .search-box { order: 4; flex: 1 1 100%; max-width: none; margin-left: 0; }
+  .filter { order: 5; }
+  .alert-strip__row { flex-wrap: wrap; }
+  .alert-strip__title { max-width: 100%; }
+  .alert-strip__body { flex: 1 1 100%; white-space: normal; }
+  .tbl-wrap { max-width: 100%; overflow-x: auto; }
+}
+
+@media (max-width: 600px) {
+  .card-header { padding: 0 1rem; }
+  .card-meta { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* all animation off */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

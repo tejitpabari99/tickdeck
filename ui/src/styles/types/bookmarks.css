@@ -1,0 +1,15 @@
+/* types/bookmarks.css: grouped links. Tokens only: no colour literals (group tint arrives as --tint). */
+.bm { display: block; min-width: 0; }
+.bm-group { break-inside: avoid; min-width: 0; }
+.bm-group + .bm-group { border-top: 1px solid var(--color-separator); margin-top: 1rem; padding-top: 1rem; }
+.bm-title {
+  font-size: var(--font-size-h5); text-transform: uppercase; letter-spacing: 0.04em;
+  margin-bottom: 0.4rem; color: var(--tint, var(--color-text-base-muted));
+}
+.bm-list { list-style: none; margin: 0; padding: 0; }
+.bm-item { padding: 0.3rem 0; min-width: 0; }
+.bm-icon { display: inline-block; width: 2.2rem; flex: none; }
+.bm-desc { display: block; padding-left: 2.2rem; color: var(--color-text-subdue); font-size: var(--font-size-h5); }
+.bm[data-mode='fullscreen'] { column-width: 28rem; column-gap: 3.2rem; }
+.bm[data-mode='fullscreen'] .bm-group + .bm-group { margin-top: 0; border-top: 0; padding-top: 0; padding-bottom: 1rem; }
+.bm[data-mode='fullscreen'] .bm-group { padding-bottom: 1rem; }

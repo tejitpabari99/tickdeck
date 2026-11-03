@@ -1,0 +1,18 @@
+Tickdeck
+Copyright (c) 2026 Tejit Pabari. Licensed under the MIT License (see LICENSE).
+
+Third-party credits
+
+Glance (https://github.com/glanceapp/glance), AGPL-3.0
+  The dashboard's visual design (colour-input model, spacing and type scale,
+  card frame, stylesheet file split) is modelled on Glance. Design values and
+  structure were re-implemented from scratch for Tickdeck. No Glance CSS,
+  HTML or code is copied verbatim, and Tickdeck contains no Glance source.
+  This project therefore remains MIT-licensed.
+
+Catppuccin Mocha palette (https://github.com/catppuccin/catppuccin), MIT
+  Colour values used for the single built-in theme.
+
+JetBrains Mono (https://github.com/JetBrains/JetBrainsMono), SIL OFL 1.1
+  Regular (400) woff2 is bundled. Copyright 2020 The JetBrains Mono Project
+  Authors. Licence text ships in the package at dist/ui/fonts/OFL.txt.

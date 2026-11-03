@@ -1,0 +1,13 @@
+{
+  "$schema": "../../schemas/card-def.json",
+  "type": "bookmarks",
+  "title": "Bookmarks",
+  "data": "data.json",
+  "layout": {
+    "column": "left",
+    "order": 0,
+    "height": "auto"
+  },
+  "priority": 1,
+  "notify": false
+}

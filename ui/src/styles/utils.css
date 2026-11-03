@@ -1,0 +1,85 @@
+/* utils.css: generic helpers. No colour literals: var()/calc()/color-mix() only. */
+.truncate, .clamp-1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.clamp-2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+
+/* link with accent arrow; arrow dims once visited */
+.visited-arrow { color: var(--color-text-paragraph); }
+.visited-arrow::after { content: ' \2197'; color: var(--color-primary); }
+.visited-arrow:visited::after { color: var(--color-text-base); }
+.visited-arrow:hover { color: var(--color-text-highlight); }
+
+.sep-dot::before { content: '\2022'; margin: 0 0.8rem; color: var(--color-text-subdue); }
+.separator-list > * + * {
+  border-top: 1px solid var(--color-separator);
+  padding-top: var(--list-half-gap); margin-top: var(--list-half-gap);
+}
+
+.thumbnail {
+  display: block; width: 100%; aspect-ratio: 16 / 8.9; object-fit: cover;
+  border: 1px solid var(--color-separator); border-radius: var(--border-radius);
+  filter: grayscale(0.2) contrast(0.9); opacity: 0.8; transition: opacity 0.2s, filter 0.2s;
+}
+.thumbnail:hover, a:hover > .thumbnail { opacity: 1; filter: none; }
+
+/* staggered reveal */
+.reveal > * { animation: page-in 0.3s ease both; }
+.reveal > *:nth-child(2) { animation-delay: 30ms; }
+.reveal > *:nth-child(3) { animation-delay: 60ms; }
+.reveal > *:nth-child(4) { animation-delay: 90ms; }
+.reveal > *:nth-child(5) { animation-delay: 120ms; }
+.reveal > *:nth-child(6) { animation-delay: 150ms; }
+.reveal > *:nth-child(7) { animation-delay: 180ms; }
+.reveal > *:nth-child(8) { animation-delay: 210ms; }
+
+/* size helpers */
+.size-h1 { font-size: var(--font-size-h1); }
+.size-h2 { font-size: var(--font-size-h2); }
+.size-h3 { font-size: var(--font-size-h3); }
+.size-h4 { font-size: var(--font-size-h4); }
+.size-base { font-size: var(--font-size-base); }
+.size-h5 { font-size: var(--font-size-h5); }
+.size-h6 { font-size: var(--font-size-h6); }
+
+/* text-tier helpers (emphasis = colour, not weight) */
+.color-highlight, .text-highlight { color: var(--color-text-highlight); }
+.color-paragraph, .text-paragraph { color: var(--color-text-paragraph); }
+.color-base, .text-base { color: var(--color-text-base); }
+.color-muted, .text-muted { color: var(--color-text-base-muted); }
+.color-subdue, .text-subdue { color: var(--color-text-subdue); }
+.color-primary { color: var(--color-primary); }
+.color-positive { color: var(--color-positive); }
+.color-negative { color: var(--color-negative); }
+.text-upper { text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* screen-reader-only text */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.meta { font-size: var(--font-size-h5); color: var(--color-text-base-muted); }
+
+/* clamped text keeps long words from overflowing */
+.clamp-2, .card-link__text, .card-link-text { overflow-wrap: anywhere; }
+.card-link__text, .card-link-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+
+/* CardLink: visited state is CSS-only (:visited exposes colour only) */
+a.card-link { display: inline-flex; align-items: baseline; max-width: 100%; text-decoration: none; }
+a.card-link:not(:visited), a.card-link:not(:visited) .card-link__glyph { color: var(--color-primary); }
+a.card-link:visited, a.card-link:visited .card-link__glyph { color: var(--color-text-base-muted); }
+.card-link__glyph { opacity: 0.6; white-space: nowrap; }
+a.card-link:hover { text-decoration: underline; }
+a.card-link:hover .card-link__glyph { opacity: 1; }
+a.card-link:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }
+
+.show-more {
+  background: none; border: 0; padding: 0.4rem 0; font: inherit; font-size: var(--font-size-h5);
+  color: var(--color-primary); cursor: pointer;
+}
+.show-more:hover { text-decoration: underline; }
+mark { background: color-mix(in srgb, var(--color-primary) 30%, transparent); color: inherit; border-radius: 2px; }
+
+/* type-level motion (kpi cross-fade, list check-off) is opt-in and off when reduced */
+.type-motion { transition: opacity 200ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  .type-motion, .type-motion * { transition: none !important; animation: none !important; }
+}

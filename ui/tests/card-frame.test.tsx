@@ -1,0 +1,391 @@
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ViewCard } from '../src/api/types.ts';
+import { CardFrame, type CardFrameProps } from '../src/frame/CardFrame.tsx';
+import { isExpanded, resetExpanded, setExpanded, subscribeExpanded } from '../src/frame/CardFrame.tsx';
+import { markSeen } from '../src/lib/seen.ts';
+import { SEEN_KEY } from '../src/constants/storage.ts';
+import { registerCardType } from '../src/registry/registry.ts';
+
+const NOW = Date.parse('2026-10-05T12:00:00Z');
+const ago = (ms: number) => new Date(NOW - ms).toISOString();
+
+function card(over: Partial<ViewCard> = {}): ViewCard {
+  return {
+    id: 'c1',
+    type: 'zz-frame',
+    title: 'My card',
+    priority: 3,
+    notify: false,
+    updatedAt: ago(2 * 3_600_000),
+    column: 'center',
+    height: 'M',
+    permanent: false,
+    collapsed: false,
+    done: false,
+    status: 'ok',
+    data: { text: 'SECRET-DATA' },
+    ...over,
+  };
+}
+
+function props(over: Partial<CardFrameProps> = {}): CardFrameProps {
+  return {
+    card: card(),
+    mode: 'column',
+    query: '',
+    checked: new Set(),
+    pending: new Set(),
+    nowPriorityThreshold: 8,
+    onItemAction: async () => {},
+    onDone: vi.fn(),
+    onHide: vi.fn(),
+    onFullscreen: vi.fn(),
+    ...over,
+  };
+}
+
+function mockMatchMedia(reduced: boolean) {
+  vi.stubGlobal('matchMedia', (q: string) => ({
+    matches: reduced && q.includes('prefers-reduced-motion'),
+    media: q,
+    addEventListener() {},
+    removeEventListener() {},
+    addListener() {},
+    removeListener() {},
+    onchange: null,
+    dispatchEvent: () => false,
+  }));
+}
+
+// @ts-expect-error deliberately not a 01 type name
+registerCardType('zz-frame', {
+  Component: ({ data, mode }: { data: { text: string }; mode: string }) => (
+    <p data-testid="body">
+      {data.text}|{mode}
+    </p>
+  ),
+  searchText: () => '',
+});
+// @ts-expect-error deliberately not a 01 type name
+registerCardType('zz-throw', {
+  Component: () => {
+    throw new Error('boom');
+  },
+  searchText: () => '',
+});
+
+beforeEach(() => {
+  localStorage.clear();
+  resetExpanded();
+  mockMatchMedia(false);
+  vi.useFakeTimers({ now: NOW, toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
+});
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+describe('title bar', () => {
+  it('shows title with tooltip, relative time with absolute title, body via registry', () => {
+    const p = props();
+    render(<CardFrame {...p} />);
+    expect(screen.getByText('My card').getAttribute('title')).toBe('My card');
+    const rel = screen.getByText('2h ago');
+    expect(rel.getAttribute('title')).toBe(new Date(p.card.updatedAt!).toLocaleString());
+    expect(screen.getByTestId('body').textContent).toBe('SECRET-DATA|column');
+    expect(document.querySelector('.card-body')).not.toBeNull();
+  });
+
+  it('relative time ticks', () => {
+    render(<CardFrame {...props({ card: card({ updatedAt: ago(59 * 60_000) }) })} />);
+    expect(screen.getByText('59m ago')).toBeTruthy();
+    act(() => {
+      vi.advanceTimersByTime(60_000);
+    });
+    expect(screen.getByText('1h ago')).toBeTruthy();
+  });
+
+  it('priority marker only at/above threshold', () => {
+    const { rerender } = render(<CardFrame {...props({ card: card({ priority: 7 }) })} />);
+    expect(screen.queryByTestId('priority-marker')).toBeNull();
+    rerender(<CardFrame {...props({ card: card({ priority: 8 }) })} />);
+    expect(screen.getByTestId('priority-marker')).toBeTruthy();
+  });
+
+  it('action buttons are labelled and call back', () => {
+    const p = props();
+    render(<CardFrame {...p} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Fullscreen' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+    expect(p.onFullscreen).toHaveBeenCalledWith('c1');
+    expect(p.onDone).toHaveBeenCalledWith('c1');
+    expect(p.onHide).toHaveBeenCalledWith('c1');
+  });
+
+  it('contains render errors', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(<CardFrame {...props({ card: card({ type: 'zz-throw' }) })} />);
+    expect(screen.getByText('Render error')).toBeTruthy();
+    spy.mockRestore();
+  });
+
+  it('unknown type falls back', () => {
+    render(<CardFrame {...props({ card: card({ type: 'holo' }) })} />);
+    expect(screen.getByTestId('unknown-type')).toBeTruthy();
+  });
+});
+
+describe('hooks contract', () => {
+  it('renders .card with the look from card.column and data-permanent from card.permanent', () => {
+    const { container, rerender } = render(<CardFrame {...props({ card: card({ column: 'center' }) })} />);
+    let el = container.querySelector('.card')!;
+    expect(el.classList.contains('card--center')).toBe(true);
+    expect(el.classList.contains('card--side')).toBe(false);
+    expect(el.getAttribute('data-permanent')).toBe('false');
+    rerender(<CardFrame {...props({ card: card({ column: 'left', permanent: true }) })} />);
+    el = container.querySelector('.card')!;
+    expect(el.classList.contains('card--side')).toBe(true);
+    expect(el.getAttribute('data-permanent')).toBe('true');
+  });
+
+  it('now/fullscreen modes always use the center look', () => {
+    const { container } = render(<CardFrame {...props({ card: card({ column: 'right' }), mode: 'now' })} />);
+    expect(container.querySelector('.card')!.classList.contains('card--center')).toBe(true);
+  });
+
+  it('priority classes', () => {
+    const cls = (priority: number) => {
+      const { container, unmount } = render(<CardFrame {...props({ card: card({ priority }) })} />);
+      const c = container.querySelector('.card')!.className;
+      unmount();
+      return c;
+    };
+    expect(cls(8)).toContain('prio-high');
+    expect(cls(2)).toContain('prio-normal');
+    expect(cls(1)).toContain('prio-low');
+  });
+
+  it('frame parts exist with contract names', () => {
+    const { container } = render(<CardFrame {...props({ card: card({ notify: true }) })} />);
+    for (const s of ['.card-header', '.card-title', '.card-meta', '.card-actions', '.unseen-dot', '.card-body']) {
+      expect(container.querySelector(s), s).not.toBeNull();
+    }
+  });
+
+  it('side cards keep all buttons in the DOM (CSS hides them)', () => {
+    render(<CardFrame {...props({ card: card({ column: 'left' }) })} />);
+    for (const n of ['Fullscreen', 'Done', 'Hide']) expect(screen.getByRole('button', { name: n })).toBeTruthy();
+  });
+});
+
+describe('Broken', () => {
+  it('never shows data even if supplied', () => {
+    const p = props({
+      card: card({ status: 'broken', reason: 'unreadable', message: 'bad feed', data: { text: 'SECRET-DATA' } }),
+    });
+    const { container } = render(<CardFrame {...p} />);
+    expect(screen.getByText('bad feed')).toBeTruthy();
+    expect(screen.queryByTestId('body')).toBeNull();
+    expect(container.textContent).not.toContain('SECRET-DATA');
+    expect(container.querySelector('.card-body .card-broken')).not.toBeNull();
+    expect(container.querySelector('.card--broken')).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Hide' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Done' })).toBeTruthy();
+  });
+});
+
+describe('notify highlight', () => {
+  const n = () => card({ notify: true });
+
+  it('unseen notify card is highlighted; non-notify is not', () => {
+    const { container, rerender } = render(<CardFrame {...props({ card: n() })} />);
+    expect(container.querySelector('.card-frame--notify')).not.toBeNull();
+    expect(screen.getByTestId('notify-dot')).toBeTruthy();
+    rerender(<CardFrame {...props({ card: card() })} />);
+    expect(container.querySelector('.card-frame--notify')).toBeNull();
+  });
+
+  it('already-seen card is not highlighted', () => {
+    const c = n();
+    markSeen({ id: c.id, updatedAt: c.updatedAt! });
+    const { container } = render(<CardFrame {...props({ card: c })} />);
+    expect(container.querySelector('.card-frame--notify')).toBeNull();
+  });
+
+  it('clears on click and records seen', () => {
+    const c = n();
+    const { container } = render(<CardFrame {...props({ card: c })} />);
+    fireEvent.click(container.querySelector('.card')!);
+    expect(container.querySelector('.card-frame--notify')).toBeNull();
+    expect(JSON.parse(localStorage.getItem(SEEN_KEY)!)).toEqual({ c1: c.updatedAt });
+  });
+
+  it('clears on focus', () => {
+    const { container } = render(<CardFrame {...props({ card: n() })} />);
+    fireEvent.focus(screen.getByRole('button', { name: 'Done' }));
+    expect(container.querySelector('.card-frame--notify')).toBeNull();
+  });
+
+  it('clears after 1 s at >=50% visibility; leaving resets timer', () => {
+    let cb: IntersectionObserverCallback = () => {};
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(c: IntersectionObserverCallback) {
+          cb = c;
+        }
+        observe() {}
+        disconnect() {}
+        unobserve() {}
+      },
+    );
+    const { container } = render(<CardFrame {...props({ card: n() })} />);
+    const fire = (ratio: number) =>
+      act(() => {
+        cb([{ intersectionRatio: ratio } as IntersectionObserverEntry], {} as IntersectionObserver);
+      });
+    fire(0.6);
+    act(() => {
+      vi.advanceTimersByTime(900);
+    });
+    fire(0.2);
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+    expect(container.querySelector('.card-frame--notify')).not.toBeNull();
+    fire(0.5);
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    expect(container.querySelector('.card-frame--notify')).toBeNull();
+    expect(localStorage.getItem(SEEN_KEY)).toContain('c1');
+  });
+
+  it('new updatedAt re-highlights', () => {
+    const c = n();
+    markSeen({ id: c.id, updatedAt: c.updatedAt! });
+    const { container, rerender } = render(<CardFrame {...props({ card: c })} />);
+    rerender(<CardFrame {...props({ card: { ...c, updatedAt: ago(0) } })} />);
+    expect(container.querySelector('.card-frame--notify')).not.toBeNull();
+  });
+});
+
+describe('motion', () => {
+  it('mount-in and updated fade apply, fade ends after 600 ms', () => {
+    const c = card();
+    const { container, rerender } = render(<CardFrame {...props({ card: c })} />);
+    const el = () => container.querySelector('.card')!;
+    expect(el().classList.contains('card-frame--enter')).toBe(true);
+    expect(el().classList.contains('card-frame--updated')).toBe(false);
+    rerender(<CardFrame {...props({ card: { ...c, updatedAt: ago(0) } })} />);
+    expect(el().classList.contains('card-frame--updated')).toBe(true);
+    act(() => {
+      vi.advanceTimersByTime(600);
+    });
+    expect(el().classList.contains('card-frame--updated')).toBe(false);
+  });
+
+  it('disabled under prefers-reduced-motion', () => {
+    mockMatchMedia(true);
+    const c = card();
+    const { container, rerender } = render(<CardFrame {...props({ card: c })} />);
+    const el = () => container.querySelector('.card')!;
+    expect(el().classList.contains('card-frame--enter')).toBe(false);
+    rerender(<CardFrame {...props({ card: { ...c, updatedAt: ago(0) } })} />);
+    expect(el().classList.contains('card-frame--updated')).toBe(false);
+  });
+});
+
+describe('heights', () => {
+  it.each(['S', 'M', 'L', 'auto'] as const)('height %s -> card-frame--h-%s', (h) => {
+    const { container } = render(<CardFrame {...props({ card: card({ height: h }) })} />);
+    expect(container.querySelector('.card')!.classList.contains(`card-frame--h-${h}`)).toBe(true);
+    expect(container.querySelector('.drag-handle')).toBeNull();
+  });
+});
+
+describe('no-data', () => {
+  const nd = () => card({ status: 'no-data', data: undefined, updatedAt: undefined, notify: true, height: 'S' });
+  it('muted frame with placeholder, no body, no Done/Fullscreen, Hide kept', () => {
+    const p = props({ card: nd() });
+    const { container } = render(<CardFrame {...p} />);
+    expect(container.querySelector('.card--empty')).not.toBeNull();
+    expect(container.querySelector('.card-frame--h-S')).not.toBeNull();
+    expect(screen.getByText('No data yet').className).toContain('meta');
+    expect(screen.getByText('My card')).toBeTruthy();
+    expect(screen.queryByTestId('body')).toBeNull();
+    expect(container.querySelector('.card-meta')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Done' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Fullscreen' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+    expect(p.onHide).toHaveBeenCalledWith('c1');
+    expect(screen.queryByTestId('notify-dot')).toBeNull();
+  });
+});
+
+describe('collapsed card, expanded', () => {
+  const col = () => card({ collapsed: true, priority: 9 });
+
+  it('shows Collapse button in column mode only', () => {
+    render(<CardFrame {...props({ card: col() })} />);
+    expect(screen.getByRole('button', { name: 'Collapse' }).getAttribute('aria-expanded')).toBe('true');
+    cleanup();
+    render(<CardFrame {...props({ card: col(), mode: 'fullscreen' })} />);
+    expect(screen.queryByRole('button', { name: 'Collapse' })).toBeNull();
+    expect(screen.getByTestId('body')).toBeTruthy();
+  });
+
+  it('Collapse clears the session expanded flag and notifies subscribers', () => {
+    setExpanded('c1', true);
+    const l = vi.fn();
+    const off = subscribeExpanded(l);
+    render(<CardFrame {...props({ card: col() })} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Collapse' }));
+    expect(isExpanded('c1')).toBe(false);
+    expect(l).toHaveBeenCalled();
+    off();
+  });
+});
+
+describe('permanent (side) cards', () => {
+  const perm = (over: Partial<ViewCard> = {}) => card({ column: 'left', permanent: true, priority: 9, collapsed: true, notify: true, ...over });
+
+  it('renders no Done, Hide, collapse, priority marker or unseen dot; keeps Fullscreen', () => {
+    const p = props({ card: perm() });
+    render(<CardFrame {...p} />);
+    expect(screen.queryByRole('button', { name: 'Done' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Hide' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Collapse' })).toBeNull();
+    expect(screen.queryByTestId('priority-marker')).toBeNull();
+    expect(screen.queryByTestId('notify-dot')).toBeNull();
+    expect(document.querySelector('.card--highlight, .card-frame--notify')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Fullscreen' }));
+    expect(p.onFullscreen).toHaveBeenCalledWith('c1');
+  });
+
+  it('data-permanent follows card.permanent; classes follow column', () => {
+    const { rerender } = render(<CardFrame {...props({ card: perm() })} />);
+    let root = document.querySelector('[data-card-id="c1"]')!;
+    expect(root.getAttribute('data-permanent')).toBe('true');
+    expect(root.classList.contains('card--side')).toBe(true);
+    rerender(<CardFrame {...props({ card: card() })} />);
+    root = document.querySelector('[data-card-id="c1"]')!;
+    expect(root.getAttribute('data-permanent')).toBe('false');
+    expect(root.classList.contains('card--center')).toBe(true);
+  });
+
+  it('permanent card in fullscreen mode still has no Done/Hide', () => {
+    render(<CardFrame {...props({ card: perm(), mode: 'fullscreen' })} />);
+    expect(screen.queryByRole('button', { name: 'Done' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Fullscreen' })).toBeTruthy();
+  });
+
+  it('non-permanent card keeps Done/Hide', () => {
+    render(<CardFrame {...props()} />);
+    expect(screen.getByRole('button', { name: 'Done' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Hide' })).toBeTruthy();
+  });
+});
